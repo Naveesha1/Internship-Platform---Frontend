@@ -13,9 +13,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const history = useNavigate();
   
   const menuItems = [
-    { name: 'Dashboard', icon: require("../../Images/sidebar/dashboard.png"), href: `/SDashboard` },
+    { name: 'Dashboard', icon: require("../../Images/sidebar/dashboard.png"), href: `/STDashboard` },
     { name: 'Profile', icon: require("../../Images/sidebar/profile.png"), href: `/SProfile` },
-    { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/Internship` },
+    { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage` },
     { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/Application` },
     { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/Calender` },
     { name: 'ChatBot', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatBot` },
