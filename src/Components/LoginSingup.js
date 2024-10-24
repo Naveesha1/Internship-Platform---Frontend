@@ -55,7 +55,7 @@ const LoginSignUp = () => {
         let redirectPath;
         // send user to relevant paths
         if (userData.role === "Student") {
-          redirectPath = `/SDashboard`;
+          redirectPath = `/STDashboard`;
         } else if (userData.role === "Company") {
           redirectPath = `/CmDashboard`;
         } else {
