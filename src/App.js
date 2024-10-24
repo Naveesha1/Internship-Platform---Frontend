@@ -7,10 +7,11 @@ import CMDashboard from "./Pages/Company/Dashboard.js";
 import ResetPassword from "./Components/ResetPassword.js";
 import Profile from "./Pages/Student/Profile.js";
 import InternshipPage from "./Pages/Student/InternshipPage.js";
-import Application from "./Pages/Student/Application.js";
 import Chatbot from "./Pages/Student/Chatbot.js";
-import Calender from "./Pages/Student/Calender.js";
 import DashboardPage from "./Pages/Student/DashboardPage.js";
+import InternshipDetailsPage from "./Pages/Student/InternshipDetailsPage.js";
+import ApplicationPage from "./Pages/Student/ApplicationPage.js";
+import CalendarPage from "./Pages/Student/CalendarPage.js";
 
 
 function App() {
@@ -24,11 +25,13 @@ function App() {
         <Route path='/STDashboard' element={<DashboardPage/>}></Route>
         <Route path='/SProfile' element={<Profile/>} />
         <Route path='/InternshipPage' element={<InternshipPage/>} />
-        <Route path='/Application' element={<Application/>} />
+        <Route path='/CalendarPage' element={<CalendarPage/>}></Route>
         <Route path='/ChatBot' element={<Chatbot/>} />
-        <Route path='/Calender' element={<Calender/>} />
+        <Route path='/InternshipDetailsPage' element={<InternshipDetailsPage/>}></Route>
         {/* company routes */}
         <Route path='/CmDashboard' element={<CMDashboard/>} />
+        <Route path="ApplicationPage" element={<ApplicationPage/>}></Route>
+
       </Routes>
       
     </div>

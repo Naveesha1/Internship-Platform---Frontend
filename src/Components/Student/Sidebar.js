@@ -16,8 +16,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Dashboard', icon: require("../../Images/sidebar/dashboard.png"), href: `/STDashboard` },
     { name: 'Profile', icon: require("../../Images/sidebar/profile.png"), href: `/SProfile` },
     { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage` },
-    { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/Application` },
-    { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/Calender` },
+    { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage` },
+    { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage` },
     { name: 'ChatBot', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatBot` },
   ];
   
@@ -61,7 +61,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             key={item.name}
             className={`flex items-center pt-4 px-6 py-3 cursor-pointer ${
               location.pathname === item.href
-                ? 'bg-[#D9D9D966] text-white px-3 py-3 rounded-lg ' // Active class based on current route
+                ? 'bg-[#D9D9D966] text-white px-3 py-3 rounded-lg' // Active class based on current route
                 : ''
             }`}
           >
