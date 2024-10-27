@@ -7,11 +7,11 @@ import CMDashboard from "./Pages/Company/Dashboard.js";
 import ResetPassword from "./Components/ResetPassword.js";
 import Profile from "./Pages/Student/Profile.js";
 import InternshipPage from "./Pages/Student/InternshipPage.js";
-import Chatbot from "./Pages/Student/Chatbot.js";
 import DashboardPage from "./Pages/Student/DashboardPage.js";
 import InternshipDetailsPage from "./Pages/Student/InternshipDetailsPage.js";
 import ApplicationPage from "./Pages/Student/ApplicationPage.js";
 import CalendarPage from "./Pages/Student/CalendarPage.js";
+import ChatbotPage from "./Pages/Student/ChatbotPage.js";
 
 
 function App() {
@@ -26,8 +26,8 @@ function App() {
         <Route path='/SProfile' element={<Profile/>} />
         <Route path='/InternshipPage' element={<InternshipPage/>} />
         <Route path='/CalendarPage' element={<CalendarPage/>}></Route>
-        <Route path='/ChatBot' element={<Chatbot/>} />
         <Route path='/InternshipDetailsPage' element={<InternshipDetailsPage/>}></Route>
+        <Route path='/ChatbotPage' element={<ChatbotPage/>}></Route>
         {/* company routes */}
         <Route path='/CmDashboard' element={<CMDashboard/>} />
         <Route path="ApplicationPage" element={<ApplicationPage/>}></Route>

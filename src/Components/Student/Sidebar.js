@@ -18,7 +18,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage` },
     { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage` },
     { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage` },
-    { name: 'ChatBot', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatBot` },
+    { name: 'ChatBot', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatbotPage` },
   ];
   
   const handleLogout = () => {
