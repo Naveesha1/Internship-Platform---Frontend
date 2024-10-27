@@ -1,9 +1,8 @@
 import React,{useState} from 'react'
 import Navbar from '../../Components/Navbar/Navbar';
 import Sidebar from '../../Components/Student/Sidebar';
-import Calendar from '../../Components/Student/Calendar/Calendar';
-
-function CalendarPage() {
+import Chatbot from '../../Components/Student/ChatBot/Chatbot';
+function ChatbotPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar state
 
     const toggleSidebar = () => {
@@ -23,11 +22,11 @@ function CalendarPage() {
   
           {/* Main Content Area */}
           <div className="flex-1">
-            <Calendar/>
+            <Chatbot/>
           </div>
         </div>
       </div>
     );
   };
 
-export default CalendarPage
+export default ChatbotPage
