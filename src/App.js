@@ -12,13 +12,11 @@ import ApplicationPage from "./Pages/Student/ApplicationPage.js";
 import CalendarPage from "./Pages/Student/CalendarPage.js";
 import ChatbotPage from "./Pages/Student/ChatbotPage.js";
 import FullProfilePage from "./Pages/Student/FullProfilePage.js";
-
 import ComDashboardPage from "./Pages/Company/ComDashboardPage.js";
 import CompanyProfilePage from "./Pages/Company/CompanyProfilePage.js";
 import CompanyInternshipPage from "./Pages/Company/CompanyInternshipPage.js";
 import CompanyCalendarPage from "./Pages/Company/CompanyCalendarPage.js";
 import CompanyApplicationPage from "./Pages/Company/CompanyApplicationPage.js";
-
 
 function App() {
   return (
@@ -35,8 +33,9 @@ function App() {
         <Route path='/InternshipDetailsPage' element={<InternshipDetailsPage/>}></Route>
         <Route path='/ChatbotPage' element={<ChatbotPage/>}></Route>
         <Route path='/STFullProfile' element={<FullProfilePage/>}></Route>
-
-
+        {/* company routes */}
+        <Route path='/CmDashboard' element={<CMDashboard/>} />
+        <Route path="ApplicationPage" element={<ApplicationPage/>}></Route>
         {/* company routes */}
         <Route path='/ComDashboard' element={<ComDashboardPage/>}></Route>
         <Route path="/ApplicationPage" element={<ApplicationPage/>}></Route>
@@ -44,8 +43,7 @@ function App() {
         <Route path='/CompanyInternshipPage' element={<CompanyInternshipPage/>}></Route>
         <Route path='/CompanyCalendar' element={<CompanyCalendarPage/>}></Route>
         <Route path='/CompanyApplicationPage' element={<CompanyApplicationPage/>}></Route>
-      </Routes>
-      
+      </Routes>  
     </div>
   );
 }
