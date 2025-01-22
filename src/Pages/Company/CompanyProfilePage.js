@@ -1,85 +1,146 @@
-import React, { useState } from 'react';
+import React, { useEffect, useContext,useState } from 'react';
 import Sidebar from '../../Components/Company/CSidebar.js';
 import Navbar from '../../Components/Navbar/Navbar';
-import Step1 from './Profile/CStep1';
-import Step2 from './Profile/CStep2';
+import Step1 from '../../Components/Company/Profile/CStep1.js';
+import Step2 from '../../Components/Company/Profile/CStep2.js';
+import { StoreContext } from "../../Context/StoreContext.js";
 import { FaCheck } from 'react-icons/fa';
+import axios from 'axios';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase.js";
+import {jwtDecode} from "jwt-decode";
 import done_icon from '../../Images/done.png';
+import ProfileContent from '../../Components/Company/Profile/CompanyProfile.js';
 
 const CompanyProfilePage = () => {
+
+  const token = localStorage.getItem("authToken");
+  const decodedToken = jwtDecode(token);
+  const registeredEmail = encodeURIComponent(decodedToken.email);
+
+  const { url } = useContext(StoreContext);
+  
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar open/close state
   const [step, setStep] = useState(1); // Step state to control the stepper
   const [loading, setLoading] = useState(false); // For handling loading state
-  const [error, setError] = useState(null); // For handling errors
   const [success, setSuccess] = useState(false); // For handling success status
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen); // Toggle sidebar state
-  };
+  const [company,setCompany] = useState({});
+  const [availability,setAvailability] = useState(false);
+  const [submitted,setSubmitted] = useState(false);
+  const [error,setError] = useState(null);
+  const [stepperVisibility,setStepperVisibility] = useState(false);
 
   const [formData, setFormData] = useState({
     companyName: '',
     rating: '',
     industry: '',
-    companyMail: '',
+    companyEmail: '',
     contactNumber: '',
     location: '',
-    aboutUs: '', // Add field for ID image in the form state
-    offer: '',
-    visionMission: '',
+    aboutUs: '',
+    vision: '',
+    mission: '',
     companyLogo: '',
     companyDocument: '',
+    positions: '',
+    verify: false,
+    registeredEmail:registeredEmail,
 
   });
 
+  const [file,setFiles] = useState({
+    logo:'',
+    document: '',
+  });
+
+  // for toggle sidebar 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // for handle the change in inputs
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
-      setFormData({ ...formData, [name]: files[0] }); // Handle file upload
+      setFiles({...file, [name]: files[0]});
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
+  // for submitted form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
 
     if (step === 2) {
-      // Submit the profile creation request
-      setLoading(true); // Show loading spinner or disable button
+      setLoading(true);
+      setSuccess(true);
+      setStepperVisibility(true);
       try {
-        // Prepare data to send
-        const formDataToSend = new FormData();
-
-        // Append each field to the FormData object
-        for (const key in formData) {
-          formDataToSend.append(key, formData[key]);
+        // upload each file into the firebase bucket
+        const uploadedUrls = {};
+        try {
+          for (const key in file) {
+            if (file[key]) {
+              const fileRef = ref(storage, `${key}/${file[key].name}`);
+              await uploadBytes(fileRef, file[key]);
+              const url = await getDownloadURL(fileRef);
+              uploadedUrls[key] = url;
+            }
+          }
+        } catch (error) {
+          console.error("Error uploading files:", error);
         }
 
-        // Make an API request (replace URL with your actual endpoint)
-        const response = await fetch('https://your-api-endpoint.com/create-profile', {
-          method: 'POST',
-          body: formDataToSend,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to create profile');
+        // update state variable values with access links to files
+        const updatedFormData = {
+          ...formData,
+          companyLogo: uploadedUrls.logo,
+          companyDocument: uploadedUrls.document,
+        };
+        
+        // api call for saving gathered data
+        const response = await axios.post(`${url}/api/company/createprofile`,updatedFormData);
+        if(response.data.success){
+          console.log(response.data.message);
+          setSubmitted(true);
+          
+        } else {
+          setError(response.data.message);
         }
-
-        // If successful
-        console.log('Profile created successfully');
-        setSuccess(true);
+        console.log(response.data.message);
+        
       } catch (error) {
-        setError(error.message); // Handle any errors
-        console.error('Error creating profile:', error);
-      } finally {
-        setLoading(false); // Hide loading spinner
+        console.error('Error submitting form', error);
       }
+
     } else {
-      setStep(step + 1); // Move to the next step
+      setStep(step + 1);
     }
   };
+
+  useEffect(()=> {
+    // for checking availability of company details
+    const getCompany = async() => {
+      if(registeredEmail){
+        try {
+          const response = await axios.post(`${url}/api/company/getCompany`,registeredEmail);
+          if(response.data.success){
+            setCompany(response.data.data);
+            setSuccess(true);
+            setAvailability(true);
+            setSubmitted(false); 
+            setStepperVisibility(true);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
+    getCompany();
+
+  },[registeredEmail]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -97,6 +158,7 @@ const CompanyProfilePage = () => {
         {/* Main Content Area */}
         <div className="flex-1 p-6 transition-all duration-300 flex flex-col justify-center items-center">
           {/* Stepper */}
+          {stepperVisibility ? <></> : <>
           <div className="flex justify-center mb-4">
             <div className="flex items-center">
               {/* Step 1 */}
@@ -119,9 +181,10 @@ const CompanyProfilePage = () => {
               </div>
             </div>
           </div>
+          </>}
 
           {/* Form Card */}
-          {!success ? (
+          {!success&&!availability ? (
             <>
               <div className="bg-[#D9D9D947] p-6 rounded-lg shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit}>
@@ -145,13 +208,20 @@ const CompanyProfilePage = () => {
               </div>
             </>
           ) : (
-            <>
-              {/* Error Message */}
-              {error && <p className="text-red-500">{error}</p>}
 
-              {/* Success Message */}
-              <img src={done_icon} alt="Success" />
-              <p className="text-[#0C7075] font-bold text-2xl">Profile Created Successfully</p>
+           
+            <>
+             {error ? <><p>{error}</p></> : <>
+              {availability && <>
+                <ProfileContent companyDetails={company}/>
+              </>}
+
+              {submitted&& <>
+                <img src={done_icon} alt="Success" />
+                <p className="text-[#0C7075] font-bold text-2xl">Profile Created Successfully</p>
+
+              </>}
+              </>}
             </>
           )}
         </div>

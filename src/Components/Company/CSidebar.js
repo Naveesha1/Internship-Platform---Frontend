@@ -8,27 +8,19 @@ const CSidebar = ({ isOpen, toggleSidebar }) => {
   
 
   // Safely decode the token
-  try {
-    const token = localStorage.getItem("authToken");
-  let decodedToken = null;
-    if (token) {
-      decodedToken = jwtDecode(token);
-      console.log("Decoded Token:", decodedToken); // Debugging output
-    }
-  } catch (error) {
-    console.error("Error decoding token:", error.message);
-  }
+  const token = localStorage.getItem("authToken");
+  const decodedToken = jwtDecode(token);
+ 
 
   const location = useLocation();
   const history = useNavigate();
 
   const menuItems = [
-    { name: "Dashboard", icon: require("../../Images/sidebar/dashboard.png"), href: `/ComDashboard` },
-    { name: "Profile", icon: require("../../Images/sidebar/profile.png"), href: `/CompanyProfile` },
-    { name: "Internship", icon: require("../../Images/sidebar/internship.png"), href: `/CompanyInternshipPage` },
-    { name: "Applications", icon: require("../../Images/sidebar/applications.png"), href: `/CompanyApplicationPage` },
-    { name: "Calendar", icon: require("../../Images/sidebar/calender.png"), href: `/CompanyCalendar` },
-    { name: "ChatBot", icon: require("../../Images/sidebar/chatbot.png"), href: `/` },
+    { name: "Dashboard", icon: require("../../Images/sidebar/dashboard.png"), href: `/ComDashboard?${decodedToken._id}` },
+    { name: "Profile", icon: require("../../Images/sidebar/profile.png"), href: `/CompanyProfile?${decodedToken._id}` },
+    { name: "Internship", icon: require("../../Images/sidebar/internship.png"), href: `/CompanyInternshipPage?${decodedToken._id}` },
+    { name: "Applications", icon: require("../../Images/sidebar/applications.png"), href: `/CompanyApplicationPage?${decodedToken._id}` },
+    { name: "Calendar", icon: require("../../Images/sidebar/calender.png"), href: `/CompanyCalendar?${decodedToken._id}` },
   ];
 
   const handleLogout = () => {
