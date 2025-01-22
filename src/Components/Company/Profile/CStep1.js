@@ -11,16 +11,21 @@ const CStep1 = ({ formData, handleChange }) => {
           value={formData.companyName}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your company name here'
         />
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Rating</label>
         <input 
-          type="text"
+          type="number"
           name="rating"
           value={formData.rating}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = Math.max(0, Math.min(5, Number(e.target.value))); // Restrict value between 0 and 5
+            handleChange({ target: { name: 'rating', value } });
+          }}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your rating level out of 5'
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -31,16 +36,18 @@ const CStep1 = ({ formData, handleChange }) => {
           value={formData.industry}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your industry here'
         />
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Company Mail</label>
         <input
           type="email"
-          name="companyMail"
-          value={formData.companyMail}
+          name="companyEmail"
+          value={formData.companyEmail}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your company email here'
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -51,16 +58,18 @@ const CStep1 = ({ formData, handleChange }) => {
           value={formData.contactNumber}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your company contact number here'
         />
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Location</label>
         <input
-          type="number"
+          type="text"
           name="location"
           value={formData.location}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Place your company address here'
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -71,26 +80,40 @@ const CStep1 = ({ formData, handleChange }) => {
           value={formData.aboutUs}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Add about your company'
         />
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">What We Offer</label>
         <input 
           type="text"
-          name="offer"
-          value={formData.offer}
+          name="positions"
+          value={formData.positions}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Enter intern positions separate by ","'
         />
       </div>
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mr-4 w-48">Vision & Mission</label>
+        <label className="block text-gray-700 mr-4 w-48">Vision</label>
         <input 
           type="text"
-          name="visionMission"
-          value={formData.visionMission}
+          name="vision"
+          value={formData.vision}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Your vision'
+        />
+      </div>
+      <div className="mb-4 flex items-center">
+        <label className="block text-gray-700 mr-4 w-48">Mission</label>
+        <input 
+          type="text"
+          name="mission"
+          value={formData.mission}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder='Your mission'
         />
       </div>
     </>

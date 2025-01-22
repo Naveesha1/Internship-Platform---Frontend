@@ -8,6 +8,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ForgetPassword from "./ForgetPassword";
+import { jwtDecode } from "jwt-decode";
 
 const LoginSignUp = () => {
   const { url } = useContext(StoreContext);
@@ -51,15 +52,17 @@ const LoginSignUp = () => {
       const userData = response.data.userData;
       if (response.data.success) {
         localStorage.setItem("authToken", response.data.token);
+        const token = localStorage.getItem("authToken");
+        const decodedToken = jwtDecode(token);
 
         let redirectPath;
         // send user to relevant paths
         if (userData.role === "Student") {
-          redirectPath = `/STDashboard`;
+          redirectPath = `/STDashboard?${decodedToken._id}`;
         } else if (userData.role === "Company") {
-          redirectPath = `/ComDashboard`;
+          redirectPath = `/ComDashboard?${decodedToken._id}`;
         } else {
-          redirectPath = `/Admin`;
+          redirectPath = `/Admin?${decodedToken._id}`;
         }
         navigate(redirectPath);
       } else {

@@ -1,93 +1,152 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Sidebar from '../../Components/Student/Sidebar';
 import Navbar from '../../Components/Navbar/Navbar';
-import Step1 from './Profile/Step1';
-import Step2 from './Profile/Step2'; 
-import Step3 from './Profile/Step3'; 
+import Step1 from '../../Components/Student/Profile/Step1';
+import Step2 from '../../Components/Student/Profile/Step2'; 
+import Step3 from '../../Components/Student/Profile/Step3'; 
 import { FaCheck } from 'react-icons/fa';
-import done_icon from '../../Images/done.png'
-
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase.js";
+import axios from 'axios';
+import { StoreContext } from "../../Context/StoreContext.js";
+import {jwtDecode} from "jwt-decode";
+import ProfileContent from '../../Components/Student/Profile/FullProfile.js';
+import done_icon from '../../Images/done.png';
 
 
 const Profile = () => {
+
+  const { url } = useContext(StoreContext);
+
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar open/close state
   const [step, setStep] = useState(1); // Step state to control the stepper
   const [loading, setLoading] = useState(false); // For handling loading state
-  const [error, setError] = useState(null); // For handling errors
   const [success, setSuccess] = useState(false); // For handling success status
+  const [user, setUser] = useState({});// for save user details
+  const [stepperVisibility,setStepperVisibility] = useState(false); // for control steps
+  const [profileVisible,setProfileVisible] = useState(false); // for control profile details visibility
+  const [submitted,setSubmitted] = useState(false); // for control profile details visibility
+  const [error,setError] = useState(null);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen); // Toggle sidebar state
-  };
+  const token = localStorage.getItem("authToken");
+  const decodedToken = jwtDecode(token);
+  const registeredEmail = encodeURIComponent(decodedToken.email);
+  const userId = encodeURIComponent(decodedToken._id);
 
   const [formData, setFormData] = useState({
     fullName: '',
     registrationNumber: '',
     degree: '',
     universityMail: '',
+    userEmail: registeredEmail,
     contactNumber: '',
     gpa: '',
-    profileImage: null, // Add field for ID image in the form state
-    idFrontImage: null,
-    idBackImage: null,
+    profileImage: '',
+    idFrontImage: '',
+    idBackImage:'',
     skills: '',
     position: '',
     qualification: '',
-    cv: null
+    cv: '',
+    certifications: '',
   });
 
+  const [file,setFiles] = useState({
+    profileImage:'',
+    idFrontImage: '',
+    idBackImage: '',
+    cv: ''
+  });
+
+  //function for toggle sidebar
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  //function for saving details to the state variable
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
-      setFormData({ ...formData, [name]: files[0] }); // Handle file upload
+      setFiles({...file, [name]: files[0]});
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
+  // function for submit gathered data and move steps
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-
-    if(step == 3){
-    setSuccess(true)
+    if(step === 3){
+    setSuccess(true);
+    setStepperVisibility(true);
+    setLoading(true);
     }
     if (step < 3) {
-      setStep(step + 1); // Move to the next step
+      setStep(step + 1);
     } else {
-      // When we are at Step 3, submit the form
-      setLoading(true); // Show loading spinner or disable button
+
       try {
-        // Prepare data to send
-        const formDataToSend = new FormData();
-        
-        // Append each field to the FormData object
-        for (const key in formData) {
-          formDataToSend.append(key, formData[key]);
+        // upload each file into the firebase bucket
+        const uploadedUrls = {};
+        try {
+          for (const key in file) {
+            if (file[key]) {
+              const fileRef = ref(storage, `${key}/${file[key].name}`);
+              await uploadBytes(fileRef, file[key]);
+              const url = await getDownloadURL(fileRef);
+              uploadedUrls[key] = url;
+            }
+          }
+          console.log("Uploaded File URLs:", uploadedUrls);
+        } catch (error) {
+          console.error("Error uploading files:", error);
         }
 
-        // Make an API request (replace URL with your actual endpoint)
-        const response = await fetch('https://your-api-endpoint.com/submit', {
-          method: 'POST',
-          body: formDataToSend,
-        });
+        // update state variable values with access links to files
+        const updatedFormData = {
+          ...formData,
+          idFrontImage: uploadedUrls.idFrontImage,
+          idBackImage: uploadedUrls.idBackImage,
+          profileImage: uploadedUrls.profileImage,
+          cv: uploadedUrls.cv
+        };
 
-        if (!response.ok) {
+        // api call for saving gathered data
+        const response = await axios.post(`${url}/api/student/profile`,updatedFormData);
+        if(response.data.success){
+          setSubmitted(true);
+          console.log(response.data.success);
           
-          throw new Error('Failed to submit data');
+        } else {
+          setError("An error occured please try again");
         }
-
-        // If successful
-       
-        console.log('Form submitted successfully');
+        console.log(response.data.message);
+        console.log(submitted);
+        
+        
       } catch (error) {
-        setError(error.message); // Handle any errors
-        console.error('Error submitting form:', error);
-      } finally {
-        setLoading(false); // Hide loading spinner
-      }
+        console.error('Error submitting form', error);
+      } 
     }
   };
+
+  useEffect(()=>{
+      // to check if user has sent the data
+    const getStudentProfile = async()=> {      
+      const response = await axios.post(`${url}/api/student/getprofile`,registeredEmail);
+      if(response.data.success){
+      setUser(response.data.data);
+      setProfileVisible(true);
+      setStepperVisibility(true);
+      setSubmitted(false);
+      setSuccess(true);
+      } 
+    } 
+    getStudentProfile();
+
+  },[userId]);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -96,17 +155,17 @@ const Profile = () => {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div
-          className={`transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#45A29E]`}
-        >
+        <div className={`transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#45A29E]`}>
           <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </div>
 
         {/* Main Content Area */}
         <div className="flex-1 p-6 transition-all duration-300 flex flex-col justify-center items-center">
-          {/* Stepper */}
+
           <div className="flex justify-center mb-4">
             <div className="flex items-center">
+              {stepperVisibility ? <></> : <>
+              
               {/* Step 1 */}
               <div
                 className={`w-10 h-10 flex items-center justify-center rounded-full ${
@@ -135,6 +194,7 @@ const Profile = () => {
               >
                 {success ? <div className='w-10 h-10 flex items-center justify-center rounded-full bg-green-500'><FaCheck /></div> : '3'}
               </div>
+              </>}
             </div>
           </div>
 
@@ -161,14 +221,19 @@ const Profile = () => {
               </div>
             </form>
           </div>
-          </> : <>
-          {/* Error Message */}
-          {error && <p className="text-red-500">{error}</p>}
-
-          {/* Success Message */}
-          <img src={done_icon}/>
-          <p className="text-[#0C7075] font-bold text-2xl">Details Under Review</p>
+          </> : 
+          (
+          <>
+          {error ? <><p>{error}</p></>:<>
+          {submitted && <>
+            <img src={done_icon} alt="Success" />
+            <p className="text-[#0C7075] font-bold text-2xl">Profile Created Successfully</p>
           </>}
+          {profileVisible && <>
+          <ProfileContent userDetails={user}/>
+          </> }
+          </>}
+          </>) }
         </div>
       </div>
     </div>
@@ -176,3 +241,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

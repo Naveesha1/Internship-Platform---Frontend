@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ImageIcon } from "lucide-react";
 
-const ProfileContent = () => {
+const ProfileContent = ({ userDetails }) => {
   const [activeTab, setActiveTab] = useState("documents");
-
+  
   const DocumentCard = ({ title, date, status, icon }) => (
     <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm mb-4">
       <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
@@ -51,16 +51,16 @@ const ProfileContent = () => {
         {/* Profile Card */}
         <div className="w-full lg:w-72 bg-white rounded-lg shadow-sm p-4 mb-6 lg:mb-0">
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32 bg-gray-200 rounded-full mb-4"></div>
-            <h2 className="text-xl font-semibold mb-4 text-center">H.G.N.K. Ekanayake</h2>
+            <div className="w-32 h-32 bg-gray-200 rounded-full mb-4"><img className="w-32 h-32 items-center rounded-full" src={userDetails.profileImageUrl} alt=""/></div>
+            <h2 className="text-xl font-semibold mb-4 text-center">{userDetails.fullName}</h2>
 
             <div className="w-full space-y-3">
               {[
-                { icon: "user", text: "215036R" },
-                { icon: "book", text: "ITM" },
-                { icon: "mail", text: "ekanayakehgnk.21@uom.lk" },
-                { icon: "phone", text: "077 95 89 719" },
-                { icon: "star", text: "3.356" }
+                { icon: "user", text: userDetails.registrationNumber },
+                { icon: "book", text: userDetails.degree },
+                { icon: "mail", text: userDetails.universityMail },
+                { icon: "phone", text: userDetails.contactNumber },
+                { icon: "star", text: userDetails.gpa }
               ].map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <svg 
@@ -116,13 +116,13 @@ const ProfileContent = () => {
             <div className="space-y-4">
               <DocumentCard
                 title="University ID"
-                date="2023.07.29"
-                status="Under Review"
+                date={userDetails.date}
+                status={userDetails.verify ? "Verified" : "Under verify"}
                 icon="document"
               />
               <DocumentCard
                 title="Profile Picture"
-                date="2023.08.30"
+                date={userDetails.date}
                 icon="image"
               />
             </div>
@@ -132,19 +132,19 @@ const ProfileContent = () => {
                 {[
                   { 
                     title: "Prefer Positions", 
-                    items: ["Software Engineer", "Business Analysis", "Quality Assurance"] 
+                    items: userDetails.position
                   },
                   { 
                     title: "Certifications", 
-                    items: ["Full Stack Development", ".net API development", "Java Basic"] 
+                    items: userDetails.certifications 
                   },
                   { 
                     title: "Technical Skills", 
-                    items: ["React", "Python", "JavaScript", ".net", "node"] 
+                    items: userDetails.skills
                   },
                   { 
                     title: "Soft Skills", 
-                    items: ["Team Work", "Leadership", "Time Management"] 
+                    items: userDetails.qualification
                   }
                 ].map((section, index) => (
                   <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8">

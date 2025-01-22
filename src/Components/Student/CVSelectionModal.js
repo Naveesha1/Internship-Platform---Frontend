@@ -1,7 +1,11 @@
-import React from 'react';
+import React,{ useState,useContext } from 'react';
+import { StoreContext } from "../../Context/StoreContext.js";
 
 const CvSelectionModal = ({ isOpen, setIsOpen, onSubmit }) => {
-  const [selectedCv, setSelectedCv] = React.useState("");
+
+  const { selectedInternship } = useContext(StoreContext);  
+  
+  const [selectedCv, setSelectedCv] = useState("");
 
   const handleSubmit = () => {
     if (!selectedCv) {
@@ -28,7 +32,7 @@ const CvSelectionModal = ({ isOpen, setIsOpen, onSubmit }) => {
         {/* Modal content */}
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800">
-            Software Developer Intern
+            {selectedInternship.position}
           </h2>
 
           <div className="space-y-4">
