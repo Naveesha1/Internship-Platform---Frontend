@@ -11,6 +11,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.fullName}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -21,6 +22,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.registrationNumber}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -31,6 +33,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.degree}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -41,6 +44,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.universityMail}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -51,6 +55,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.contactNumber}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -59,8 +64,12 @@ const Step1 = ({ formData, handleChange }) => {
           type="number"
           name="gpa"
           value={formData.gpa}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = Math.max(2.0, Math.min(4.0, Number(e.target.value))); // Restrict value between 0 and 5
+            handleChange({ target: { name: 'gpa', value } });
+          }}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
         />
       </div>
     </>
