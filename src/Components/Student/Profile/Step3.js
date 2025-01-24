@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Step3 = ({ formData, handleChange }) => {
+const Step3 = ({ formData, handleChange,setName }) => {
   const [cvPreview, setCvPreview] = useState(null);
 
   const handleFileChange = (e) => {
@@ -8,6 +8,7 @@ const Step3 = ({ formData, handleChange }) => {
     const file = files[0];
 
     if (file && name === "cv") {
+      setName(file.name);
       setCvPreview(file.name); // Store the file name for preview
       handleChange(e); // Pass the file data to the parent
     }

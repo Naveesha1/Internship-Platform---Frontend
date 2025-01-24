@@ -28,6 +28,7 @@ const Profile = () => {
   const [profileVisible,setProfileVisible] = useState(false); // for control profile details visibility
   const [submitted,setSubmitted] = useState(false); // for control profile details visibility
   const [error,setError] = useState(null);
+  const [cvName,setCvName] = useState(null);
 
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
@@ -50,13 +51,14 @@ const Profile = () => {
     qualification: '',
     cv: '',
     certifications: '',
+    cvName:'',
   });
 
   const [file,setFiles] = useState({
     profileImage:'',
     idFrontImage: '',
     idBackImage: '',
-    cv: ''
+    cv: '',
   });
 
   //function for toggle sidebar
@@ -76,6 +78,8 @@ const Profile = () => {
 
   // function for submit gathered data and move steps
   const handleSubmit = async (e) => {
+    console.log(cvName);
+    
     e.preventDefault();
     if(step === 3){
     setSuccess(true);
@@ -109,7 +113,8 @@ const Profile = () => {
           idFrontImage: uploadedUrls.idFrontImage,
           idBackImage: uploadedUrls.idBackImage,
           profileImage: uploadedUrls.profileImage,
-          cv: uploadedUrls.cv
+          cv: uploadedUrls.cv,
+          cvName: cvName,
         };
 
         // api call for saving gathered data
@@ -205,7 +210,7 @@ const Profile = () => {
               {/* Render Step Components */}
               {step === 1 && <Step1 formData={formData} handleChange={handleChange} />}
               {step === 2 && <Step2 formData={formData} handleChange={handleChange} />}
-              {step === 3 && <Step3 formData={formData} handleChange={handleChange}/>}
+              {step === 3 && <Step3 formData={formData} handleChange={handleChange} setName={setCvName}/>}
 
               
 
