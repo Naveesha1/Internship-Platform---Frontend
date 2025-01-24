@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState,useContext, useEffect } from 'react';
 import { IoDocumentOutline } from "react-icons/io5";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase.js";
+import axios from 'axios';
+import { StoreContext } from "../../Context/StoreContext.js";
+import { jwtDecode } from 'jwt-decode';
+import { toast } from "react-toastify";
 
 const ManageCVNewAdd = ({ onClose }) => {
+
+    const { url } = useContext(StoreContext);
     const [cvTitle, setCvTitle] = useState('');
-    const [file, setFile] = useState(null);
+    const [cv, setCV] = useState(null);
+    const [file,setFiles] = useState({
+      cv:'',
+    });
   
     const handleDragOver = (e) => {
       e.preventDefault();
@@ -14,7 +25,7 @@ const ManageCVNewAdd = ({ onClose }) => {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile && droppedFile.type === 'application/pdf') {
         if (droppedFile.size <= 2 * 1024 * 1024) { // 2MB in bytes
-          setFile(droppedFile);
+          setCV(droppedFile);
         } else {
           alert('File size must be less than 2MB');
         }
@@ -25,9 +36,13 @@ const ManageCVNewAdd = ({ onClose }) => {
   
     const handleFileChange = (e) => {
       const selectedFile = e.target.files[0];
+      console.log(selectedFile.name);
+      
+      const { name, files } = e.target;
       if (selectedFile && selectedFile.type === 'application/pdf') {
         if (selectedFile.size <= 2 * 1024 * 1024) {
-          setFile(selectedFile);
+          setCV(selectedFile);
+          setFiles({...file, [name]: files[0]});
         } else {
           alert('File size must be less than 2MB');
         }
@@ -35,6 +50,42 @@ const ManageCVNewAdd = ({ onClose }) => {
         alert('Please upload a PDF file');
       }
     };
+
+    const handleUpload = async(e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("authToken");
+      const decodedToken = jwtDecode(token);
+      const userEmail = encodeURIComponent(decodedToken.email);
+      const uploadedUrls = {};
+              try {
+                for (const key in file) {
+                  if (file[key]) {
+                    const fileRef = ref(storage, `${key}/${file[key].name}`);
+                    await uploadBytes(fileRef, file[key]);
+                    const url = await getDownloadURL(fileRef);
+                    uploadedUrls[key] = url;
+                  }
+                }
+                const cvData = {
+                  title:cvTitle,
+                  fileName:cv.name,
+                  cvUrl:uploadedUrls.cv,
+                  registeredEmail:userEmail,
+                }
+                if(uploadedUrls.cv) {
+                  const response = await axios.put(`${url}/api/student/updateCvDetails`,cvData);
+                  if(response.data.success){
+                    toast.success(response.data.message);
+                  } else {
+                    toast.error(response.data.message);
+                  }
+                  onClose();
+                }
+                console.log("Uploaded File URLs:", uploadedUrls.cv);
+              } catch (error) {
+                console.error("Error uploading files:", error);
+              }
+    }
   
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -67,7 +118,9 @@ const ManageCVNewAdd = ({ onClose }) => {
                 <div>
                   <input
                     type="file"
-                    accept=".pdf"
+                    // accept=".pdf"
+                    name="cv"
+                    accept="application/pdf"          
                     onChange={handleFileChange}
                     className="hidden"
                     id="file-upload"
@@ -79,8 +132,8 @@ const ManageCVNewAdd = ({ onClose }) => {
                     Browse Files
                   </label>
                 </div>
-                {file && (
-                  <p className="text-sky-500 text-xs">Selected: {file.name}</p>
+                {cv && (
+                  <p className="text-sky-500 text-xs">Selected: {cv.name}</p>
                 )}
               </div>
             </div>
@@ -106,7 +159,7 @@ const ManageCVNewAdd = ({ onClose }) => {
               >
                 CANCEL
               </button>
-              <button
+              <button onClick={handleUpload}
                 className={`px-6 py-2 rounded-md text-white transition-colors ${
                   !file || !cvTitle 
                     ? 'bg-cyan-600 cursor-not-allowed' 
