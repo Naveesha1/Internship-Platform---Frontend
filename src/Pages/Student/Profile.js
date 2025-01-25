@@ -32,8 +32,8 @@ const Profile = () => {
 
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
-  const registeredEmail = encodeURIComponent(decodedToken.email);
-  const userId = encodeURIComponent(decodedToken._id);
+  const registeredEmail = decodedToken.email;
+  const userId = decodedToken._id;
 
   const [formData, setFormData] = useState({
     fullName: '',

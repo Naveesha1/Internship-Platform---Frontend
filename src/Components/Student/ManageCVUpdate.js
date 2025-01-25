@@ -1,40 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useContext} from 'react';
 import { IoDocumentOutline } from "react-icons/io5";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage } from "../../firebase.js";
+import { StoreContext } from "../../Context/StoreContext.js";
+import { toast } from "react-toastify";
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
-const ManageCVUpdate = ({ onClose }) => {
-    const [cvTitle, setCvTitle] = useState('');
-    const [file, setFile] = useState(null);
-  
-    const handleDragOver = (e) => {
-      e.preventDefault();
-    };
-  
-    const handleDrop = (e) => {
-      e.preventDefault();
-      const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile && droppedFile.type === 'application/pdf') {
-        if (droppedFile.size <= 2 * 1024 * 1024) { // 2MB in bytes
-          setFile(droppedFile);
-        } else {
-          alert('File size must be less than 2MB');
-        }
+const ManageCVUpdate = ({ onClose, cvPath, cvId }) => {  
+  const { url,setCvDetails } = useContext(StoreContext);
+  const [cvTitle, setCvTitle] = useState('');
+  const [cv, setCV] = useState(null);
+  const [file,setFiles] = useState({
+    cv:'',
+  });  
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile && droppedFile.type === 'application/pdf') {
+      if (droppedFile.size <= 2 * 1024 * 1024) { // 2MB in bytes
+        setCV(droppedFile);
       } else {
-        alert('Please upload a PDF file');
+        alert('File size must be less than 2MB');
       }
-    };
-  
-    const handleFileChange = (e) => {
-      const selectedFile = e.target.files[0];
-      if (selectedFile && selectedFile.type === 'application/pdf') {
-        if (selectedFile.size <= 2 * 1024 * 1024) {
-          setFile(selectedFile);
-        } else {
-          alert('File size must be less than 2MB');
-        }
+    } else {
+      alert('Please upload a PDF file');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    console.log(selectedFile.name);
+    
+    const { name, files } = e.target;
+    if (selectedFile && selectedFile.type === 'application/pdf') {
+      if (selectedFile.size <= 2 * 1024 * 1024) {
+        setCV(selectedFile);
+        setFiles({...file, [name]: files[0]});
       } else {
-        alert('Please upload a PDF file');
+        alert('File size must be less than 2MB');
       }
-    };
+    } else {
+      alert('Please upload a PDF file');
+    }
+  };
+
+  const handleUpdate = async(e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const userEmail = decodedToken.email;  
+    const uploadedUrls = {};
+            try {
+              const fileRef = ref(storage, cvPath);
+              await deleteObject(fileRef);
+              console.log("delete success");
+              
+              for (const key in file) {
+                if (file[key]) {
+                  const fileRef = ref(storage, `${key}/${file[key].name}`);
+                  await uploadBytes(fileRef, file[key]);
+                  const url = await getDownloadURL(fileRef);
+                  uploadedUrls[key] = url;
+                }
+              }
+              const updatedCvData = {
+                title:cvTitle,
+                fileName:cv.name,
+                cvUrl:uploadedUrls.cv,
+                registeredEmail:userEmail,
+                id:cvId,
+              }
+              console.log(updatedCvData);
+              
+              if(uploadedUrls.cv) {
+                const response = await axios.put(`${url}/api/student/updateNewCv`,updatedCvData);
+                if(response.data.success){
+                  setCvDetails(response.data.data);
+                  toast.success(response.data.message);
+                } else {
+                  toast.error(response.data.message);
+                }
+                onClose();
+              }
+            } catch (error) {
+              console.error("Error uploading files:", error);
+            }
+  }
+
   
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -65,9 +123,10 @@ const ManageCVUpdate = ({ onClose }) => {
                 <p className="text-gray-600">Drag and Drop your CV here</p>
                 <p className="text-gray-400">OR</p>
                 <div>
-                  <input
+                <input
                     type="file"
-                    accept=".pdf"
+                    name="cv"
+                    accept="application/pdf"          
                     onChange={handleFileChange}
                     className="hidden"
                     id="file-upload"
@@ -79,8 +138,8 @@ const ManageCVUpdate = ({ onClose }) => {
                     Browse Files
                   </label>
                 </div>
-                {file && (
-                  <p className="text-sky-500 text-xs">Selected: {file.name}</p>
+                {cv && (
+                  <p className="text-sky-500 text-xs">{cv.name}</p>
                 )}
               </div>
             </div>
@@ -113,6 +172,7 @@ const ManageCVUpdate = ({ onClose }) => {
                     : 'bg-cyan-500 hover:bg-cyan-600'
                 }`}
                 disabled={!file || !cvTitle}
+                onClick={handleUpdate}
               >
                 UPDATE  
               </button>

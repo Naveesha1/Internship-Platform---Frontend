@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 const ManageCVNewAdd = ({ onClose }) => {
 
-    const { url } = useContext(StoreContext);
+    const { url,setCvDetails } = useContext(StoreContext);
     const [cvTitle, setCvTitle] = useState('');
     const [cv, setCV] = useState(null);
     const [file,setFiles] = useState({
@@ -35,9 +35,7 @@ const ManageCVNewAdd = ({ onClose }) => {
     };
   
     const handleFileChange = (e) => {
-      const selectedFile = e.target.files[0];
-      console.log(selectedFile.name);
-      
+      const selectedFile = e.target.files[0];      
       const { name, files } = e.target;
       if (selectedFile && selectedFile.type === 'application/pdf') {
         if (selectedFile.size <= 2 * 1024 * 1024) {
@@ -55,7 +53,7 @@ const ManageCVNewAdd = ({ onClose }) => {
       e.preventDefault();
       const token = localStorage.getItem("authToken");
       const decodedToken = jwtDecode(token);
-      const userEmail = encodeURIComponent(decodedToken.email);
+      const userEmail = decodedToken.email;
       const uploadedUrls = {};
               try {
                 for (const key in file) {
@@ -73,15 +71,15 @@ const ManageCVNewAdd = ({ onClose }) => {
                   registeredEmail:userEmail,
                 }
                 if(uploadedUrls.cv) {
-                  const response = await axios.put(`${url}/api/student/updateCvDetails`,cvData);
+                  const response = await axios.put(`${url}/api/student/addNewCvDetails`,cvData);
                   if(response.data.success){
+                    setCvDetails(response.data.data);
                     toast.success(response.data.message);
                   } else {
                     toast.error(response.data.message);
                   }
                   onClose();
                 }
-                console.log("Uploaded File URLs:", uploadedUrls.cv);
               } catch (error) {
                 console.error("Error uploading files:", error);
               }
