@@ -69,12 +69,24 @@ const Step3 = ({ formData, handleChange,setName }) => {
           onChange={handleFileChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E] bg-[#A5D1D53D]"
         />
-        {cvPreview && (
+        {/* {cvPreview && (
           <div className="mt-2">
             <p className="text-sm text-gray-700">Uploaded File: {cvPreview}</p>
           </div>
-        )}
+        )} */}
       </div>
+
+      <div className="mb-4 flex items-center">
+        <label className="block text-gray-700 mr-4 w-48">Position for CV</label>
+        <input
+          type="text"
+          name="cvPosition"
+          value={formData.cvPosition || ""}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+        />
+      </div>
+
     </>
   );
 };

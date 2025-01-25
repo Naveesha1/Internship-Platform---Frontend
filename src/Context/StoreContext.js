@@ -8,12 +8,17 @@ export const StoreContext = createContext();
  const StoreContextProvider = ({ children }) => {
 
   const [selectedInternship, setSelectedInternship] = useState(null);
-  const url = "http://localhost:4000"; // Store the base url
+  const [cvDetails,setCvDetails] = useState([]);
+  const url = "http://localhost:4000";
+
+
 
   const contextValue = {
     url,
     setSelectedInternship,
     selectedInternship,
+    cvDetails,
+    setCvDetails,
 }
 
   return (
