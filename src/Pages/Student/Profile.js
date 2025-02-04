@@ -52,6 +52,7 @@ const Profile = () => {
     cv: '',
     certifications: '',
     cvName:'',
+    cvPosition:'',
   });
 
   const [file,setFiles] = useState({

@@ -69,11 +69,6 @@ const Step3 = ({ formData, handleChange,setName }) => {
           onChange={handleFileChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E] bg-[#A5D1D53D]"
         />
-        {/* {cvPreview && (
-          <div className="mt-2">
-            <p className="text-sm text-gray-700">Uploaded File: {cvPreview}</p>
-          </div>
-        )} */}
       </div>
 
       <div className="mb-4 flex items-center">
