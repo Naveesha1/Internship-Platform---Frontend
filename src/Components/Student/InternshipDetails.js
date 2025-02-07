@@ -1,35 +1,62 @@
-import React,{useState,useContext} from 'react';
+import React,{useState,useContext, useEffect} from 'react';
 import { IoLocationSharp} from "react-icons/io5";
 import { MdShoppingBag } from "react-icons/md";
 import CvSelectionModal from '../../Components/Student/CVSelectionModal'
 import { StoreContext } from "../../Context/StoreContext.js";
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+
 
 const InternshipDetails = () => {
     const [isOpen, setIsOpen] = useState(false);
 
-  const { selectedInternship } = useContext(StoreContext);  
-  console.log(selectedInternship);
+    const { selectedInternship, url, setSelectedInternship } = useContext(StoreContext);  
     
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const registeredEmail = decodedToken.email;    
     
 
   const handleApplySubmit = async (selectedCvId) => {
     try {
-      // Replace with actual API call
-      await fetch('/api/apply', {
-        method: 'POST',
-        body: JSON.stringify({ cvId: selectedCvId }),
-      });
-      
-      alert('Application submitted successfully!');
+      const applicationDetails = {
+        userEmail:registeredEmail,
+        userName:decodedToken.name,
+        userCv:selectedCvId,
+        position:selectedInternship.position,
+        companyName:selectedInternship.companyName,
+        companyEmail:selectedInternship.companyEmail,
+        internshipId:selectedInternship._id,
+      }      
+      const response = await axios.post(`${url}/api/student/applications`,applicationDetails);
+      if(response.data.success){
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }      
       setIsOpen(false);
     } catch (error) {
       console.error('Error submitting application:', error);
-      alert('Failed to submit application');
+      toast.error(error);
     }
   };
+
+  useEffect(()=> {
+    if(selectedInternship){
+      localStorage.setItem("selectedInternship",JSON.stringify(selectedInternship));
+    }
+  },[selectedInternship]);
+
+  useEffect(()=> {
+   const storedInternship = localStorage.getItem("selectedInternship");
+   if(!selectedInternship && storedInternship){
+    setSelectedInternship(JSON.parse(storedInternship));
+   }
+  },[selectedInternship])
     return (
         <div className="flex justify-center items-center min-h-screen mt-4 mb-4">
-    
+          {selectedInternship ? <>
             <div className="box-border w-full max-w-[900px] h-auto p-6 border rounded-sm shadow-md bg-slate-100">
                 {/* Card content */}
                 <div className="flex items-center mb-4">
@@ -88,6 +115,7 @@ const InternshipDetails = () => {
           onSubmit={handleApplySubmit}
         />
       </div>
+      </> : <></>}
     </div>
   );
 };

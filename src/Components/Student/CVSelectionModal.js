@@ -1,9 +1,12 @@
-import React,{ useState,useContext } from 'react';
+import React,{ useState,useContext, useEffect } from 'react';
 import { StoreContext } from "../../Context/StoreContext.js";
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+
 
 const CvSelectionModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
-  const { selectedInternship } = useContext(StoreContext);  
+  const { selectedInternship, cvDetails, url, setCvDetails } = useContext(StoreContext);  
   
   const [selectedCv, setSelectedCv] = useState("");
 
@@ -16,6 +19,30 @@ const CvSelectionModal = ({ isOpen, setIsOpen, onSubmit }) => {
     setSelectedCv("");
   };
 
+  // console.log(cvDetails);
+  // console.log(selectedCv);
+
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const registeredEmail = decodedToken.email;
+  
+
+
+  useEffect(()=>{
+    
+    const getCvDetails = async() => {      
+      const response = await axios.post(`${url}/api/student/getCvDetails`,{registeredEmail});
+
+      if(response.data.success) {
+        setCvDetails(response.data.data);
+      } else {
+        console.log(response.data.message);
+      }
+    }
+    getCvDetails();
+    
+  },[registeredEmail]);
+  
   if (!isOpen) return null;
 
   return (
@@ -43,9 +70,15 @@ const CvSelectionModal = ({ isOpen, setIsOpen, onSubmit }) => {
               className="w-full p-2 border border-gray-300 rounded bg-white"
             >
               <option value="">Choose a CV</option>
-              <option value="cv1">CV 1</option>
+              {/* <option value="cv1">CV 1</option>
               <option value="cv2">CV 2</option>
-              <option value="cv3">CV 3</option>
+              <option value="cv3">CV 3</option> */}
+
+                {cvDetails ? <>
+              {cvDetails.map((cv,index) => (
+                <option key={index} value={cv.cvUrl}>{cv.fileName}</option>
+              ))} 
+              </> : <></>}
             </select>
           </div>
 
