@@ -74,9 +74,9 @@ const AllInternship = () => {
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, index) => (
+          {/* {[...Array(4)].map((_, index) => (
             <InternshipCard key={index} />
-          ))}
+          ))} */}
         </div>
 
         {/* All Internships Section */}
@@ -134,9 +134,9 @@ const AllInternship = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, index) => (
+          {/* {[...Array(4)].map((_, index) => (
             <InternshipCard key={index} />
-          ))}
+          ))} */}
         </div>
       </div>
     </div>
