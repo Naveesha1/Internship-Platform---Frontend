@@ -140,7 +140,7 @@ const Profile = () => {
   useEffect(()=>{
       // to check if user has sent the data
     const getStudentProfile = async()=> {      
-      const response = await axios.post(`${url}/api/student/getprofile`,registeredEmail);
+      const response = await axios.post(`${url}/api/student/getprofile`,{registeredEmail});
       if(response.data.success){
       setUser(response.data.data);
       setProfileVisible(true);
@@ -152,6 +152,7 @@ const Profile = () => {
     getStudentProfile();
 
   },[userId]);
+console.log(user);
 
 
   return (
