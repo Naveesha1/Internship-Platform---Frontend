@@ -32,7 +32,7 @@ const CompanyInternshipPage = () => {
                 <div className="flex-1 mt-8">
                 <InternshipHeader activeTab={activeTab} setActiveTab={setActiveTab}/>
 
-                {/* {activeTab === 'manage' && <AllInternships />} */}
+                {activeTab === 'manage' && <AllInternships />}
                 {activeTab === 'track' && <CreateInternship />}
                 </div>
             </div>
