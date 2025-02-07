@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import Navbar from '../../Components/Navbar/Navbar';
-import Sidebar from '../../Components/Student/Sidebar';
+import Sidebar from '../../Components/Company/CSidebar';
 import ApplicationTable from '../../Components/Company/CompanyApplication.js';
 
 function CompanyApplicationPage() {
