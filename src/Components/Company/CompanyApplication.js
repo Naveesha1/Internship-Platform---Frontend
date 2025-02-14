@@ -98,7 +98,7 @@ const CompanyApplication = () => {
             <tr className="bg-gray-200">
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Title</th>
-              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-center">Status</th>
               <th className="px-4 py-2 text-left">AGPA</th>
               <th className="px-4 py-2 text-left">Date</th>
               <th className="px-4 py-2 text-left">CV</th>
@@ -127,11 +127,11 @@ const CompanyApplication = () => {
                         </button>
                       </>
                     ) : applicant.status ? (
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm text-center">
                         Accepted
                       </span>
                     ) : (
-                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm text-center">
                         Rejected
                       </span>
                     )}
