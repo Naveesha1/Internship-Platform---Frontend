@@ -1,28 +1,52 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useEffect, useState, useContext } from "react";
+import { StoreContext } from "../../Context/StoreContext.js";
+import { Search } from "lucide-react";
 import { FaEdit } from "react-icons/fa";
-import ManageCVUpdate from './ManageCVUpdate';
-import ManageCVNewAdd from './ManageCVNewAdd';
+import ManageCVUpdate from "./ManageCVUpdate";
+import ManageCVNewAdd from "./ManageCVNewAdd";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const ManageCVTrack = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { url } = useContext(StoreContext);
+
+  const [searchQuery, setSearchQuery] = useState("");
   const [showUpdateCVModel, setUpdateCVModel] = useState(false);
   const [showNewCVUpload, setNewCVUpload] = useState(false);
+  const [submittedApplications, setSubmittedApplications] = useState([]);
 
   const cvData = [
     {
-      Company: '99x',
-      Position: 'Software Engineering',
-      Date: '2024.05.12' ,
-      Status: 'Reject'
+      Company: "99x",
+      Position: "Software Engineering",
+      Date: "2024.05.12",
+      Status: "Reject",
     },
     {
-      Company: '99x',
-      Position:'Business Analysis',
-      Date: '2024.12.04' ,
-      Status: 'Accept'
-    }
+      Company: "99x",
+      Position: "Business Analysis",
+      Date: "2024.12.04",
+      Status: "Accept",
+    },
   ];
+
+  const token = localStorage.getItem("authToken");
+  const decodedToken = jwtDecode(token);
+  const registeredEmail = decodedToken.email;
+
+  useEffect(() => {
+    const getSubmittedApplications = async () => {
+      const response = await axios.post(`${url}/api/student/getSubmitted`, {
+        registeredEmail,
+      });
+      if (response.data.success) {
+        setSubmittedApplications(response.data.data);
+      } else {
+        setSubmittedApplications(0);
+      }
+    };
+    getSubmittedApplications();
+  }, []);
 
   return (
     <div className="p-4 bg-white px-6">
@@ -38,7 +62,6 @@ const ManageCVTrack = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
       </div>
 
       {/* CV Table */}
@@ -52,27 +75,58 @@ const ManageCVTrack = () => {
           </div>
         </div>
         <div className="border-x border-b rounded-b-lg">
-          {cvData.map((cv) => (
-            <div 
-              key={cv.id} 
-              className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
-            >
-              <div className="text-gray-600">{cv.Company}</div>
-              <div className="text-gray-800">{cv.Position}</div>
-              <div className=''>
-                {cv.Date}
-              </div>
-              <div>
-                <button className="text-gray-500" >
-                <div className='bg-cyan-100 px-4 py-1 rounded-3xl'>
-                {cv.Status}   </div> 
-                </button>
-              </div>
-            </div>
-          ))}
+          {submittedApplications ? (
+            <>
+              {submittedApplications.map((application, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
+                >
+                  <div className="text-gray-600">{application.companyName}</div>
+                  <div className="text-gray-800">{application.position}</div>
+                  <div className="">{application.date}</div>
+                  <div>
+                    <button className="text-gray-500">
+                      <div className="px-4 py-1 rounded-3xl">
+                        {application.status === null ? (
+                          <>
+                            <div className="bg-blue-100 px-4 py-1 rounded-3xl">
+                              Pending
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {application.status ? (
+                              <>
+                                <div className="bg-green-300 px-4 py-1 rounded-3xl">
+                                  Accept
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="bg-red-200 px-4 py-1 rounded-3xl">
+                                  Reject
+                                </div>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <></>
+          )}
         </div>
-        {showUpdateCVModel && <ManageCVUpdate onClose={() => setUpdateCVModel(false)} />}
-        {showNewCVUpload && <ManageCVNewAdd onClose={() => setNewCVUpload(false)} />}
+        {showUpdateCVModel && (
+          <ManageCVUpdate onClose={() => setUpdateCVModel(false)} />
+        )}
+        {showNewCVUpload && (
+          <ManageCVNewAdd onClose={() => setNewCVUpload(false)} />
+        )}
       </div>
     </div>
   );

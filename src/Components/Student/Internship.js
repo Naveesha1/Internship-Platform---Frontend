@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { FaFilter, FaArrowCircleRight, FaArrowCircleLeft, FaSearch } from "react-icons/fa";
+import {
+  FaFilter,
+  FaArrowCircleRight,
+  FaArrowCircleLeft,
+  FaSearch,
+} from "react-icons/fa";
 import InternshipCard from "../../Components/Student/InternshipCard";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { jwtDecode } from "jwt-decode";
@@ -15,7 +20,9 @@ const Internship = () => {
   const [suggestInternships, setSuggestInternships] = useState([]);
 
   const [filteredInternships, setFilteredInternships] = useState([]);
-  const [filteredSuggestInternships, setFilteredSuggestInternships] = useState([]);
+  const [filteredSuggestInternships, setFilteredSuggestInternships] = useState(
+    []
+  );
 
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
@@ -31,7 +38,8 @@ const Internship = () => {
   const userId = decodedToken._id;
   const registeredEmail = decodedToken.email;
 
-  const toggleSuggestFilters = () => setShowSuggestionFilters(!showSuggestionFilters);
+  const toggleSuggestFilters = () =>
+    setShowSuggestionFilters(!showSuggestionFilters);
   const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
 
   useEffect(() => {
@@ -49,7 +57,9 @@ const Internship = () => {
 
   useEffect(() => {
     const getSuggestInternships = async () => {
-      const response = await axios.post(`${url}/api/student/getSuggestions`, { registeredEmail });
+      const response = await axios.post(`${url}/api/student/getSuggestions`, {
+        registeredEmail,
+      });
       if (response.data.success) {
         setSuggestInternships(response.data.data);
         setFilteredSuggestInternships(response.data.data); // Initially set filtered data to full data
@@ -62,37 +72,53 @@ const Internship = () => {
 
   // Filtering internships
   useEffect(() => {
-    const filtered = internships.filter((internship) =>
-      internship.companyName.toLowerCase().includes(searchCompany.toLowerCase()) &&
-      internship.position.toLowerCase().includes(searchRole.toLowerCase())
+    const filtered = internships.filter(
+      (internship) =>
+        internship.companyName
+          .toLowerCase()
+          .includes(searchCompany.toLowerCase()) &&
+        internship.position.toLowerCase().includes(searchRole.toLowerCase())
     );
     setFilteredInternships(filtered);
   }, [searchCompany, searchRole, internships]);
 
   // Filtering suggested internships
   useEffect(() => {
-    const filtered = suggestInternships.filter((internship) =>
-      internship.companyName.toLowerCase().includes(searchSuggestCompany.toLowerCase()) &&
-      internship.position.toLowerCase().includes(searchSuggestRole.toLowerCase())
+    const filtered = suggestInternships.filter(
+      (internship) =>
+        internship.companyName
+          .toLowerCase()
+          .includes(searchSuggestCompany.toLowerCase()) &&
+        internship.position
+          .toLowerCase()
+          .includes(searchSuggestRole.toLowerCase())
     );
     setFilteredSuggestInternships(filtered);
   }, [searchSuggestCompany, searchSuggestRole, suggestInternships]);
 
   const startIndex = currentPage * internshipsPerPage;
   const startSuggestionIndex = currentSuggestionsPage * internshipsPerPage;
-  const currentInternships = filteredInternships.slice(startIndex, startIndex + internshipsPerPage);
-  const suggestedInternships = filteredSuggestInternships.slice(startSuggestionIndex, startSuggestionIndex + internshipsPerPage);
+  const currentInternships = filteredInternships.slice(
+    startIndex,
+    startIndex + internshipsPerPage
+  );
+  const suggestedInternships = filteredSuggestInternships.slice(
+    startSuggestionIndex,
+    startSuggestionIndex + internshipsPerPage
+  );
 
-
-    // Page navigation functions
+  // Page navigation functions
   const handlePrevPageSuggestions = () => {
-    if (currentSuggestionsPage>0){
-      setCurrentSuggestionsPage((previousPage)=> previousPage-1);
+    if (currentSuggestionsPage > 0) {
+      setCurrentSuggestionsPage((previousPage) => previousPage - 1);
     }
   };
 
   const handleNextPageSuggestions = () => {
-    if (startSuggestionIndex + internshipsPerPage < suggestedInternships.length) {
+    if (
+      startSuggestionIndex + internshipsPerPage <
+      suggestedInternships.length
+    ) {
       setCurrentSuggestionsPage((previousPage) => previousPage + 1);
     }
   };
@@ -117,7 +143,10 @@ const Internship = () => {
           <div className="flex items-center">
             Suggestions for you
             <FaFilter className="ml-4 mt-1" size={12} />
-            <IoMdArrowDropdown className="mt-1 cursor-pointer" onClick={toggleSuggestFilters} />
+            <IoMdArrowDropdown
+              className="mt-1 cursor-pointer"
+              onClick={toggleSuggestFilters}
+            />
           </div>
           <div>
             <button className="mr-2" onClick={handlePrevPageSuggestions}>
@@ -159,14 +188,17 @@ const Internship = () => {
           <div className="flex items-center">
             All Internships
             <FaFilter className="ml-4 mt-1" size={12} />
-            <IoMdArrowDropdown className="mt-1 cursor-pointer" onClick={toggleAllFilters} />
+            <IoMdArrowDropdown
+              className="mt-1 cursor-pointer"
+              onClick={toggleAllFilters}
+            />
           </div>
           <div>
             <button className="mr-2" onClick={handlePrevPage}>
               <FaArrowCircleLeft color="#45A29E" />
             </button>
-            <button onClick={handleNextPage}> 
-               <FaArrowCircleRight color="#45A29E" />
+            <button onClick={handleNextPage}>
+              <FaArrowCircleRight color="#45A29E" />
             </button>
           </div>
         </div>

@@ -1,17 +1,15 @@
 // src/context/StoreContext.js
-import React, { createContext,useState } from 'react';
+import React, { createContext, useState } from "react";
 
 // Create a context
 export const StoreContext = createContext();
 
 // Create a provider component
- const StoreContextProvider = ({ children }) => {
-
+const StoreContextProvider = ({ children }) => {
   const [selectedInternship, setSelectedInternship] = useState(null);
-  const [cvDetails,setCvDetails] = useState([]);
+  const [cvDetails, setCvDetails] = useState([]);
+  const [cvStatus, setCvStatus] = useState(null);
   const url = "http://localhost:4000";
-
-
 
   const contextValue = {
     url,
@@ -19,7 +17,9 @@ export const StoreContext = createContext();
     selectedInternship,
     cvDetails,
     setCvDetails,
-}
+    cvStatus,
+    setCvStatus,
+  };
 
   return (
     <StoreContext.Provider value={contextValue}>
@@ -27,6 +27,5 @@ export const StoreContext = createContext();
     </StoreContext.Provider>
   );
 };
-
 
 export default StoreContextProvider;
