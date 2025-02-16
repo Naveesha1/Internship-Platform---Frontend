@@ -8,6 +8,7 @@ export const StoreContext = createContext();
 const StoreContextProvider = ({ children }) => {
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [cvDetails, setCvDetails] = useState([]);
+  const [addedEvents, setAddedEvents] = useState([]);
   const [cvStatus, setCvStatus] = useState(null);
   const url = "http://localhost:4000";
 
@@ -19,6 +20,8 @@ const StoreContextProvider = ({ children }) => {
     setCvDetails,
     cvStatus,
     setCvStatus,
+    addedEvents,
+    setAddedEvents,
   };
 
   return (
