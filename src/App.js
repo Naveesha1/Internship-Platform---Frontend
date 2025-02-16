@@ -1,8 +1,8 @@
 import React from "react";
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from "react-router-dom";
 import LoginSignUp from "./Components/LoginSingup.js";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ResetPassword from "./Components/ResetPassword.js";
 import Profile from "./Pages/Student/Profile.js";
 import InternshipPage from "./Pages/Student/InternshipPage.js";
@@ -22,23 +22,35 @@ function App() {
     <div>
       <ToastContainer />
       <Routes>
-        <Route path='/' element={<LoginSignUp/>} />
-        <Route path='/resetPassword' element={<ResetPassword/>} />
+        <Route path="/" element={<LoginSignUp />} />
+        <Route path="/resetPassword" element={<ResetPassword />} />
         {/* Students routes */}
-        <Route path='/STDashboard' element={<DashboardPage/>}></Route>
-        <Route path='/SProfile' element={<Profile/>} />
-        <Route path='/InternshipPage' element={<InternshipPage/>} />
-        <Route path='/CalendarPage' element={<CalendarPage/>}></Route>
-        <Route path='/InternshipDetailsPage' element={<InternshipDetailsPage/>}></Route>
-        <Route path='/ChatbotPage' element={<ChatbotPage/>}></Route>
+        <Route path="/STDashboard" element={<DashboardPage />}></Route>
+        <Route path="/SProfile" element={<Profile />} />
+        <Route path="/InternshipPage" element={<InternshipPage />} />
+        <Route path="/CalendarPage" element={<CalendarPage />}></Route>
+        <Route
+          path="/InternshipDetailsPage"
+          element={<InternshipDetailsPage />}
+        ></Route>
+        <Route path="/ChatbotPage" element={<ChatbotPage />}></Route>
         {/* company routes */}
-        <Route path='/ComDashboard' element={<ComDashboardPage/>}></Route>
-        <Route path="/ApplicationPage" element={<ApplicationPage/>}></Route>
-        <Route path='/CompanyProfile' element={<CompanyProfilePage/>}></Route>
-        <Route path='/CompanyInternshipPage' element={<CompanyInternshipPage/>}></Route>
-        <Route path='/CompanyCalendar' element={<CompanyCalendarPage/>}></Route>
-        <Route path='/CompanyApplicationPage' element={<CompanyApplicationPage/>}></Route>
-      </Routes>  
+        <Route path="/ComDashboard" element={<ComDashboardPage />}></Route>
+        <Route path="/ApplicationPage" element={<ApplicationPage />}></Route>
+        <Route path="/CompanyProfile" element={<CompanyProfilePage />}></Route>
+        <Route
+          path="/CompanyInternshipPage"
+          element={<CompanyInternshipPage />}
+        ></Route>
+        <Route
+          path="/CompanyCalendar"
+          element={<CompanyCalendarPage />}
+        ></Route>
+        <Route
+          path="/CompanyApplicationPage"
+          element={<CompanyApplicationPage />}
+        ></Route>
+      </Routes>
     </div>
   );
 }
