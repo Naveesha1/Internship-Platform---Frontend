@@ -61,8 +61,10 @@ const LoginSignUp = () => {
           redirectPath = `/STDashboard?${decodedToken._id}`;
         } else if (userData.role === "Company") {
           redirectPath = `/ComDashboard?${decodedToken._id}`;
+        } else if (userData.role === "Admin") {
+          redirectPath = `/AdminDashboard?${decodedToken._id}`;
         } else {
-          redirectPath = `/Admin?${decodedToken._id}`;
+          redirectPath = `/Mentor`;
         }
         navigate(redirectPath);
       } else {
