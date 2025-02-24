@@ -17,6 +17,12 @@ import CompanyInternshipPage from "./Pages/Company/CompanyInternshipPage.js";
 import CompanyCalendarPage from "./Pages/Company/CompanyCalendarPage.js";
 import CompanyApplicationPage from "./Pages/Company/CompanyApplicationPage.js";
 
+import AdminDashboard from "./Pages/Admin/DashboardPage.js";
+import AdminInternshipPage from "./Pages/Admin/InternshipPage.js";
+import AdminProfilePage from "./Pages/Admin/ProfilesPage.js";
+import AdminCalenderPage from "./Pages/Admin/CalenderPage.js";
+import AdminDocumentPage from "./Pages/Admin/DocumentPage.js";
+
 function App() {
   return (
     <div>
@@ -50,6 +56,13 @@ function App() {
           path="/CompanyApplicationPage"
           element={<CompanyApplicationPage />}
         ></Route>
+
+        {/* Admin routes */}
+        <Route path="/AdminDashboard" element={<AdminDashboard />} />
+        <Route path="/AdminProfiles" element={<AdminProfilePage />} />
+        <Route path="/AdminInternships" element={<AdminInternshipPage />} />
+        <Route path="/AdminCalender" element={<AdminCalenderPage />} />
+        <Route path="/AdminDocument" element={<AdminDocumentPage />} />
       </Routes>
     </div>
   );
