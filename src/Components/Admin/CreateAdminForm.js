@@ -1,7 +1,12 @@
 // CreateAdminForm.js
 import React from "react";
 
-const CreateAdminForm = ({ newAdmin, handleChange, handleAddAdmin, closeModal }) => {
+const CreateAdminForm = ({
+  newAdmin,
+  handleChange,
+  handleAddAdmin,
+  closeModal,
+}) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -27,6 +32,14 @@ const CreateAdminForm = ({ newAdmin, handleChange, handleAddAdmin, closeModal })
           name="email"
           placeholder="Email"
           value={newAdmin.email}
+          onChange={handleChange}
+          className="w-full mb-2 p-2 border rounded"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={newAdmin.password}
           onChange={handleChange}
           className="w-full mb-2 p-2 border rounded"
         />
