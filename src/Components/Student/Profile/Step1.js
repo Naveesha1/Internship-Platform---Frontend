@@ -1,11 +1,13 @@
-import React from 'react';
+import React from "react";
 
 const Step1 = ({ formData, handleChange }) => {
   return (
     <>
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mr-4 w-48">Full name with initials</label>
-        <input 
+        <label className="block text-gray-700 mr-4 w-48">
+          Full name with initials
+        </label>
+        <input
           type="text"
           name="fullName"
           value={formData.fullName}
@@ -15,8 +17,10 @@ const Step1 = ({ formData, handleChange }) => {
         />
       </div>
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mr-4 w-48">Registration Number</label>
-        <input 
+        <label className="block text-gray-700 mr-4 w-48">
+          Registration Number
+        </label>
+        <input
           type="text"
           name="registrationNumber"
           value={formData.registrationNumber}
@@ -27,14 +31,18 @@ const Step1 = ({ formData, handleChange }) => {
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Degree</label>
-        <input
-          type="text"
+        <select
           name="degree"
           value={formData.degree}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          className="w-full border border-gray-300 p-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
           required
-        />
+        >
+          <option value="">Select Degree</option>
+          <option value="IT">IT</option>
+          <option value="ITM">ITM</option>
+          <option value="AI">AI</option>
+        </select>
       </div>
       <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">University Mail</label>
@@ -66,7 +74,7 @@ const Step1 = ({ formData, handleChange }) => {
           value={formData.gpa}
           onChange={(e) => {
             const value = Math.max(2.0, Math.min(4.0, Number(e.target.value))); // Restrict value between 0 and 5
-            handleChange({ target: { name: 'gpa', value } });
+            handleChange({ target: { name: "gpa", value } });
           }}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
           required

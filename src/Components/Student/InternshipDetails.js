@@ -17,6 +17,7 @@ const InternshipDetails = () => {
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
   const registeredEmail = decodedToken.email;
+  const role = decodedToken.role;
 
   const handleApplySubmit = async (selectedCvId) => {
     try {
@@ -77,7 +78,7 @@ const InternshipDetails = () => {
     }
   }, [selectedInternship]);
   return (
-    <div className="flex justify-center items-center min-h-screen mt-4 mb-4">
+    <div className="flex justify-center items-center min-h-screen m-4">
       {selectedInternship ? (
         <>
           <div className="box-border w-full max-w-[900px] h-auto p-6 border rounded-sm shadow-md bg-slate-100">
@@ -143,12 +144,18 @@ const InternshipDetails = () => {
             </div>
 
             <div className="flex justify-end">
-              <button
-                onClick={() => setIsOpen(true)}
-                className="bg-teal-600 text-white px-12 py-2 rounded-full shadow-md hover:bg-teal-700"
-              >
-                Apply
-              </button>
+              {role === "Admin" ? (
+                <></>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setIsOpen(true)}
+                    className="bg-teal-600 text-white px-12 py-2 rounded-full shadow-md hover:bg-teal-700"
+                  >
+                    Apply
+                  </button>
+                </>
+              )}
             </div>
 
             <CvSelectionModal

@@ -83,7 +83,6 @@ const Calendar = () => {
       (event) => event.date === dateString
     );
     setEvent(eventsForDate);
-    console.log(eventsForDate);
 
     if (eventsForDate.length > 0) {
       setShowViewPopup(true);

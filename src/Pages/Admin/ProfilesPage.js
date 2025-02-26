@@ -30,8 +30,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Main Content Area */}
-
-        <div className="flex-1 mt-16">
+        <div className="flex-1 mt-6 overflow-y-auto">
           <AdminProfileHeader
             activeTab={activeTab}
             setActiveTab={setActiveTab}

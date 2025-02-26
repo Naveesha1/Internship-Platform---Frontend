@@ -1,155 +1,253 @@
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
 import { FaFilter } from "react-icons/fa";
+import { StoreContext } from "../../Context/StoreContext";
 
 const AdminProfileSideStudent = () => {
-  const initialStudents = [
-    { name: "H.K.G.N.K.Ekanayake", status: "Accept", degree: "ITM", date: "2024.01.02", document: "cv.pdf" },
-    { name: "I.P.B.M.Iddamalgoda", status: "Reject", degree: "IT", date: "2024.01.23", document: "cv.pdf" },
-    { name: "A.B.C.D.Heelibathdeniya", status: "Pending", degree: "ITM", date: "2024.01.02", document: "cv.pdf" }
-  ];
+  const { url, idStatus, setIdStatus } = useContext(StoreContext);
 
-  const [students, setStudents] = useState(initialStudents);
-  const [filters, setFilters] = useState({
-    pending: { IT: false, ITM: false, AI: false },
-    accept: { IT: false, ITM: false, AI: false },
-    reject: { IT: false, ITM: false, AI: false }
-  });
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const token = localStorage.getItem("authToken");
 
-  const filterStudents = () => {
-    const hasActiveFilters = Object.values(filters).some(categoryFilters =>
-      Object.values(categoryFilters).some(value => value)
-    );
+  const [students, setStudents] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [idUrl, setIdUrl] = useState(null);
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [filters, setFilters] = useState({ status: "", degree: "" });
 
-    if (!hasActiveFilters) {
-      setStudents(initialStudents);
-      return;
+  const openModal = (idUrl) => {
+    setIdUrl(idUrl);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIdUrl(null);
+    setIsModalOpen(false);
+  };
+
+  const handleAccept = async (id) => {
+    const response = await axios.put(`${url}/api/admin/updateStatus`, {
+      id,
+      status: true,
+    });
+    if (response.data.success) {
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          student._id === id ? { ...student, verify: true } : student
+        )
+      );
+    } else {
+      setIdStatus(null);
+    }
+  };
+
+  const handleReject = async (id) => {
+    const response = await axios.put(`${url}/api/admin/updateStatus`, {
+      id,
+      status: false,
+    });
+    if (response.data.success) {
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          student._id === id ? { ...student, verify: false } : student
+        )
+      );
+    } else {
+      setIdStatus(null);
+    }
+  };
+
+  useEffect(() => {
+    const getAllStudents = async () => {
+      const response = await axios.get(`${url}/api/admin/getAllStudents`);
+      if (response.data.success) {
+        setStudents(response.data.data);
+      }
+    };
+    getAllStudents();
+  }, [token]);
+
+  useEffect(() => {
+    let filteredData = students;
+
+    if (filters.status !== "") {
+      filteredData = filteredData.filter((student) => {
+        if (filters.status === "Accept") return student.verify === true;
+        if (filters.status === "Reject") return student.verify === false;
+        if (filters.status === "Pending") return student.verify === null;
+        return true;
+      });
     }
 
-    const filteredStudents = initialStudents.filter(student => {
-      return (
-        (filters.pending[student.degree] && student.status === "Pending") ||
-        (filters.accept[student.degree] && student.status === "Accept") ||
-        (filters.reject[student.degree] && student.status === "Reject")
+    if (filters.degree !== "") {
+      filteredData = filteredData.filter((student) =>
+        filters.degree === "All" ? true : student.degree === filters.degree
       );
-    });
+    }
 
-    setStudents(filteredStudents);
-  };
+    setFilteredStudents(filteredData);
+  }, [students, filters]);
 
-  const handleFilterChange = (category, degree) => {
-    setFilters(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [degree]: !prev[category][degree]
-      }
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
     }));
-    setTimeout(filterStudents, 0);
-  };
-
-  const StatusBadge = ({ status }) => {
-    const statusStyles = {
-      Accept: "bg-green-500 text-white",
-      Reject: "bg-red-500 text-white",
-      Pending: "bg-yellow-500 text-white"
-    };
-
-    return (
-      <span className={`px-3 py-1 rounded-full text-sm ${statusStyles[status]} font-medium`}>
-        {status}
-      </span>
-    );
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
-          <span className="text-gray-700 font-medium">All Students</span>
-          <FaFilter size={13} className="text-gray-600" />
-        </div>
-        
-        {/* Mobile Filter Toggle */}
-        <button 
-          className="md:hidden bg-teal-600 text-white px-8 py-2 mr-12 rounded-lg"
-          onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-        >
-          Filters
-        </button>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar */}
-        <div className={`lg:w-64 flex-shrink-0 ${isMobileFiltersOpen ? 'block' : 'hidden'} lg:block`}>
-          <div className="space-y-4">
-            {["Pending", "Accept", "Reject"].map(category => (
-              <div key={category} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="font-medium mb-3 text-gray-700">{category}</h3>
-                <div className="space-y-2">
-                  {["IT", "ITM", "AI"].map(degree => (
-                    <label key={`${category.toLowerCase()}-${degree}`} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={filters[category.toLowerCase()][degree]}
-                        onChange={() => handleFilterChange(category.toLowerCase(), degree)}
-                        className="form-checkbox h-4 w-4 text-teal-600 rounded"
-                      />
-                      <span className="ml-2 text-sm text-gray-600">{degree}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            ))}
+    <>
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
+        {/* Header */}
+        <div className="flex justify-between items-center w-full max-w-4xl mb-6">
+          <div className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+            <span className="text-gray-700 font-medium">All Students</span>
+            <FaFilter size={13} className="text-gray-600" />
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="flex-1 overflow-hidden">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Degree</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {students.map((student, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-teal-600">{student.name}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge status={student.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">{student.degree}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">{student.date}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button className="text-teal-600 hover:text-teal-700">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
+        {/* Filters */}
+        <div className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-1 justify-between items-center mb-6">
+          <div className="w-full sm:w-1/2">
+            <label className="block text-gray-700 text-sm mb-1">
+              Filter by Status
+            </label>
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="w-full border border-gray-300 p-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+            >
+              <option value="">All</option>
+              <option value="Accept">Accept</option>
+              <option value="Reject">Reject</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div className="w-full sm:w-1/2">
+            <label className="block text-gray-700 text-sm mb-1">
+              Filter by Degree
+            </label>
+            <select
+              name="degree"
+              value={filters.degree}
+              onChange={handleFilterChange}
+              className="w-full border border-gray-300 p-2 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+            >
+              <option value="">All</option>
+              <option value="IT">IT</option>
+              <option value="ITM">ITM</option>
+              <option value="AI">AI</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="w-full max-w-4xl bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="overflow-x-auto max-h-[calc(100vh-200px)] overflow-y-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Degree
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    University ID
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredStudents.map((student, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-teal-600">
+                      {student.fullName}
+                    </td>
+                    <td className="px-6 py-2 whitespace-nowrap text-center flex justify-flex-start">
+                      {idStatus === student.verify ? (
+                        <>
+                          <span className="flex flex-col gap-1 text-center">
+                            <button
+                              onClick={() => handleAccept(student._id)}
+                              className="bg-green-100 text-green-700 px-5 py-1 rounded-full text-sm"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => handleReject(student._id)}
+                              className="bg-red-100 text-red-700 px-5 py-1 rounded-full text-sm"
+                            >
+                              Reject
+                            </button>
+                          </span>
+                        </>
+                      ) : student.verify ? (
+                        <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm text-center">
+                          Accepted
+                        </span>
+                      ) : (
+                        <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm text-center">
+                          Rejected
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {student.degree}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {student.date}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <span className="flex flex-row justify-flex-start">
+                        <button
+                          onClick={() => openModal(student.idFrontImageUrl)}
+                          className="text-blue-500 hover:underline"
+                        >
+                          Front
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <button
+                          onClick={() => openModal(student.idBackImageUrl)}
+                          className="text-blue-500 hover:underline ml-4"
+                        >
+                          Back
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-auto max-w-3xl max-h-[80vh] relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl"
+            >
+              &times;
+            </button>
+            <div className="flex justify-center items-center">
+              <img
+                src={idUrl}
+                alt="ID Preview"
+                className="max-w-80 max-h-[60vh] object-contain"
+              />
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

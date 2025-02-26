@@ -22,17 +22,11 @@ const AllInternship = () => {
   const internshipsPerPage = 8;
 
   const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken._id;
-  const registeredEmail = decodedToken.email;
-
   const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
 
   useEffect(() => {
     const getCompanySpecificInternships = async () => {
-      const response = await axios.post(`${url}/api/company/allInternships`, {
-        registeredEmail,
-      });
+      const response = await axios.post(`${url}/api/admin/getAllInternships`);
       if (response.data.success) {
         setInternships(response.data.data);
         setFilteredInternships(response.data.data);
@@ -41,7 +35,7 @@ const AllInternship = () => {
       }
     };
     getCompanySpecificInternships();
-  }, [userId]);
+  }, [token]);
 
   // Filtering internships
   useEffect(() => {

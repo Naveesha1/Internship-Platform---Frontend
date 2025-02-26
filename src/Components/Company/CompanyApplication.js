@@ -58,7 +58,11 @@ const CompanyApplication = () => {
       status: true,
     });
     if (response.data.success) {
-      setCvStatus(true);
+      setFilteredApplicants((prevApplicants) =>
+        prevApplicants.map((student) =>
+          student._id === id ? { ...student, status: true } : student
+        )
+      );
     } else {
       setCvStatus(null);
     }
@@ -70,7 +74,11 @@ const CompanyApplication = () => {
       status: false,
     });
     if (response.data.success) {
-      setCvStatus(false);
+      setFilteredApplicants((prevApplicants) =>
+        prevApplicants.map((student) =>
+          student._id === id ? { ...student, status: false } : student
+        )
+      );
     } else {
       setCvStatus(null);
     }
@@ -127,11 +135,11 @@ const CompanyApplication = () => {
                         </button>
                       </>
                     ) : applicant.status ? (
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm text-center">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm text-center">
                         Accepted
                       </span>
                     ) : (
-                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm text-center">
+                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm text-center">
                         Rejected
                       </span>
                     )}
