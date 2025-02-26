@@ -10,6 +10,7 @@ const StoreContextProvider = ({ children }) => {
   const [cvDetails, setCvDetails] = useState([]);
   const [addedEvents, setAddedEvents] = useState([]);
   const [cvStatus, setCvStatus] = useState(null);
+  const [idStatus, setIdStatus] = useState(null);
 
   const [adminsData, setAdminsData] = useState([]);
   const url = "http://localhost:4000";
@@ -26,6 +27,8 @@ const StoreContextProvider = ({ children }) => {
     setAddedEvents,
     adminsData,
     setAdminsData,
+    idStatus,
+    setIdStatus,
   };
 
   return (
