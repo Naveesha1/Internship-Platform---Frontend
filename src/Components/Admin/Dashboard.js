@@ -10,39 +10,60 @@ import { jwtDecode } from "jwt-decode";
 const AdminDashboard = () => {
   const { url } = useContext(StoreContext);
 
-  const [submittedCount, setSubmittedCount] = useState(0);
+  const [verifiedCompaniesCount, setVerifiedCompaniesCount] = useState(0);
+  const [verifiedStudentsCount, setVerifiedStudentsCount] = useState(0);
+  const [pendingStudentsCount, setPendingStudentsCount] = useState(0);
+  const [pendingCompaniesCount, setPendingCompaniesCount] = useState(0);
   const [newChancesCount, setNewChancesCount] = useState(0);
 
   const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
 
   useEffect(() => {
-    const getSubmittedApplicationsCount = async () => {
-      const response = await axios.post(`${url}/api/student/getSubmitted`, {
-        registeredEmail,
-      });
+    const getVerifiedCompanies = async () => {
+      const response = await axios.get(`${url}/api/admin/getVerifiedCompanies`);
       if (response.data.success) {
-        setSubmittedCount(response.data.count);
+        setVerifiedCompaniesCount(response.data.count);
       } else {
-        setSubmittedCount(0);
+        setVerifiedCompaniesCount(0);
       }
     };
-    getSubmittedApplicationsCount();
+    getVerifiedCompanies();
   }, [token]);
 
   useEffect(() => {
-    const getNewChancesCount = async () => {
-      const response = await axios.post(`${url}/api/student/newChances`, {
-        registeredEmail,
-      });
+    const getVerifiedStudents = async () => {
+      const response = await axios.get(`${url}/api/admin/getVerifiedStudents`);
       if (response.data.success) {
-        setNewChancesCount(response.data.data);
+        setVerifiedStudentsCount(response.data.count);
       } else {
-        setNewChancesCount(0);
+        setVerifiedStudentsCount(0);
       }
     };
-    getNewChancesCount();
+    getVerifiedStudents();
+  }, [token]);
+
+  useEffect(() => {
+    const getPendingStudents = async () => {
+      const response = await axios.get(`${url}/api/admin/getPendingStudents`);
+      if (response.data.success) {
+        setPendingStudentsCount(response.data.count);
+      } else {
+        setPendingStudentsCount(0);
+      }
+    };
+    getPendingStudents();
+  }, [token]);
+
+  useEffect(() => {
+    const getPendingCompanies = async () => {
+      const response = await axios.get(`${url}/api/admin/getPendingCompanies`);
+      if (response.data.success) {
+        setPendingCompaniesCount(response.data.count);
+      } else {
+        setPendingCompaniesCount(0);
+      }
+    };
+    getPendingCompanies();
   }, [token]);
 
   return (
@@ -52,16 +73,16 @@ const AdminDashboard = () => {
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={employee} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
-            {submittedCount ? <>{submittedCount}</> : <>0</>}
+            {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">Verified Employers</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={student} alt="" className="pt-2 pb-5 brightness-0 invert" />
-          <h3 className="text-3xl font-bold pl-2">12</h3>
-          <p className="pl-2 font-bold text-sm pt-3 text-[#ffffff]">
-            Verified Students
-          </p>
+          <h3 className="text-3xl font-bold pl-2">
+            {verifiedStudentsCount ? <>{verifiedStudentsCount}</> : <>0</>}
+          </h3>
+          <p className="pl-2 font-bold text-sm pt-3">Verified Students</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={document} alt="" className="pt-2 pb-5" />
@@ -84,12 +105,20 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
                 <img src={company} alt="" className="pt-2 pb-5" />
-                <h3 className="text-3xl font-bold pl-2 text-[#155E75]">12</h3>
+                <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
+                  {pendingCompaniesCount ? (
+                    <>{pendingCompaniesCount}</>
+                  ) : (
+                    <>0</>
+                  )}
+                </h3>
                 <p className="pl-2 font-bold text-sm pt-3 ">Companies</p>
               </div>
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
                 <img src={student} alt="" className="pt-2 pb-5" />
-                <h3 className="text-3xl font-bold pl-2 text-[#155E75]">12</h3>
+                <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
+                  {pendingStudentsCount ? <>{pendingStudentsCount}</> : <>0</>}
+                </h3>
                 <p className="pl-2 font-bold text-sm pt-3">Students</p>
               </div>
             </div>
