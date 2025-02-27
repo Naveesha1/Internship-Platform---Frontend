@@ -1,10 +1,8 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 
 const Step2 = ({ formData, handleChange }) => {
-
-    const [logoPreview, setLogoPreview] = useState(null);
-    const [documentPreview, setDocumentPreview] = useState(null);
-  
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [documentPreview, setDocumentPreview] = useState(null);
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -43,28 +41,21 @@ const Step2 = ({ formData, handleChange }) => {
         )}
       </div>
       <div className="mb-4 items-center">
-
-  <label className="block text-gray-700 mb-3 w-48 mt-6">
-    Company Recognize Document
-  </label>
-  <div className="flex flex-col">
-    <label className="block text-gray-700 mb-2 w-48"></label>
-    <input
-      type="file"
-      name="document"
-      accept=".pdf,.doc,.docx,image/*"
-      onChange={handleFileChange}
-      className="w-full border border-gray-300 p-10 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E] bg-[#A5D1D53D]"
-      placeholder="pdf/doc/docx/png will be accepted"
-    />
-     {documentPreview && (
-          <div className="mt-2">
-            <p className="text-sm text-gray-700">File: {documentPreview}</p>
-          </div>
-        )}
-  </div>
-</div>
-
+        <label className="block text-gray-700 mb-3 w-48 mt-6">
+          Company Recognize Document
+        </label>
+        <div className="flex flex-col">
+          <label className="block text-gray-700 mb-2 w-48"></label>
+          <input
+            type="file"
+            name="document"
+            accept=".pdf,.doc,.docx,image/*"
+            onChange={handleFileChange}
+            className="w-full border border-gray-300 p-10 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E] bg-[#A5D1D53D]"
+            placeholder="pdf/doc/docx/png will be accepted"
+          />
+        </div>
+      </div>
     </>
   );
 };

@@ -24,7 +24,7 @@ const AdminProfileSideStudent = () => {
   };
 
   const handleAccept = async (id) => {
-    const response = await axios.put(`${url}/api/admin/updateStatus`, {
+    const response = await axios.put(`${url}/api/admin/updateStudentStatus`, {
       id,
       status: true,
     });
@@ -40,7 +40,7 @@ const AdminProfileSideStudent = () => {
   };
 
   const handleReject = async (id) => {
-    const response = await axios.put(`${url}/api/admin/updateStatus`, {
+    const response = await axios.put(`${url}/api/admin/updateStudentStatus`, {
       id,
       status: false,
     });
