@@ -15,21 +15,6 @@ const ManageCVTrack = () => {
   const [showNewCVUpload, setNewCVUpload] = useState(false);
   const [submittedApplications, setSubmittedApplications] = useState([]);
 
-  const cvData = [
-    {
-      Company: "99x",
-      Position: "Software Engineering",
-      Date: "2024.05.12",
-      Status: "Reject",
-    },
-    {
-      Company: "99x",
-      Position: "Business Analysis",
-      Date: "2024.12.04",
-      Status: "Accept",
-    },
-  ];
-
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
   const registeredEmail = decodedToken.email;
@@ -90,7 +75,7 @@ const ManageCVTrack = () => {
                       <div className="px-4 py-1 rounded-3xl">
                         {application.status === null ? (
                           <>
-                            <div className="bg-blue-100 px-4 py-1 rounded-3xl">
+                            <div className="bg-yellow-500 text-white px-4 py-1 rounded-3xl">
                               Pending
                             </div>
                           </>
@@ -98,14 +83,14 @@ const ManageCVTrack = () => {
                           <>
                             {application.status ? (
                               <>
-                                <div className="bg-green-300 px-4 py-1 rounded-3xl">
-                                  Accept
+                                <div className="bg-green-500 text-white px-4 py-1 rounded-3xl">
+                                  Accepted
                                 </div>
                               </>
                             ) : (
                               <>
-                                <div className="bg-red-200 px-4 py-1 rounded-3xl">
-                                  Reject
+                                <div className="bg-red-500 text-white px-4 py-1 rounded-3xl">
+                                  Rejected
                                 </div>
                               </>
                             )}

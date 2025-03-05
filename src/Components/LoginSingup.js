@@ -64,7 +64,7 @@ const LoginSignUp = () => {
         } else if (userData.role === "Admin") {
           redirectPath = `/AdminDashboard?${decodedToken._id}`;
         } else {
-          redirectPath = `/Mentor`;
+          redirectPath = `/MDashboard`;
         }
         navigate(redirectPath);
       } else {
