@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { StoreContext } from "../../Context/StoreContext.js";
 import company from "../../Images/AdminDashboard/Business Building.png";
-import student from "../../Images/AdminDashboard/Graduate.png";
+import student from "../../Images/AdminDashboard/graduatewhite.png";
 import employee from "../../Images/AdminDashboard/Payroll.png";
 import document from "../../Images/sidebar/Document.png";
+import pendingDocument from "../../Images/AdminDashboard/Document.png";
 import axios from "axios";
 
 const AdminDashboard = () => {
@@ -70,25 +71,18 @@ const AdminDashboard = () => {
       {/* Top Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 text-[#45A29E]">
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
-          <img src={employee} alt="" className="pt-2 pb-5" />
+          <img src={document} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
             {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
           </h3>
-          <p className="pl-2 font-bold text-sm pt-3">Verified Employers</p>
+          <p className="pl-2 font-bold text-sm pt-3">All Documents</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
-          <img src={student} alt="" className="pt-2 pb-5 brightness-0 invert" />
-          <h3 className="text-3xl font-bold pl-2">
-            {verifiedStudentsCount ? <>{verifiedStudentsCount}</> : <>0</>}
-          </h3>
-          <p className="pl-2 font-bold text-sm pt-3">Verified Students</p>
-        </div>
-        <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
-          <img src={document} alt="" className="pt-2 pb-5" />
+          <img src={student} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
             {newChancesCount ? <>{newChancesCount}</> : <>0</>}
           </h3>
-          <p className="pl-2 font-bold text-sm pt-3">All Documents</p>
+          <p className="pl-2 font-bold text-sm pt-3">All Students</p>
         </div>
       </div>
 
@@ -99,11 +93,11 @@ const AdminDashboard = () => {
           {/* Interview Invitation */}
           <div className="bg-[#66FCF1] p-4 rounded-lg shadow-lg ">
             <h4 className="text-lg text-[#6B7280] font-bold mb-4">
-              Pending Verification
+              Pending Approvel
             </h4>
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
-                <img src={company} alt="" className="pt-2 pb-5" />
+                <img src={pendingDocument} alt="" className="pt-2 pb-5" />
                 <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
                   {pendingCompaniesCount ? (
                     <>{pendingCompaniesCount}</>
@@ -111,14 +105,14 @@ const AdminDashboard = () => {
                     <>0</>
                   )}
                 </h3>
-                <p className="pl-2 font-bold text-sm pt-3 ">Companies</p>
+                <p className="pl-2 font-bold text-sm pt-3 ">Weekly Reports</p>
               </div>
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
-                <img src={student} alt="" className="pt-2 pb-5" />
+                <img src={pendingDocument} alt="" className="pt-2 pb-5" />
                 <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
                   {pendingStudentsCount ? <>{pendingStudentsCount}</> : <>0</>}
                 </h3>
-                <p className="pl-2 font-bold text-sm pt-3">Students</p>
+                <p className="pl-2 font-bold text-sm pt-3">Monthly Reports</p>
               </div>
             </div>
           </div>

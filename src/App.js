@@ -23,6 +23,12 @@ import AdminProfilePage from "./Pages/Admin/ProfilesPage.js";
 import AdminCalenderPage from "./Pages/Admin/CalenderPage.js";
 import AdminDocumentPage from "./Pages/Admin/DocumentPage.js";
 
+import MentorDashboard from "./Pages/Mentor/DashboardPage.js";
+import MentorProfile from "./Pages/Mentor/ProfilePage.js";
+import MentorDocument from "./Pages/Mentor/DocumentPage.js";
+import MentorStudent from "./Pages/Mentor/StudentPage.js";
+import MentorCalender from "./Pages/Mentor/CalenderPage.js";
+
 function App() {
   return (
     <div>
@@ -63,6 +69,13 @@ function App() {
         <Route path="/AdminInternships" element={<AdminInternshipPage />} />
         <Route path="/AdminCalender" element={<AdminCalenderPage />} />
         <Route path="/AdminDocument" element={<AdminDocumentPage />} />
+
+        {/* Mentor routes */}
+        <Route path="/MDashboard" element={<MentorDashboard />} />
+        <Route path="/MProfile" element={<MentorProfile />} />
+        <Route path="/MDocument" element={<MentorDocument />} />
+        <Route path="/MStudent" element={<MentorStudent />} />
+        <Route path="/MCalender" element={<MentorCalender />} />
       </Routes>
     </div>
   );
