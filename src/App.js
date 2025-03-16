@@ -28,6 +28,7 @@ import MentorProfile from "./Pages/Mentor/ProfilePage.js";
 import MentorDocument from "./Pages/Mentor/DocumentPage.js";
 import MentorStudent from "./Pages/Mentor/StudentPage.js";
 import MentorCalender from "./Pages/Mentor/CalenderPage.js";
+import MentorCreateMonthlyDoc from "./Components/Mentor/MentorCreateMonthlyDoc.js";
 
 function App() {
   return (
@@ -76,6 +77,10 @@ function App() {
         <Route path="/MDocument" element={<MentorDocument />} />
         <Route path="/MStudent" element={<MentorStudent />} />
         <Route path="/MCalender" element={<MentorCalender />} />
+        <Route
+          path="/MentorCreateMonthlyDoc"
+          element={<MentorCreateMonthlyDoc />}
+        />
       </Routes>
     </div>
   );
