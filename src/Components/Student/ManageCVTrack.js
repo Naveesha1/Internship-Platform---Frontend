@@ -27,7 +27,7 @@ const ManageCVTrack = () => {
       if (response.data.success) {
         setSubmittedApplications(response.data.data);
       } else {
-        setSubmittedApplications(0);
+        setSubmittedApplications([]);
       }
     };
     getSubmittedApplications();
@@ -36,7 +36,7 @@ const ManageCVTrack = () => {
   return (
     <div className="p-4 bg-white px-6">
       {/* Search and Add New Section */}
-      <div className="mt-10 flex justify-between items-center">
+      <div className=" flex justify-between items-center">
         <div className="relative">
           <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
           <input
@@ -50,60 +50,46 @@ const ManageCVTrack = () => {
       </div>
 
       {/* CV Table */}
-      <div className="mt-8">
-        <div className="bg-gray-100 rounded-t-lg">
-          <div className="grid grid-cols-4 p-4 font-medium text-gray-600">
-            <div className="text-left">Company</div>
-            <div className="text-left">Position</div>
-            <div className="text-left">Date</div>
-            <div className="text-left">Status</div>
-          </div>
+      <div className="mt-4 border rounded-lg">
+        <div className="bg-gray-100 rounded-t-lg p-4 font-medium text-gray-600 grid grid-cols-4 sticky top-0 z-10">
+          <div className="text-left">Company</div>
+          <div className="text-left">Position</div>
+          <div className="text-left">Date</div>
+          <div className="text-left">Status</div>
         </div>
-        <div className="border-x border-b rounded-b-lg">
-          {submittedApplications ? (
-            <>
-              {submittedApplications.map((application, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
-                >
-                  <div className="text-gray-600">{application.companyName}</div>
-                  <div className="text-gray-800">{application.position}</div>
-                  <div className="">{application.date}</div>
-                  <div>
-                    <button className="text-gray-500">
-                      <div className="px-4 py-1 rounded-3xl">
-                        {application.status === null ? (
-                          <>
-                            <div className="bg-yellow-500 text-white px-4 py-1 rounded-3xl">
-                              Pending
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {application.status ? (
-                              <>
-                                <div className="bg-green-500 text-white px-4 py-1 rounded-3xl">
-                                  Accepted
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="bg-red-500 text-white px-4 py-1 rounded-3xl">
-                                  Rejected
-                                </div>
-                              </>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </button>
-                  </div>
+        <div className="max-h-96 overflow-y-auto border-x border-b">
+          {submittedApplications.length > 0 ? (
+            submittedApplications.map((application, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
+              >
+                <div className="text-gray-600">{application.companyName}</div>
+                <div className="text-gray-800">{application.position}</div>
+                <div className="">{application.date}</div>
+                <div>
+                  <button className="text-gray-500">
+                    <div className="px-4 py-1 rounded-3xl">
+                      {application.status === null ? (
+                        <div className="bg-yellow-500 text-white px-4 py-1 rounded-3xl">
+                          Pending
+                        </div>
+                      ) : application.status ? (
+                        <div className="bg-green-500 text-white px-4 py-1 rounded-3xl">
+                          Accepted
+                        </div>
+                      ) : (
+                        <div className="bg-red-500 text-white px-4 py-1 rounded-3xl">
+                          Rejected
+                        </div>
+                      )}
+                    </div>
+                  </button>
                 </div>
-              ))}
-            </>
+              </div>
+            ))
           ) : (
-            <></>
+            <div className="p-4 text-gray-500">No applications found.</div>
           )}
         </div>
         {showUpdateCVModel && (
