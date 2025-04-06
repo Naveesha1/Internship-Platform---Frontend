@@ -91,6 +91,7 @@ const AdminProfile = () => {
     };
     getAllProfiles();
   }, [token]);
+  
 
   return (
     <div className="p-8">

@@ -27,7 +27,7 @@ const ApplicationPage = () => {
 
                 {/* Main Content Area */}
 
-                <div className="flex-1 mt-16">
+                <div className="flex-1 mt-12">
                 <ApplicationHeader activeTab={activeTab} setActiveTab={setActiveTab}/>
 
                 {activeTab === 'manage' && <ManageCVView />}

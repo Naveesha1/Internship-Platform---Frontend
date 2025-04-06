@@ -22,12 +22,16 @@ import AdminInternshipPage from "./Pages/Admin/InternshipPage.js";
 import AdminProfilePage from "./Pages/Admin/ProfilesPage.js";
 import AdminCalenderPage from "./Pages/Admin/CalenderPage.js";
 import AdminDocumentPage from "./Pages/Admin/DocumentPage.js";
+import AdminAnalyticsPage from "./Pages/Admin/AdminAnalyticsPage.js";
+
 
 import MentorDashboard from "./Pages/Mentor/DashboardPage.js";
 import MentorProfile from "./Pages/Mentor/ProfilePage.js";
 import MentorDocument from "./Pages/Mentor/DocumentPage.js";
 import MentorStudent from "./Pages/Mentor/StudentPage.js";
 import MentorCalender from "./Pages/Mentor/CalenderPage.js";
+import MentorCreateMonthlyDoc from "./Components/Mentor/MentorCreateMonthlyDoc.js";
+import MentorDocMonthly from "./Components/Mentor/MentorDocMonthly.js";
 
 function App() {
   return (
@@ -69,6 +73,7 @@ function App() {
         <Route path="/AdminInternships" element={<AdminInternshipPage />} />
         <Route path="/AdminCalender" element={<AdminCalenderPage />} />
         <Route path="/AdminDocument" element={<AdminDocumentPage />} />
+        <Route path="/AdminAnalyticsPage" element={<AdminAnalyticsPage/>}></Route>
 
         {/* Mentor routes */}
         <Route path="/MDashboard" element={<MentorDashboard />} />
@@ -76,6 +81,12 @@ function App() {
         <Route path="/MDocument" element={<MentorDocument />} />
         <Route path="/MStudent" element={<MentorStudent />} />
         <Route path="/MCalender" element={<MentorCalender />} />
+        <Route path="/MDocMonthly" element={<MentorDocMonthly/>}></Route>
+        <Route path="/MMonthlyDocCreate" element={<MentorCreateMonthlyDoc/>}></Route>
+        <Route
+          path="/MentorCreateMonthlyDoc"
+          element={<MentorCreateMonthlyDoc />}
+        />
       </Routes>
     </div>
   );
