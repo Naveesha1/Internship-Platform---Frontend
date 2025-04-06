@@ -9,6 +9,8 @@ import InternshipPage from "./Pages/Student/InternshipPage.js";
 import DashboardPage from "./Pages/Student/DashboardPage.js";
 import InternshipDetailsPage from "./Pages/Student/InternshipDetailsPage.js";
 import ApplicationPage from "./Pages/Student/ApplicationPage.js";
+import StudentDocumentPage from "./Pages/Student/StudentDocumentPage.js";
+
 import CalendarPage from "./Pages/Student/CalendarPage.js";
 import ChatbotPage from "./Pages/Student/ChatbotPage.js";
 import ComDashboardPage from "./Pages/Company/ComDashboardPage.js";
@@ -47,9 +49,10 @@ function App() {
           element={<InternshipDetailsPage />}
         ></Route>
         <Route path="/ChatbotPage" element={<ChatbotPage />}></Route>
+        <Route path="/ApplicationPage" element={<ApplicationPage />}></Route>
+        <Route path="/DocumentPage" element={<StudentDocumentPage />}></Route>
         {/* company routes */}
         <Route path="/ComDashboard" element={<ComDashboardPage />}></Route>
-        <Route path="/ApplicationPage" element={<ApplicationPage />}></Route>
         <Route path="/CompanyProfile" element={<CompanyProfilePage />}></Route>
         <Route
           path="/CompanyInternshipPage"

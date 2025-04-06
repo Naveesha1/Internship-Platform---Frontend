@@ -17,6 +17,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Profile', icon: require("../../Images/sidebar/profile.png"), href: `/SProfile?${decodedToken._id}` },
     { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage?${decodedToken._id}` },
     { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage?${decodedToken._id}` },
+    { name: 'Documents', icon: require("../../Images/sidebar/applications.png"), href: `/DocumentPage?${decodedToken._id}` },
     { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage?${decodedToken._id}` },
     { name: 'ChatBot', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatbotPage?${decodedToken._id}` },
   ];
