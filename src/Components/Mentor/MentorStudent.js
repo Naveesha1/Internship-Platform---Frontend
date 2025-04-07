@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaUserGraduate, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
 import MentorCreateStudentForm from "./MentorCreateStudentForm";
 import {
@@ -8,9 +8,12 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import axios from "axios";
+import { StoreContext } from "../../Context/StoreContext";
 
 // Main StudentList component
 const MentorStudent = () => {
+  const { url } = useContext(StoreContext);
   const [students, setStudents] = useState([
     {
       id: "215036R",
@@ -50,6 +53,7 @@ const MentorStudent = () => {
   const [showModal, setShowModal] = useState(false);
   const [newStudent, setNewStudent] = useState({
     id: "",
+    name:"",
     position: "",
     startDate: "",
     endDate: "",
@@ -57,7 +61,7 @@ const MentorStudent = () => {
 
   const filteredStudents = students.filter(
     (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -118,6 +122,23 @@ const MentorStudent = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  //Get student details
+  useEffect(() => {
+    const studentId = newStudent.id;
+    const getStudent = async () => {
+      const response = await axios.post(`${url}/api/student/getStudentName`, {
+        studentId,
+      });
+      if (response.data.success) {
+        setNewStudent((prevState) => ({
+          ...prevState,
+          name: response.data.data,
+        }));
+      }
+    };
+    getStudent();
+  }, [newStudent.id.length == 7]);
 
   return (
     <div className="p-4 w-full">

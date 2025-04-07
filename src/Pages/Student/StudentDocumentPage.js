@@ -9,7 +9,9 @@ import StudentDocWeekly from '../../Components/Student/StudentDocWeekly';
 
 const StudentDocumentPage = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState('monthly');
+    const [activeTab, setActiveTab] = useState('weekly');
+
+    
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -29,10 +31,17 @@ const StudentDocumentPage = () => {
                 <div className="flex-1 mt-16 p-8">
                     <StudentDocHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                    {activeTab === 'monthly' && <StudentDocMonthly />}
                     {activeTab === 'weekly' && <StudentDocWeekly />}
+                    {activeTab === 'monthly' && <StudentDocMonthly />}
                 </div>
             </div>
+
+
+
+
+
+
+      
         </div>
     );
 };

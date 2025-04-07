@@ -69,20 +69,24 @@ const MentorCreateStudentForm = ({
             onFocus={() => {
               if (newStudent.id !== "") setShowSuggestions(true);
             }}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 100)} // delay to allow click
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
             className="w-full p-2 border rounded"
           />
-          {showSuggestions && filteredIds.length > 0 && (
+          {showSuggestions && (
             <ul className="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto rounded shadow">
-              {filteredIds.map((id) => (
-                <li
-                  key={id}
-                  onClick={() => handleSelectId(id)}
-                  className="p-2 hover:bg-gray-200 cursor-pointer"
-                >
-                  {id}
-                </li>
-              ))}
+              {filteredIds.length > 0 ? (
+                filteredIds.map((id) => (
+                  <li
+                    key={id}
+                    onClick={() => handleSelectId(id)}
+                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                  >
+                    {id}
+                  </li>
+                ))
+              ) : (
+                <li className="p-2 text-gray-500">No student</li>
+              )}
             </ul>
           )}
         </div>
