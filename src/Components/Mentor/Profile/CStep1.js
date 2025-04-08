@@ -42,25 +42,14 @@ const CStep1 = ({ formData, handleChange }) => {
         />
       </div>
       <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mr-4 w-48">Company Name</label>
+        <label className="block text-gray-700 mr-4 w-48">Address</label>
         <input
           type="text"
-          name="companyName"
-          value={formData.companyName}
+          name="address"
+          value={formData.address}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
           placeholder="Place your industry here"
-        />
-      </div>
-      <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mr-4 w-48">Personal email</label>
-        <input
-          type="email"
-          name="personalEmail"
-          value={formData.personalEmail}
-          onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your company email here"
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -74,25 +63,6 @@ const CStep1 = ({ formData, handleChange }) => {
           placeholder="Place your company contact number here"
         />
       </div>
-      <div className="mb-4 flex items-center">
-        <label className="block text-gray-700 mb-4 w-48">
-          Upload Your Digital Signature
-        </label>
-        <input
-          type="file"
-          name="sign"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full ml-4 border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-        />
-      </div>
-      {preview && (
-        <img
-          src={preview}
-          alt="Sign Preview"
-          className="mt-1 ml-40 w-32 h-32 object-cover rounded-md border"
-        />
-      )}
     </>
   );
 };
