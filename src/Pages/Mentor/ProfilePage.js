@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from "react";
 import Sidebar from "../../Components/Mentor/MentorSidebar.js";
 import Navbar from "../../Components/Navbar/Navbar";
 import Step1 from "../../Components/Mentor/Profile/CStep1.js";
-import Step2 from "../../Components/Mentor/Profile/CStep2.js";
 import { StoreContext } from "../../Context/StoreContext.js";
 import { FaCheck } from "react-icons/fa";
 import axios from "axios";
@@ -23,24 +22,17 @@ const ProfilePage = () => {
   const [step, setStep] = useState(1); // Step state to control the stepper
   const [loading, setLoading] = useState(false); // For handling loading state
   const [success, setSuccess] = useState(false); // For handling success status
-  const [company, setCompany] = useState({});
+  const [mentor, setMentor] = useState({});
   const [availability, setAvailability] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  const [stepperVisibility, setStepperVisibility] = useState(false);
 
   const [formData, setFormData] = useState({
     mentorName: "",
     position: "",
-    companyName: "",
-    personalEmail: "",
+    address: "",
     contactNumber: "",
-    verify: null,
     registeredEmail: registeredEmail,
-  });
-
-  const [file, setFiles] = useState({
-    sign: "",
   });
 
   // for toggle sidebar
@@ -50,12 +42,8 @@ const ProfilePage = () => {
 
   // for handle the change in inputs
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      setFiles({ ...file, [name]: files[0] });
-    } else {
+    const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
-    }
   };
 
   // for submitted form
@@ -65,50 +53,22 @@ const ProfilePage = () => {
     if (step === 1) {
       setLoading(true);
       setSuccess(true);
-      setStepperVisibility(true);
       try {
-        console.log(formData);
-        console.log(file);
-
-        // upload each file into the firebase bucket
-        // const uploadedUrls = {};
-        // try {
-        //   for (const key in file) {
-        //     if (file[key]) {
-        //       const fileRef = ref(storage, `${key}/${file[key].name}`);
-        //       await uploadBytes(fileRef, file[key]);
-        //       const url = await getDownloadURL(fileRef);
-        //       uploadedUrls[key] = url;
-        //     }
-        //   }
-        // } catch (error) {
-        //   console.error("Error uploading files:", error);
-        // }
-
-        // update state variable values with access links to files
-        // const updatedFormData = {
-        //   ...formData,
-        //   companyLogo: uploadedUrls.logo,
-        //   companyDocument: uploadedUrls.document,
-        // };
-
         // api call for saving gathered data
-        // const response = await axios.post(
-        //   `${url}/api/company/createprofile`,
-        //   updatedFormData
-        // );
-        // if (response.data.success) {
-        //   console.log(response.data.message);
-        //   setSubmitted(true);
-        // } else {
-        //   setError(response.data.message);
-        // }
-        // console.log(response.data.message);
+        const response = await axios.post(
+          `${url}/api/mentor/create`,
+          formData
+        );
+        if (response.data.success) {
+          console.log(response.data.message);
+          setSubmitted(true);
+        } else {
+          setError(response.data.message);
+        }
+        console.log(response.data.message);
       } catch (error) {
         console.error("Error submitting form", error);
       }
-    } else {
-      setStep(step + 1);
     }
   };
 
@@ -117,15 +77,14 @@ const ProfilePage = () => {
     const getCompany = async () => {
       if (registeredEmail) {
         try {
-          const response = await axios.post(`${url}/api/company/getCompany`, {
+          const response = await axios.post(`${url}/api/mentor/getProfile`, {
             registeredEmail,
           });
           if (response.data.success) {
-            setCompany(response.data.data);
+            setMentor(response.data.data);
             setSuccess(true);
             setAvailability(true);
             setSubmitted(false);
-            setStepperVisibility(true);
           }
         } catch (error) {
           console.log(error);
@@ -153,44 +112,18 @@ const ProfilePage = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 p-6 transition-all duration-300 flex flex-col justify-center items-center">
-          {/* Stepper */}
-          {stepperVisibility ? (
-            <></>
-          ) : (
-            <>
-              <div className="flex justify-center mb-4">
-                <p>hello</p>
-              </div>
-            </>
-          )}
-
           {/* Form Card */}
           {!success && !availability ? (
             <>
               <div className="bg-[#D9D9D947] p-6 rounded-lg shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit}>
-                  {/* Render Step Components */}
+                  {/* Render Step1 Component */}
                   <Step1 formData={formData} handleChange={handleChange} />
-                  {/* {step === 1 && (
-                  )}
-                  {step === 2 && (
-                    <Step2 formData={formData} handleChange={handleChange} />
-                  )} */}
-
-                  {/* Next/Submit Button */}
-                  <div className="flex justify-end">
+                  <div className="flex justify-center">
                     <button
                       type="submit"
-                      className={`bg-[#45A29E] text-white px-6 py-2 rounded-md shadow-md hover:bg-[#3C9C89] focus:outline-none focus:ring-2 focus:ring-[#45A29E] ${
-                        loading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      disabled={loading}
+                      className={`bg-[#45A29E] text-white px-6 py-2 rounded-md shadow-md hover:bg-[#3C9C89] focus:outline-none focus:ring-2 focus:ring-[#45A29E]`}
                     >
-                      {/* {loading
-                        ? "Submitting..."
-                        : step === 1
-                        ? "Submit"
-                        : "Next"} */}
                       Submit
                     </button>
                   </div>
@@ -207,7 +140,7 @@ const ProfilePage = () => {
                 <>
                   {availability && (
                     <>
-                      <ProfileContent companyDetails={company} />
+                      <ProfileContent mentorDetails={mentor} />
                     </>
                   )}
 

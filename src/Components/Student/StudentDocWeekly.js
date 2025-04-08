@@ -31,6 +31,7 @@ const StudentDocWeekly = () => {
   };
 
   useEffect(() => {
+    if(token){
     const getWeeklyReports = async () => {
       const response = await axios.post(`${url}/api/student/getWeeklyReports`, {
         userEmail,
@@ -40,13 +41,14 @@ const StudentDocWeekly = () => {
       }
     };
     getWeeklyReports();
+}
   }, [token,weeklyReports]);
 
   const filteredDocuments = weeklyReports.filter(
     (doc) =>
-      doc.weekNo.toString().includes(searchText) ||
-      //   doc.status.toLowerCase().includes(searchText.toLowerCase()) ||
-      doc.month.toLowerCase().includes(searchText.toLowerCase())
+      doc.weekNo?.toString().includes(searchText) ||
+      doc.status?.toLowerCase().includes(searchText.toLowerCase()) ||
+      doc.month?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const openModal = (reportUrl) => {

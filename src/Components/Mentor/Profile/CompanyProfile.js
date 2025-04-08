@@ -1,49 +1,9 @@
 import React, { useState } from "react";
 import { ImageIcon } from "lucide-react";
+import { User } from "lucide-react";
 
-const ProfileContent = ({ companyDetails }) => {
-  const [activeTab, setActiveTab] = useState("Documents");
-  
-  const DocumentCard = ({ title, date, status, icon }) => (
-    <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm mb-4">
-      <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div className="text-center md:text-left w-full">
-          <h3 className="text-teal-600 font-medium mb-1 md:mb-2">{title}</h3>
-          <p className="text-gray-500 text-sm">{date}</p>
-        </div>
-        <div className="flex items-center gap-4 flex-col md:flex-row">
-          {status && (
-            <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-sm">
-              {status}
-            </span>
-          )}
-          <div
-            className={`w-12 h-12 flex items-center justify-center rounded-lg ${
-              icon === "image" ? "bg-orange-100" : "bg-blue-50"
-            }`}
-          >
-            {icon === "image" ? (
-              <ImageIcon className="w-6 h-6 text-orange-500" />
-            ) : (
-              <svg
-                className="w-6 h-6 text-blue-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+
+const ProfileContent = ({ mentorDetails }) => {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 bg-gray-50 min-h-screen">
@@ -51,16 +11,14 @@ const ProfileContent = ({ companyDetails }) => {
         {/* Profile Card */}
         <div className="w-full lg:w-72 bg-white rounded-lg shadow-sm p-4 mb-6 lg:mb-0">
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32 bg-gray-200 rounded-full mb-4"><img className="w-32 h-32 items-center rounded-full" src={companyDetails.companyLogo} alt=""/></div>
-            <h2 className="text-xl font-semibold mb-4 text-center">{companyDetails.companyName}</h2>
+            <div className="w-32 h-32 bg-gray-200 rounded-full mb-4"><img className="w-32 h-32 items-center rounded-full" src={User}  alt=""/></div>
 
             <div className="w-full space-y-3">
               {[
-                { icon: "star", text: companyDetails.rating },
-                { icon: "book", text: companyDetails.industry + " Industry" },
-                { icon: "mail", text: companyDetails.companyEmail },
-                { icon: "phone", text: companyDetails.contactNumber },
-                { icon: "address", text: companyDetails.location }
+                { icon: "star", text: mentorDetails?.name },
+                { icon: "mail", text: mentorDetails?.registeredEmail },
+                { icon: "phone", text: mentorDetails?.contactNumber },
+                { icon: "address", text: mentorDetails?.address }
               ].map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <svg 
@@ -90,95 +48,6 @@ const ProfileContent = ({ companyDetails }) => {
               ))}
             </div>
           </div>
-        </div>
-        
-        {/* Main Content */}
-        <div className="flex-1">
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-4 border-b justify-center md:justify-start">
-              {["Company Details", "Documents"].map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-4 py-2 font-medium text-sm ${
-                    activeTab === tab
-                      ? "text-teal-600 border-b-2 border-teal-600"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab === "Company Details" ? "Company Details" : "Documents"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {activeTab === "Documents" ? (
-            <div className="space-y-4">
-              <DocumentCard
-                title="Incorparation Certificate"
-                date={companyDetails.date}
-                status={companyDetails.verify ? "Verified" : "Under verify"}
-                icon="document"
-              />
-              <DocumentCard
-                title="Company Logo"
-                date={companyDetails.date}
-                icon="image"
-              />
-            </div>
-          ) : (
-            <div className="text-gray-600">
-              <div className="space-y-8">
-                {[
-                  { 
-                    title: "About Us", 
-                    items: companyDetails.about
-                  },
-                  { 
-                    title: "What we offer", 
-                    items: companyDetails.positions 
-                  },
-                  { 
-                    title: "Vision", 
-                    items: companyDetails.vision
-                  },
-                  { 
-                    title: "Mission", 
-                    items: companyDetails.mission
-                  }
-                ].map((section, index) => (
-                  <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8">
-                    <div className="w-full md:w-32 text-teal-600 font-medium text-center md:text-left">
-                      {section.title}
-                    </div>
-                    <div className="relative flex-1">
-                      <div className="absolute hidden md:block left-0 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                      <div className="relative md:pl-8">
-                        <div className="absolute hidden md:block left-0 w-4 h-4 bg-teal-100 rounded-full border-2 border-teal-600 -translate-x-2"></div>
-                        <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-                          
-                          {section.title === "What we offer" ? 
-                          <>
-                          {section.items.map((item, itemIndex) => (
-                            <span 
-                              key={itemIndex} 
-                              className="px-3 py-1 mb-2 bg-white rounded border text-gray-600 text-sm"
-                            >
-                              {item}
-                            </span>
-                          ))}
-                          </> : 
-                          <>
-                          {section.items}
-                          </>}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
