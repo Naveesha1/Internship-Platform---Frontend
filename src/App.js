@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginSignUp from "./Components/LoginSingup.js";
 import { ToastContainer } from "react-toastify";
+import { ReportProvider } from "./Context/ReportContext.js";
 import "react-toastify/dist/ReactToastify.css";
 import ResetPassword from "./Components/ResetPassword.js";
 import Profile from "./Pages/Student/Profile.js";
@@ -34,10 +35,13 @@ import MentorStudent from "./Pages/Mentor/StudentPage.js";
 import MentorCalender from "./Pages/Mentor/CalenderPage.js";
 import MentorCreateMonthlyDoc from "./Components/Mentor/MentorCreateMonthlyDoc.js";
 import MentorDocMonthly from "./Components/Mentor/MentorDocMonthly.js";
+import MentorCreateMOnthlyReportPage from "./Pages/Mentor/MonthlyReports/MentorCreateMOnthlyReportPage.js";
+import MentorMonthlyReportViewPage from "./Pages/Mentor/MonthlyReports/MentorMonthlyReportViewPage.js";
 
 function App() {
   return (
     <div>
+      <ReportProvider>
       <ToastContainer />
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
@@ -85,12 +89,10 @@ function App() {
         <Route path="/MStudent" element={<MentorStudent />} />
         <Route path="/MCalender" element={<MentorCalender />} />
         <Route path="/MDocMonthly" element={<MentorDocMonthly/>}></Route>
-        <Route path="/MMonthlyDocCreate" element={<MentorCreateMonthlyDoc/>}></Route>
-        <Route
-          path="/MentorCreateMonthlyDoc"
-          element={<MentorCreateMonthlyDoc />}
-        />
+        <Route path="/MCreateMonthlyDocPage" element={<MentorCreateMOnthlyReportPage/>}></Route>
+        <Route path="/MMonthlyDocViewPage" element={<MentorMonthlyReportViewPage/>}></Route>
       </Routes>
+      </ReportProvider>
     </div>
   );
 }

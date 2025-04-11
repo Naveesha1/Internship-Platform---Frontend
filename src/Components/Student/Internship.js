@@ -46,6 +46,7 @@ const Internship = () => {
     const getAllInternships = async () => {
       const response = await axios.get(`${url}/api/student/allInternships`);
       if (response.data.success) {
+        console.log("data",response.data);
         setInternships(response.data.data);
         setFilteredInternships(response.data.data); // Initially set filtered data to full data
       } else {
@@ -57,12 +58,13 @@ const Internship = () => {
 
   useEffect(() => {
     const getSuggestInternships = async () => {
-      const response = await axios.post(`${url}/api/student/getSuggestions`, {
+      const response = await axios.post(`${url}/api/student/getMatchingInternshipsController`, {
         registeredEmail,
       });
       if (response.data.success) {
+        console.log("Suggested Internships: ", response.data.data);
         setSuggestInternships(response.data.data);
-        setFilteredSuggestInternships(response.data.data); // Initially set filtered data to full data
+        setFilteredSuggestInternships(response.data.data);
       } else {
         console.log(response.data.message);
       }

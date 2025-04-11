@@ -67,6 +67,17 @@ const Step1 = ({ formData, handleChange }) => {
         />
       </div>
       <div className="mb-4 flex items-center">
+      <label className="block text-gray-700 mr-4 w-48">Address</label>
+        <input
+          type="address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          required
+        />
+      </div>
+      <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Average GPA</label>
         <input
           type="number"
