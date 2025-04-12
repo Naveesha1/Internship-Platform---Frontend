@@ -64,9 +64,9 @@ const ManageCVTrack = () => {
                 key={index}
                 className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
               >
-                <div className="text-gray-600">{application.companyName}</div>
-                <div className="text-gray-800">{application.position}</div>
-                <div className="">{application.date}</div>
+                <div className="text-fuchsia-600">{application.companyName}</div>
+                <div className="text-teal-800">{application.position}</div>
+                <div className="text-cyan-600">{application.date}</div>
                 <div>
                   <button className="text-gray-500">
                     <div className="px-4 py-1 rounded-3xl">

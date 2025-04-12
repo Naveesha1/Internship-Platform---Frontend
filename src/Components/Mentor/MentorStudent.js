@@ -24,7 +24,7 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image1.jpg",
-      email: "ekanayake@gmail.com",
+      email: "ekanayakehgnk@gmail.com",
       phone: "+94 77 123 4567",
       address: "Kandy, Sri Lanka"
     },
@@ -35,7 +35,7 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image2.jpg",
-      email: "ekanayake@gmail.com",
+      email: "iddamalgodaipbm.21@uom.lk",
       phone: "+94 77 123 4567",
       address: "Kandy, Sri Lanka"
     },
@@ -46,7 +46,7 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image3.jpg",
-      email: "ekanayake@gmail.com",
+      email: "cdgs@mgail.som",
       phone: "+94 77 123 4567",
       address: "Kandy, Sri Lanka"
     },

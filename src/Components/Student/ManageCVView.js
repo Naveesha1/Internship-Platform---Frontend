@@ -100,8 +100,8 @@ const ManageCVView = () => {
               className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
             >
               {/* <div className="text-gray-600">{cv.number}</div> */}
-              <div className="text-gray-800 text-center">{cv.title}</div>
-              <div className='text-center'>{cv.fileName}</div>
+              <div className="text-fuchsia-800 text-center">{cv.title}</div>
+              <div className='text-center text-sky-800'>{cv.fileName}</div>
               <div className='flex justify-center'>
                 <button className="text-gray-500" onClick={() => {
                   setPath(`cv/${cv.fileName}`);  

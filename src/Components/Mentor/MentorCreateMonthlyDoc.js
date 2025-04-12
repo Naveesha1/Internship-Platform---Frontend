@@ -216,44 +216,27 @@ const formatCardDateForInput = (dateString) => {
     }
   };
 
-  // Function to upload PDF to Firebase
-  const uploadPDFToFirebase = async (pdfBlob, fileName) => {
-    try {
-      // Create reference to 'monthlyReports' folder with the registration number
-      const storageRef = ref(storage, `/monthlyReports${formData.regNo}/${fileName}`);
-      
-      // Upload the blob
-      await uploadBytes(storageRef, pdfBlob);
-      
-      // Get download URL
-      const downloadURL = await getDownloadURL(storageRef);
-      return downloadURL;
-    } catch (error) {
-      console.error('Error uploading PDF to Firebase:', error);
-      throw error;
-    }
-  };
   const sendToMentor = async () => {
     setLoading(true);
     try {
       // Generate PDF blob
       const blob = await generatePDFBlob();
-      
+  
       // Extract month and year for the filename
       const reportDate = new Date(formData.reportPeriodFrom);
       const month = reportDate.toLocaleString('default', { month: 'short' });
       const year = reportDate.getFullYear();
-      
+  
       // Create a meaningful filename with registration number and month/year
       const fileName = `${formData.regNo}-${month}-${year}.pdf`;
-      
+  
       // Upload to Firebase and get download URL
       const storageRef = ref(storage, `monthlyReports/${formData.regNo}/${fileName}`);
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
-      
+  
       if (downloadURL) {
-        // Prepare data to send to backend
+        // ========== SEND TO MENTOR ==========
         const monthlyData = {
           registeredEmail: userEmail,
           month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
@@ -261,22 +244,75 @@ const formatCardDateForInput = (dateString) => {
           index: formData.regNo,
           reportUrl: downloadURL,
         };
-        
-        console.log("Sending data to backend:", monthlyData);
-        
-        // Send data to backend - THIS WAS MISSING
+  
+        console.log("Sending data to mentor backend:", monthlyData);
+  
         const response = await axios.post(
           `${url}/api/mentor/saveMonthlyReportData`,
           monthlyData
         );
-        
+  
         if (response.data.success) {
           alert("Report sent to mentor successfully!");
-          
         } else {
           alert("Failed to send report to mentor: " + response.data.message);
         }
+  
+        // ========== SEND TO STUDENT ==========
+        const sendToStudent = async () => {
+          try {
+            const studentEmail = studentFromCard?.email || studentData?.email;
+            if (!studentEmail) {
+              console.error("Student email not found");
+              return;
+            }
+  
+            const formatDateForDuration = (date) => {
+              const d = new Date(date);
+              return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+            };
+  
+            const duration = `${formatDateForDuration(formData.reportPeriodFrom)} - ${formatDateForDuration(formData.reportPeriodTo)}`;
+  
+            const existingReports = studentData?.monthly || [];
+            const number = existingReports.length + 1;
+  
+            const studentReportData = {
+              universityMail: studentEmail,
+              month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
+              number: number,
+              duration: duration,
+              reportUrl: downloadURL,
+            };
+  
+            console.log("Sending data to student backend:", studentReportData);
+  
+            const response = await axios.post(
+              `${url}/api/student/saveMonthlyReportStudent`,
+              studentReportData
+            );
+  
+            if (response.data.success) {
+              alert("Report saved for student successfully!");
+            } else {
+              const errorMessage =
+                typeof response.data.message === "object"
+                  ? JSON.stringify(response.data.message)
+                  : response.data.message;
+              alert("Failed to save report for student: " + errorMessage);
+            }
+            
+  
+          } catch (error) {
+            console.error("Error sending data to student backend:", error);
+            alert("Failed to save report for student: " + error.message);
+          }
+        };
+  
+        // Call it here
+        await sendToStudent();
       }
+  
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Failed to send report to mentor: " + error.message);
@@ -284,6 +320,107 @@ const formatCardDateForInput = (dateString) => {
       setLoading(false);
     }
   };
+  
+
+  // const sendToMentor = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // Generate PDF blob
+  //     const blob = await generatePDFBlob();
+      
+  //     // Extract month and year for the filename
+  //     const reportDate = new Date(formData.reportPeriodFrom);
+  //     const month = reportDate.toLocaleString('default', { month: 'short' });
+  //     const year = reportDate.getFullYear();
+      
+  //     // Create a meaningful filename with registration number and month/year
+  //     const fileName = `${formData.regNo}-${month}-${year}.pdf`;
+      
+  //     // Upload to Firebase and get download URL
+  //     const storageRef = ref(storage, `monthlyReports/${formData.regNo}/${fileName}`);
+  //     await uploadBytes(storageRef, blob);
+  //     const downloadURL = await getDownloadURL(storageRef);
+      
+  //     if (downloadURL) {
+  //       // Prepare data to send to backend
+  //       const monthlyData = {
+  //         registeredEmail: userEmail,
+  //         month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
+  //         name: formData.name,
+  //         index: formData.regNo,
+  //         reportUrl: downloadURL,
+  //       };
+        
+  //       console.log("Sending data to backend:", monthlyData);
+        
+  //       // Send data to backend - THIS WAS MISSING
+  //       const response = await axios.post(
+  //         `${url}/api/mentor/saveMonthlyReportData`,
+  //         monthlyData
+  //       );
+        
+  //       if (response.data.success) {
+  //         alert("Report sent to mentor successfully!");
+          
+  //       } else {
+  //         alert("Failed to send report to mentor: " + response.data.message);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Upload failed:", error);
+  //     alert("Failed to send report to mentor: " + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  //   const sendToStudent = async (downloadURL) => {
+  //     try {
+  //       // Ensure student email is available
+  //       const studentEmail = studentFromCard?.email || studentData?.email;
+  //       if (!studentEmail) {
+  //         console.error("Student email not found");
+  //         return;
+  //       }
+    
+  //       // Calculate duration in the format 'YYYY/MM/DD - YYYY/MM/DD'
+  //       const formatDateForDuration = (date) => {
+  //         const d = new Date(date);
+  //         return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+  //       };
+    
+  //       const duration = `${formatDateForDuration(formData.reportPeriodFrom)} - ${formatDateForDuration(formData.reportPeriodTo)}`;
+    
+  //       // Get the current number of monthly reports and increment
+  //       const existingReports = studentData?.monthly || [];
+  //       const number = existingReports.length + 1;
+    
+  //       const studentReportData = {
+  //         registeredEmail: studentEmail,
+  //         month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
+  //         number: number,
+  //         duration: duration,
+  //         reportUrl: downloadURL,
+  //       };
+    
+  //       console.log("Sending data to student backend:", studentReportData);
+    
+  //       const response = await axios.post(
+  //         `${url}/api/student/saveMonthlyReportData`,
+  //         studentReportData
+  //       );
+    
+  //       if (response.data.success) {
+  //         alert("Report saved for student successfully!");
+  //       } else {
+  //         alert("Failed to save report for student: " + response.data.message);
+  //       }
+    
+  //     } catch (error) {
+  //       console.error("Error sending data to student backend:", error);
+  //       alert("Failed to save report for student: " + error.message);
+  //     }
+  //   };
+    
+  // };
   
   // Function for local PDF download
   const downloadPDF = async () => {
