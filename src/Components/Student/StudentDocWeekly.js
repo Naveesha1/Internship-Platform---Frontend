@@ -31,18 +31,18 @@ const StudentDocWeekly = () => {
   };
 
   useEffect(() => {
-    if(token){
-    const getWeeklyReports = async () => {
-      const response = await axios.post(`${url}/api/student/getWeeklyReports`, {
-        userEmail,
-      });
-      if (response.data.success) {
-        setWeeklyReports(response.data.data);
-      }
-    };
-    getWeeklyReports();
-}
-  }, [token,weeklyReports]);
+    if (token) {
+      const getWeeklyReports = async () => {
+        const response = await axios.post(`${url}/api/student/getWeeklyReports`, {
+          userEmail,
+        });
+        if (response.data.success) {
+          setWeeklyReports(response.data.data);
+        }
+      };
+      getWeeklyReports();
+    }
+  }, [token, weeklyReports]);
 
   const filteredDocuments = weeklyReports.filter(
     (doc) =>
@@ -60,18 +60,18 @@ const StudentDocWeekly = () => {
     setIsModalOpen(false);
   };
 
-const deleteDocument = async(id) => {
-    const response = await axios.delete(`${url}/api/student/deleteWeeklyReport`,{
-        data: { userEmail, id },
-      });
-    if(response.data.success){
-        toast.success(response.data.message);
-        setWeeklyReports(response.data.data);
+  const deleteDocument = async (id) => {
+    const response = await axios.delete(`${url}/api/student/deleteWeeklyReport`, {
+      data: { userEmail, id },
+    });
+    if (response.data.success) {
+      toast.success(response.data.message);
+      setWeeklyReports(response.data.data);
     }
     else {
-        toast.error(response.data.message);
+      toast.error(response.data.message);
     }
-}
+  }
 
   return (
     <div className="w-full p-6">
@@ -115,20 +115,19 @@ const deleteDocument = async(id) => {
               <tbody className="divide-y divide-gray-200">
                 {filteredDocuments.map((doc, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-4 px-4">{doc.weekNo}</td>
+                    <td className="py-4 px-4 text-blue-600 font-medium">{doc.weekNo}</td>
                     <td className="py-4 px-4">
                       <span
                         className={`px-4 py-1 rounded-full text-xs font-medium 
-                                        ${
-                                          "done" === "Done"
-                                            ? "bg-teal-600 text-white"
-                                            : "bg-gray-500 text-white"
-                                        }`}
+                      ${"done" === "Done"
+                            ? "bg-teal-600 text-white"
+                            : "bg-gray-500 text-white"
+                          }`}
                       >
                         {/* {doc.status} */} Done
                       </span>
                     </td>
-                    <td className="py-4 px-4">{doc.month}</td>
+                    <td className="py-4 px-4 text-purple-600">{doc.month}</td>
                     <td className="py-4 px-4 flex space-x-3">
                       <button
                         onClick={() => openModal(doc.reportUrl)}
@@ -141,6 +140,7 @@ const deleteDocument = async(id) => {
                   </tr>
                 ))}
               </tbody>
+
             </>
           )}
         </table>
