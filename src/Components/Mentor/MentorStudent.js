@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaUserGraduate, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
+import { FaUserGraduate, FaCalendarAlt, FaFileAlt, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import MentorCreateStudentForm from "./MentorCreateStudentForm";
 import {
   BrowserRouter as Router,
@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
+import { MdEmail } from "react-icons/md";
+
 
 // Main StudentList component
 const MentorStudent = () => {
@@ -22,6 +24,9 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image1.jpg",
+      email: "ekanayake@gmail.com",
+      phone: "+94 77 123 4567",
+      address: "Kandy, Sri Lanka"
     },
     {
       id: "215036R",
@@ -30,6 +35,9 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image2.jpg",
+      email: "ekanayake@gmail.com",
+      phone: "+94 77 123 4567",
+      address: "Kandy, Sri Lanka"
     },
     {
       id: "215036R",
@@ -38,6 +46,9 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image3.jpg",
+      email: "ekanayake@gmail.com",
+      phone: "+94 77 123 4567",
+      address: "Kandy, Sri Lanka"
     },
     {
       id: "215036R",
@@ -46,6 +57,9 @@ const MentorStudent = () => {
       startDate: "01/03/2025",
       endDate: "30/09/2025",
       image: "/path/to/image4.jpg",
+      email: "ekanayake@gmail.com",
+      phone: "+94 77 123 4567",
+      address: "Kandy, Sri Lanka"
     },
   ]);
 
@@ -53,10 +67,13 @@ const MentorStudent = () => {
   const [showModal, setShowModal] = useState(false);
   const [newStudent, setNewStudent] = useState({
     id: "",
-    name:"",
+    name: "",
     position: "",
     startDate: "",
     endDate: "",
+    email: "",
+    phone: "",
+    address: "",
   });
 
   const filteredStudents = students.filter(
@@ -80,7 +97,10 @@ const MentorStudent = () => {
       !newStudent.id ||
       !newStudent.startDate ||
       !newStudent.endDate ||
-      !newStudent.position
+      !newStudent.position ||
+      !newStudent.email ||
+      !newStudent.phone ||
+      !newStudent.address
     ) {
       alert("Please fill all required fields");
       return;
@@ -111,6 +131,9 @@ const MentorStudent = () => {
       position: "",
       startDate: "",
       endDate: "",
+      email: "",
+      phone: "",
+      address: "",
     });
     setShowModal(false);
   };
@@ -195,8 +218,6 @@ const MentorStudent = () => {
     </div>
   );
 };
-
-// Student Card Component
 const StudentCard = ({ student }) => {
   const [isMonthlyReportActive, setIsMonthlyReportActive] = useState(false);
   const [availableMonths, setAvailableMonths] = useState([]);
@@ -205,26 +226,19 @@ const StudentCard = ({ student }) => {
   useEffect(() => {
     checkMonthlyReportAvailability();
     generateAvailableMonthsList();
-
-    // Set up a timer to check monthly
     const timer = setInterval(() => {
       checkMonthlyReportAvailability();
       generateAvailableMonthsList();
-    }, 86400000); // Check once a day
-
+    }, 86400000);
     return () => clearInterval(timer);
   }, []);
 
   const checkMonthlyReportAvailability = () => {
     const today = new Date();
     const startDate = new Date(convertToDateFormat(student.startDate));
-
-    // If at least one month has passed since start date
     const oneMonthLater = new Date(startDate);
     oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
-
     setIsMonthlyReportActive(today >= oneMonthLater);
-    // setIsMonthlyReportActive(true);
   };
 
   const generateAvailableMonthsList = () => {
@@ -232,21 +246,16 @@ const StudentCard = ({ student }) => {
     const today = new Date();
     const startDate = new Date(convertToDateFormat(student.startDate));
     const endDate = new Date(convertToDateFormat(student.endDate));
-
     let currentDate = new Date(startDate);
-    currentDate.setMonth(currentDate.getMonth() + 1); // First report available after 1 month
-
+    currentDate.setMonth(currentDate.getMonth() + 1);
     while (currentDate <= today && currentDate <= endDate) {
       months.push(new Date(currentDate));
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
-
     setAvailableMonths(months);
-    // setAvailableMonths(["01/04/2025"]);
   };
 
   const convertToDateFormat = (dateString) => {
-    // Convert from DD/MM/YYYY to YYYY-MM-DD for Date constructor
     const parts = dateString.split("/");
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   };
@@ -260,21 +269,18 @@ const StudentCard = ({ student }) => {
       alert("Monthly reports will be available one month after the start date");
       return;
     }
-
     if (availableMonths.length === 0) {
       alert("No monthly reports available yet");
       return;
     }
-
-    // Show dropdown or modal with available months
-    alert(
-      `Available reports: ${availableMonths
-        .map((date) => formatMonthYear(date))
-        .join(", ")}`
-    );
-
-    // navigate(`/MentorCreateMonthlyDoc/${student.id}`);
-    navigate(`/MentorCreateMonthlyDoc`);
+    
+    // Instead of just navigating to the page, pass the student data as state
+    navigate("/MCreateMonthlyDocPage", {
+      state: {
+        student: student,
+        availableMonths: availableMonths
+      }
+    });
   };
 
   return (
@@ -297,10 +303,9 @@ const StudentCard = ({ student }) => {
         </div>
       </div>
 
-      <div className="px-4 pb-2">
+      <div className="px-4 pb-2 text-sm text-gray-700">
         <p className="text-teal-600 font-medium">{student.position}</p>
-
-        <div className="mt-2 text-sm text-gray-700">
+        <div className="mt-2">
           <div className="flex justify-between">
             <span>Start</span>
             <span>{student.startDate}</span>
@@ -310,16 +315,30 @@ const StudentCard = ({ student }) => {
             <span>{student.endDate}</span>
           </div>
         </div>
+
+        <div className="mt-3 space-y-1">
+          <div className="flex items-center gap-2 text-gray-700">
+            <MdEmail className="text-lg text-teal-600" />
+            <span>{student.email}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <FaPhoneAlt className="text-sm text-teal-600" />
+            <span>{student.phone}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <FaMapMarkerAlt className="text-lg text-teal-600" />
+            <span>{student.address}</span>
+          </div>
+        </div>
       </div>
 
       <div className="p-4 pt-2">
         <button
           onClick={handleReportClick}
-          className={`w-full py-2 px-4 rounded-md transition duration-300 ease-in-out ${
-            isMonthlyReportActive
+          className={`w-full py-2 px-4 rounded-md transition duration-300 ease-in-out ${isMonthlyReportActive
               ? "bg-teal-600 hover:bg-teal-700 text-white"
               : "bg-gray-400 cursor-not-allowed text-white"
-          }`}
+            }`}
         >
           Monthly Report
         </button>
@@ -327,5 +346,6 @@ const StudentCard = ({ student }) => {
     </div>
   );
 };
+
 
 export default MentorStudent;

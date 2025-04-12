@@ -28,7 +28,7 @@ const StudentDocumentPage = () => {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 mt-16 p-8">
+                <div className="flex-1 mt-4 p-8">
                     <StudentDocHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
                     {activeTab === 'weekly' && <StudentDocWeekly />}

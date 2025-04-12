@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Navbar from '../../Components/Navbar/Navbar';
-import Sidebar from '../../Components/Mentor/MentorSidebar';
-import MentorMonthlyReportView from '../../Components/Mentor/MentorMonthlyReportView'; 
+import Navbar from '../../../Components/Navbar/Navbar';
+import Sidebar from '../../../Components/Mentor/MentorSidebar';
+import MentorMonthlyReportView from '../../../Components/Mentor/MentorMonthlyReportView'; 
 
 const MentorMonthlyReportViewPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar state

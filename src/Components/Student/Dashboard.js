@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar open/close state
   const [submittedCount, setSubmittedCount] = useState(0);
   const [newChancesCount, setNewChancesCount] = useState(0);
+  const [responseCompanies,setResponseCompanies] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen); // Toggle state
@@ -53,6 +54,24 @@ const Dashboard = () => {
     getNewChancesCount();
   }, [token]);
 
+  useEffect(() => {
+    const responseCompanies = async () => {
+      const response = await axios.post(`${url}/api/student/getResponseCompaniesController`, {
+        userEmail: registeredEmail,
+      });
+  
+      console.log("Received userEmail:", registeredEmail);
+  
+      if (response.data.success) {
+        setResponseCompanies(response.data.responseCount); // <-- use the correct key
+      } else {
+        setResponseCompanies(0);
+      }
+    };
+    responseCompanies();
+  }, [token]);
+  
+
   return (
     <div className="flex flex-col flex-1 p-6 transition-all duration-300 py-16">
       {/* Top Stats Section */}
@@ -64,11 +83,17 @@ const Dashboard = () => {
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">Submitted Applications</p>
         </div>
+
+
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={company_img} alt="" className="pt-2 pb-5" />
-          <h3 className="text-3xl font-bold pl-2">12</h3>
+          <h3 className="text-3xl font-bold pl-2">
+            {responseCompanies ? <>{responseCompanies}</> : <>0</>}
+          </h3>
           <p className="pl-2 font-bold text-sm pt-3">Response Companies</p>
         </div>
+
+
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={chance_img} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
