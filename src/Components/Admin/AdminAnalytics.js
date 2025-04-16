@@ -1,39 +1,90 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { 
-  LineChart, Line, BarChart, Bar, PieChart, Pie, 
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, Cell
 } from 'recharts';
-import { Calendar, Clock, Activity, Users, Briefcase, Award, TrendingUp } from 'lucide-react';
 import axios from 'axios'; // Make sure you have axios installed
 import { StoreContext } from '../../Context/StoreContext';
 
 // Dashboard component that contains all analytics graphs
 const AdminAnalytics = () => {
   // State for storing data from API
-  const [internshipData, setInternshipData] = useState(null);
-  const [applicationStats, setApplicationStats] = useState(null);
-  const [userActivityData, setUserActivityData] = useState(null);
-  const [skillDemandData, setSkillDemandData] = useState(null);
+  const [skillDemandData, setSkillDemandData] = useState([]);
   const [gpaDistributionData, setGpaDistributionData] = useState([]);
   const [monthlyRegistrationData, setMonthlyRegistrationData] = useState([]);
+  
+  // State for report statistics
+  const [weekly, setWeekly] = useState([
+    { name: 'Submitted', value: 0 },
+    { name: 'Not Submitted', value: 0 }
+  ]);
+  
+  const [monthly, setMonthly] = useState([
+    { name: 'Submitted', value: 0 },
+    { name: 'Not Submitted', value: 0 }
+  ]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { url } = useContext(StoreContext);
+  // Add loading state for skill demand data
+  const [skillsLoading, setSkillsLoading] = useState(true);
+  const [skillsError, setSkillsError] = useState(null);
   
+  // Add loading state for report data
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportsError, setReportsError] = useState(null);
+
+  const { url } = useContext(StoreContext);
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   // Fetch data from APIs on component mount
   useEffect(() => {
     // In a real implementation, these would be actual API calls
-    fetchInternshipData();
-    fetchApplicationStats();
-    fetchUserActivityData();
     fetchSkillDemandData();
     fetchGpaDistributionData();
     fetchMonthlyRegistrations();
+    fetchReportStatistics();
   }, []);
+
+  // Fetch report statistics
+  const fetchReportStatistics = async () => {
+    try {
+      setReportsLoading(true);
+      setReportsError(null);
+      
+      // Get token from localStorage
+      const token = localStorage.getItem("authToken");
+      
+      if (!token) {
+        setReportsError('Authentication token not found');
+        setReportsLoading(false);
+        return;
+      }
+      
+      // Make API call to get report statistics
+      const response = await axios.get(`${url}/api/mentor/getReportStaus`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setWeekly(response.data.data.weekly);
+        setMonthly(response.data.data.monthly);
+      } else {
+        setReportsError(response.data.message || 'Failed to fetch report statistics');
+      }
+      
+      setReportsLoading(false);
+    } catch (error) {
+      console.error("Error fetching report statistics:", error);
+      setReportsError('An error occurred while fetching report statistics');
+      setReportsLoading(false);
+    }
+  };
 
   const fetchMonthlyRegistrations = async () => {
     try {
@@ -75,81 +126,72 @@ const AdminAnalytics = () => {
       console.error("Error fetching registration trends data:", error);
     }
   };
-  
+
   useEffect(() => {
-    console.log(monthlyRegistrationData); 
+    console.log(monthlyRegistrationData);
     fetchMonthlyRegistrations();
   }, []);
 
-  const fetchInternshipData = async () => {
-    try {
-      // API endpoint: /api/internships/status
-      const response = await fetch('https://your-backend-api.com/api/internships/status');
-      const data = await response.json();
-      setInternshipData(data);
-    } catch (error) {
-      console.error("Error fetching internship data:", error);
-    }
-  };
-
-  const fetchApplicationStats = async () => {
-    try {
-      // API endpoint: /api/applications/stats
-      const response = await fetch('https://your-backend-api.com/api/applications/stats');
-      const data = await response.json();
-      setApplicationStats(data);
-    } catch (error) {
-      console.error("Error fetching application stats:", error);
-    }
-  };
-
-  const fetchUserActivityData = async () => {
-    try {
-      // API endpoint: /api/users/activity
-      const response = await fetch('https://your-backend-api.com/api/users/activity');
-      const data = await response.json();
-      setUserActivityData(data);
-    } catch (error) {
-      console.error("Error fetching user activity data:", error);
-    }
-  };
 
   const fetchSkillDemandData = async () => {
     try {
-      // API endpoint: /api/skills/demand
-      const response = await fetch('https://your-backend-api.com/api/skills/demand');
-      const data = await response.json();
-      setSkillDemandData(data);
+      setSkillsLoading(true);
+      setSkillsError(null);
+
+      // Get token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        setSkillsError('Authentication token not found');
+        setSkillsLoading(false);
+        return;
+      }
+
+      // Make API call to get skills demand data
+      const response = await axios.get(`${url}/api/admin/getSkillDemand`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        setSkillDemandData(response.data.data);
+      } else {
+        setSkillsError(response.data.message || 'Failed to fetch skills demand data');
+      }
+
+      setSkillsLoading(false);
     } catch (error) {
       console.error("Error fetching skill demand data:", error);
+      setSkillsError('An error occurred while fetching skills demand data');
+      setSkillsLoading(false);
     }
   };
 
   const fetchGpaDistributionData = async () => {
     try {
       // Get token from localStorage
-
       const token = localStorage.getItem("authToken");
-      
+
       if (!token) {
         setError('Authentication token not found');
         setLoading(false);
         return;
       }
-      
+
       // Make API call with authorization header
       const response = await axios.get(`${url}/api/student/gpa-distribution`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (response.data.success) {
         setGpaDistributionData(response.data.data);
       } else {
         setError(response.data.message || 'Failed to fetch GPA data');
       }
-      
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching GPA distribution data:", error);
@@ -157,24 +199,6 @@ const AdminAnalytics = () => {
       setLoading(false);
     }
   };
-
-  // Sample data only for other charts
-  const sampleSkillDemandData = [
-    { name: 'React', value: 60 },
-    { name: 'Python', value: 45 },
-    { name: 'Java', value: 30 },
-    { name: 'Node.js', value: 25 },
-    { name: 'SQL', value: 40 }
-  ];
-
-  const sampleApplicationTrendData = [
-    { month: 'Jan', applications: 120, placements: 32 },
-    { month: 'Feb', applications: 150, placements: 40 },
-    { month: 'Mar', applications: 180, placements: 52 },
-    { month: 'Apr', applications: 170, placements: 48 }
-  ];
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   // GPA chart loading state
   const renderGpaChart = () => {
@@ -217,13 +241,111 @@ const AdminAnalytics = () => {
     );
   };
 
+  // Skills demand chart with loading state
+  const renderSkillsChart = () => {
+    if (skillsLoading) {
+      return (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      );
+    }
+
+    if (skillsError) {
+      return <div className="text-red-500 text-center py-8">{skillsError}</div>;
+    }
+
+    if (skillDemandData.length === 0) {
+      return <div className="text-gray-500 text-center py-8">No skills demand data available</div>;
+    }
+
+    return (
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart
+          layout="vertical"
+          data={skillDemandData}
+          margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" />
+          <YAxis dataKey="name" type="category" />
+          <Tooltip />
+          <Bar dataKey="value" fill="#3b82f6">
+            {skillDemandData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  };
+
+  // Render report charts with loading state
+  const renderReportCharts = () => {
+    if (reportsLoading) {
+      return (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      );
+    }
+
+    if (reportsError) {
+      return <div className="text-red-500 text-center py-8">{reportsError}</div>;
+    }
+
+    return (
+      <div className="flex justify-around">
+        <div className="w-1/2">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={weekly}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={60}
+                label
+              >
+                {weekly.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <h3 className="text-center font-medium text-sm mb-2 text-gray-600">Weekly Reports</h3>
+        </div>
+
+        <div className="w-1/2">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={monthly}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={60}
+                label
+              >
+                {monthly.map((entry, index) => (
+                  <Cell key={`cell2-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <h3 className="text-center font-medium text-sm mb-2 text-gray-600">Monthly Reports</h3>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4 p-4">
       {/* Middle Row - Main charts */}
 
 
-            {/* Registration Trends Over Time */}
-            <div className="col-span-1 bg-white p-4 rounded-lg shadow">
+      {/* Registration Trends Over Time */}
+      <div className="col-span-1 bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Registration Trends</h2>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart
@@ -241,59 +363,27 @@ const AdminAnalytics = () => {
         </ResponsiveContainer>
       </div>
 
-
-
       {/* GPA Distribution Chart */}
       <div className="col-span-1 bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Student GPA Distribution</h2>
         {renderGpaChart()}
       </div>
 
-
-
-
       {/* Bottom Row - Additional insights */}
       {/* Skills in Demand */}
       <div className="col-span-1 bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Skills in Demand</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart
-            layout="vertical"
-            data={sampleSkillDemandData}
-            margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Bar dataKey="value" fill="#3b82f6">
-              {sampleSkillDemandData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <h2 className="text-lg font-semibold mb-4">IT Skills in Demand</h2>
+        {renderSkillsChart()}
       </div>
 
-
-
-
-      {/* Real-time User Activity */}
       <div className="col-span-1 bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Real-time Platform Activity</h2>
-        <div className="flex flex-col space-y-4">
-          <ActivityMetric title="Active Users" value="126" icon={<Users size={18} />} />
-          <ActivityMetric title="Applications Today" value="42" icon={<Briefcase size={18} />} />
-          <ActivityMetric title="Interviews Today" value="18" icon={<Clock size={18} />} />
-          <ActivityMetric title="New Registrations" value="24" icon={<Activity size={18} />} />
-          <ActivityMetric title="Conversion Rate" value="34%" icon={<TrendingUp size={18} />} />
-        </div>
+        <h2 className="text-lg font-semibold mb-4">Report Submission Status</h2>
+        {renderReportCharts()}
       </div>
+
     </div>
   );
 };
-
-
 
 // Activity Metric Component
 const ActivityMetric = ({ title, value, icon }) => {

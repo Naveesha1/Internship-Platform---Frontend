@@ -8,28 +8,32 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import { StoreContext } from "../../Context/StoreContext.js";
+import { jwtDecode } from "jwt-decode";
 
 const MentorCreateStudentForm = ({
   newStudent,
   handleChange,
-  handleAddStudent,
   closeModal,
   setNewStudent,
+  refreshData, // optional: to re-fetch students after adding
 }) => {
-  const { url } = useContext(StoreContext);
+  const { url } = useContext(StoreContext); 
   const [registeredIds, setRegisteredIds] = useState([]);
   const [filteredIds, setFilteredIds] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const userEmail = decodedToken.email;
 
   useEffect(() => {
     const getStudentRegisteredId = async () => {
       try {
-        const response = await axios.get(
-          `${url}/api/student/getStudentRegisteredId`
-        );
+        const response = await axios.get(`${url}/api/student/getStudentRegisteredId`);
         if (response.data.success) {
-          setRegisteredIds(response.data.success ? response.data.data : []);
+          setRegisteredIds(response.data.data || []);
         }
       } catch (error) {
         console.log(error);
@@ -59,24 +63,18 @@ const MentorCreateStudentForm = ({
       const response = await axios.post(`${url}/api/student/getStudentProfileById`, {
         studentId,
       });
-      
       if (response.data.success) {
         const studentData = response.data.data;
-        // Update directly using handleChange for each field instead of using setNewStudent
         const fields = {
           id: studentId,
           name: studentData.fullName,
           email: studentData.universityMail,
           phone: studentData.contactNumber,
-          address: studentData.address || ""
+          address: studentData.address || "",
         };
-        
-        // Update each field individually using handleChange
         Object.entries(fields).forEach(([name, value]) => {
           handleChange({ target: { name, value } });
         });
-      } else {
-        console.log("Failed to fetch student data:", response.data.message);
       }
     } catch (error) {
       console.log("Error fetching student data:", error);
@@ -91,11 +89,46 @@ const MentorCreateStudentForm = ({
     setShowSuggestions(false);
   };
 
+  const handleAddStudent = async () => {
+    setIsSubmitting(true);
+    try {
+      const studentData = {
+        registrationNumber: newStudent.id,
+        name: newStudent.name,
+        email: newStudent.email,
+        phone: newStudent.phone,
+        address: newStudent.address,
+        startDate: newStudent.startDate,
+        endDate: newStudent.endDate,
+        position: newStudent.position,
+      };
+
+      const response = await axios.post(`${url}/api/mentor/saveStudentData`, {
+        registeredEmail: userEmail, 
+        student: studentData,
+      });
+
+      if (response.data.success) {
+        alert("Student added successfully!");
+        setNewStudent({});
+        closeModal();
+        if (refreshData) refreshData();
+      } else {
+        alert("Failed to add student: " + response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full mx-4">
         <h2 className="text-lg font-bold mb-4">Add New Student</h2>
 
+        {/* Student ID Input + Suggestions */}
         <div className="relative w-full mb-2">
           <input
             type="text"
@@ -103,9 +136,7 @@ const MentorCreateStudentForm = ({
             placeholder="Index Number"
             value={newStudent.id || ""}
             onChange={handleIdChange}
-            onFocus={() => {
-              if (newStudent.id !== "") setShowSuggestions(true);
-            }}
+            onFocus={() => newStudent.id && setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
             className="w-full p-2 border rounded"
           />
@@ -223,9 +254,9 @@ const MentorCreateStudentForm = ({
           <button
             onClick={handleAddStudent}
             className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
           >
-            Add Student
+            {isSubmitting ? "Adding..." : "Add Student"}
           </button>
         </div>
       </div>

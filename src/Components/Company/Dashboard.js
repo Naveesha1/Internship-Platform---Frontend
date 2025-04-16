@@ -20,7 +20,7 @@ const Dashboard = () => {
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={vacancies} alt='' className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">08</h3>
-          <p className="pl-2 font-bold text-sm pt-3">Available Vacancies</p>
+          <p className="pl-2 font-bold text-sm pt-3">Available Positions</p>
         </div>
       </div>
 
@@ -29,11 +29,11 @@ const Dashboard = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <div className="w-4 h-4 bg-teal-500 rounded-full mr-2"></div>
-            <p className="text-gray-400">Views on post</p>
+            <p className="text-gray-400">Position</p>
           </div>
           <div className="flex items-center">
             <div className="w-4 h-4 bg-gray-400 rounded-full mr-2"></div>
-            <p className="text-gray-400">Application for post</p>
+            <p className="text-gray-400">No. of Interns</p>
           </div>
         </div>
         <div className="w-full h-48 bg-gray-700 rounded-lg mt-4"></div>
