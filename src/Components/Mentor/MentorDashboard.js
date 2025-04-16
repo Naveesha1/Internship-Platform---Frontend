@@ -75,7 +75,14 @@ const AdminDashboard = () => {
           <h3 className="text-3xl font-bold pl-2">
             {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
           </h3>
-          <p className="pl-2 font-bold text-sm pt-3">All Documents</p>
+          <p className="pl-2 font-bold text-sm pt-3">All Weekly Reports</p>
+        </div>
+        <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
+          <img src={document} alt="" className="pt-2 pb-5" />
+          <h3 className="text-3xl font-bold pl-2">
+            {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
+          </h3>
+          <p className="pl-2 font-bold text-sm pt-3">All Monthly Reports</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={student} alt="" className="pt-2 pb-5" />

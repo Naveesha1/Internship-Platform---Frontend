@@ -18,7 +18,7 @@ const DocumentPage = () => {
     <div className="flex flex-col flex-1 ml-auto w-full">
       <Navbar />
 
-      <div className="flex h-screen w-screen overflow-hidden">
+      <div className="flex min-h-screen w-full">
         {/* Sidebar */}
         <div
           className={`transition-all duration-300 ${
@@ -29,7 +29,7 @@ const DocumentPage = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 mt-16 p-8">
+        <div className="flex-1 p-8">
           <MentorDocHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {activeTab === "monthly" && <MentorDocMonthly />}

@@ -11,62 +11,19 @@ import {
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { MdEmail } from "react-icons/md";
+import { jwtDecode } from "jwt-decode";
 
 
 // Main StudentList component
 const MentorStudent = () => {
   const { url } = useContext(StoreContext);
-  const [students, setStudents] = useState([
-    {
-      id: "215036R",
-      name: "Ekanayake HGNK",
-      position: "Software Engineer",
-      startDate: "01/03/2025",
-      endDate: "30/09/2025",
-      image: "/path/to/image1.jpg",
-      email: "ekanayakehgnk@gmail.com",
-      phone: "+94 77 123 4567",
-      address: "Kandy, Sri Lanka"
-    },
-    {
-      id: "215036R",
-      name: "Heelibathdeniya HNB",
-      position: "Business Analysis",
-      startDate: "01/03/2025",
-      endDate: "30/09/2025",
-      image: "/path/to/image2.jpg",
-      email: "iddamalgodaipbm.21@uom.lk",
-      phone: "+94 77 123 4567",
-      address: "Kandy, Sri Lanka"
-    },
-    {
-      id: "215036R",
-      name: "Aruna AMK",
-      position: "Software Engineer",
-      startDate: "01/03/2025",
-      endDate: "30/09/2025",
-      image: "/path/to/image3.jpg",
-      email: "cdgs@mgail.som",
-      phone: "+94 77 123 4567",
-      address: "Kandy, Sri Lanka"
-    },
-    {
-      id: "215036R",
-      name: "Ekanayake HGNK",
-      position: "Software Engineer",
-      startDate: "01/03/2025",
-      endDate: "30/09/2025",
-      image: "/path/to/image4.jpg",
-      email: "ekanayake@gmail.com",
-      phone: "+94 77 123 4567",
-      address: "Kandy, Sri Lanka"
-    },
-  ]);
-
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [newStudent, setNewStudent] = useState({
-    id: "",
+    registrationNumber: "",
     name: "",
     position: "",
     startDate: "",
@@ -76,11 +33,41 @@ const MentorStudent = () => {
     address: "",
   });
 
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const userEmail = decodedToken.email;
+
+  // Fetch students data when component mounts
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // Fetch all students for the logged-in mentor
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);      
+      const response = await axios.post(`${url}/api/mentor/getAllStudent`, {
+        registeredEmail: userEmail
+      });
+      
+      if (response.data.success) {
+        setStudents(response.data.data);
+      } else {
+        setError(response.data.message);
+      }
+    } catch (err) {
+      setError("Failed to fetch students. Please try again later.");
+      console.error("Error fetching students:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredStudents = students.filter(
     (student) =>
-      // student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.id.toLowerCase().includes(searchTerm.toLowerCase())
+      student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChange = (e) => {
@@ -91,52 +78,7 @@ const MentorStudent = () => {
     }));
   };
 
-  const handleAddStudent = () => {
-    // Validate form
-    if (
-      !newStudent.id ||
-      !newStudent.startDate ||
-      !newStudent.endDate ||
-      !newStudent.position ||
-      !newStudent.email ||
-      !newStudent.phone ||
-      !newStudent.address
-    ) {
-      alert("Please fill all required fields");
-      return;
-    }
 
-    // Format dates to DD/MM/YYYY
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      const day = date.getDate().toString().padStart(2, "0");
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    };
-
-    const formattedStudent = {
-      ...newStudent,
-      startDate: formatDate(newStudent.startDate),
-      endDate: formatDate(newStudent.endDate),
-      image: newStudent.image,
-    };
-
-    // Add new student
-    setStudents([...students, formattedStudent]);
-
-    // Reset form and close modal
-    setNewStudent({
-      id: "",
-      position: "",
-      startDate: "",
-      endDate: "",
-      email: "",
-      phone: "",
-      address: "",
-    });
-    setShowModal(false);
-  };
 
   const openModal = () => {
     setShowModal(true);
@@ -146,22 +88,6 @@ const MentorStudent = () => {
     setShowModal(false);
   };
 
-  //Get student details
-  useEffect(() => {
-    const studentId = newStudent.id;
-    const getStudent = async () => {
-      const response = await axios.post(`${url}/api/student/getStudentName`, {
-        studentId,
-      });
-      if (response.data.success) {
-        setNewStudent((prevState) => ({
-          ...prevState,
-          name: response.data.data,
-        }));
-      }
-    };
-    getStudent();
-  }, [newStudent.id.length == 7]);
 
   return (
     <div className="p-4 w-full">
@@ -201,23 +127,29 @@ const MentorStudent = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredStudents.map((student, index) => (
-          <StudentCard key={index} student={student} />
-        ))}
-      </div>
+      {students.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No students found. Add your first student using the button above.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredStudents.map((student, index) => (
+            <StudentCard key={index} student={student} />
+          ))}
+        </div>
+      )}
 
       {showModal && (
         <MentorCreateStudentForm
           newStudent={newStudent}
           handleChange={handleChange}
-          handleAddStudent={handleAddStudent}
           closeModal={closeModal}
         />
       )}
     </div>
   );
 };
+
 const StudentCard = ({ student }) => {
   const [isMonthlyReportActive, setIsMonthlyReportActive] = useState(false);
   const [availableMonths, setAvailableMonths] = useState([]);
@@ -274,7 +206,6 @@ const StudentCard = ({ student }) => {
       return;
     }
     
-    // Instead of just navigating to the page, pass the student data as state
     navigate("/MCreateMonthlyDocPage", {
       state: {
         student: student,
@@ -286,20 +217,12 @@ const StudentCard = ({ student }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
       <div className="p-4 flex items-center">
-        <div className="h-14 w-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-          <img
-            src={student.image}
-            alt={student.name}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = student.name.charAt(0);
-            }}
-            className="h-full w-full object-cover"
-          />
+        <div className="h-14 w-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 flex items-center justify-center text-lg font-bold text-gray-700">
+          {student.name ? student.name.charAt(0) : "S"}
         </div>
         <div className="ml-4">
           <h3 className="text-lg font-medium text-gray-900">{student.name}</h3>
-          <p className="text-sm text-gray-600">{student.id}</p>
+          <p className="text-sm text-gray-600">{student.registrationNumber}</p>
         </div>
       </div>
 
@@ -335,10 +258,11 @@ const StudentCard = ({ student }) => {
       <div className="p-4 pt-2">
         <button
           onClick={handleReportClick}
-          className={`w-full py-2 px-4 rounded-md transition duration-300 ease-in-out ${isMonthlyReportActive
+          className={`w-full py-2 px-4 rounded-md transition duration-300 ease-in-out ${
+            isMonthlyReportActive
               ? "bg-teal-600 hover:bg-teal-700 text-white"
               : "bg-gray-400 cursor-not-allowed text-white"
-            }`}
+          }`}
         >
           Monthly Report
         </button>
@@ -346,6 +270,5 @@ const StudentCard = ({ student }) => {
     </div>
   );
 };
-
 
 export default MentorStudent;
