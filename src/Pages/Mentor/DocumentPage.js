@@ -29,7 +29,7 @@ const DocumentPage = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 overflow-x-auto">
           <MentorDocHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {activeTab === "monthly" && <MentorDocMonthly />}

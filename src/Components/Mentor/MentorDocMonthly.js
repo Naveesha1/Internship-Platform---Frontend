@@ -168,7 +168,8 @@ const MentorDocMonthly = () => {
 
       {/* Desktop View - Folder Structure Table */}
       <div className="hidden md:block bg-gray-100 rounded-lg">
-      <div className="max-h-[500px] overflow-y-auto rounded-lg">        <table className="min-w-full">
+      <div className="max-h-[500px] overflow-y-auto rounded-lg">        
+        <table className="min-w-full">
           <thead>
             <tr className="bg-gray-200 text-left">
               <th className="py-3 px-4">Student</th>
