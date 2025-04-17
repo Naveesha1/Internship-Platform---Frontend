@@ -122,8 +122,15 @@ const CompanyMentorProfile = () => {
             </tr>
           </thead>
           <tbody>
+            {mentorsData?.length === 0 ? <>
+                <tr className="border-t border-gray-200 bg-gray-100">
+                    <td colSpan="4" className="py-3 px-4 text-center">
+                    No Mentors Found
+                    </td>
+                </tr>
+            </> : <>
             {mentorsData?.map((mentor, index) => (
-              <tr key={index} className="border-t border-gray-200">
+              <tr key={index} className="border-t border-gray-200 bg-gray-100">
                 <td className="py-3 px-4">{mentor.name}</td>
                 <td className="py-3 px-4">{mentor.position}</td>
                 <td className="py-3 px-4">{mentor.email}</td>
@@ -131,6 +138,7 @@ const CompanyMentorProfile = () => {
                 <ConfirmDeleteButton onConfirm={() => deleteMentor(mentor.email)} /></td>
               </tr>
             ))}
+            </>}
           </tbody>
         </table>
       </div>
