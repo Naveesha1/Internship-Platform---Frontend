@@ -13,6 +13,7 @@ const StoreContextProvider = ({ children }) => {
   const [idStatus, setIdStatus] = useState(null);
 
   const [adminsData, setAdminsData] = useState([]);
+  const [mentorsData, setMentorsData] = useState([]);
   const url = "http://localhost:4000";
 
   const contextValue = {
@@ -29,6 +30,8 @@ const StoreContextProvider = ({ children }) => {
     setAdminsData,
     idStatus,
     setIdStatus,
+    mentorsData,
+    setMentorsData,
   };
 
   return (

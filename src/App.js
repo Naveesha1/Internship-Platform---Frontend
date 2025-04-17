@@ -37,6 +37,7 @@ import MentorCreateMonthlyDoc from "./Components/Mentor/MentorCreateMonthlyDoc.j
 import MentorDocMonthly from "./Components/Mentor/MentorDocMonthly.js";
 import MentorCreateMOnthlyReportPage from "./Pages/Mentor/MonthlyReports/MentorCreateMOnthlyReportPage.js";
 import MentorMonthlyReportViewPage from "./Pages/Mentor/MonthlyReports/MentorMonthlyReportViewPage.js";
+import CompanyMentorsPage from "./Pages/Company/CompanyMentorsPage.js";
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
         <Route path="/MDocMonthly" element={<MentorDocMonthly/>}></Route>
         <Route path="/MCreateMonthlyDocPage" element={<MentorCreateMOnthlyReportPage/>}></Route>
         <Route path="/MMonthlyDocViewPage" element={<MentorMonthlyReportViewPage/>}></Route>
+        <Route path="/CreateMentor" element={<CompanyMentorsPage/>}></Route>
       </Routes>
       </ReportProvider>
     </div>
