@@ -17,6 +17,7 @@ const CSidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
     { name: "Dashboard", icon: require("../../Images/sidebar/dashboard.png"), href: `/ComDashboard?${decodedToken._id}` },
     { name: "Profile", icon: require("../../Images/sidebar/profile.png"), href: `/CompanyProfile?${decodedToken._id}` },
+    { name: "Mentors", icon: require("../../Images/sidebar/mentor.png"), href: `/CreateMentor?${decodedToken._id}` },
     { name: "Internship", icon: require("../../Images/sidebar/internship.png"), href: `/CompanyInternshipPage?${decodedToken._id}` },
     { name: "Applications", icon: require("../../Images/sidebar/applications.png"), href: `/CompanyApplicationPage?${decodedToken._id}` },
     { name: "Calendar", icon: require("../../Images/sidebar/calender.png"), href: `/CompanyCalendar?${decodedToken._id}` },
