@@ -32,6 +32,7 @@ const ProfilePage = () => {
     position: "",
     address: "",
     contactNumber: "",
+    company: "",
     registeredEmail: registeredEmail,
   });
 
@@ -56,7 +57,7 @@ const ProfilePage = () => {
       try {
         // api call for saving gathered data
         const response = await axios.post(
-          `${url}/api/mentor/create`,
+          `${url}/api/mentor/createProfile`,
           formData
         );
         if (response.data.success) {
