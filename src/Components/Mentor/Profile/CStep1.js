@@ -31,6 +31,19 @@ const CStep1 = ({ formData, handleChange }) => {
         />
       </div>
       <div className="mb-4 flex items-center">
+        <label className="block text-gray-700 mr-4 w-48">
+          Company
+        </label>
+        <input
+          type="text"
+          name="company"
+          value={formData.company}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          placeholder="Place your company name here"
+        />
+      </div>
+      <div className="mb-4 flex items-center">
         <label className="block text-gray-700 mr-4 w-48">Position</label>
         <input
           type="text"
