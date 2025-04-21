@@ -6,6 +6,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { StoreContext } from '../../Context/StoreContext';
 import { jwtDecode } from 'jwt-decode';
+import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton";
+import { toast } from 'react-toastify';
+
 
 const MentorDocMonthly = () => {
   const { url } = useContext(StoreContext);
@@ -117,9 +120,8 @@ const MentorDocMonthly = () => {
   };
 
   const handleDelete = async (reportId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this report?");
-    if (!confirmDelete) return;
-  
+    // const confirmDelete = window.confirm("Are you sure you want to delete this report?");
+    // if (!confirmDelete) return;
     try {
       const response = await axios.post(`${url}/api/mentor/deleteMonthlyReport`, {
         userEmail: userEmail,
@@ -127,6 +129,7 @@ const MentorDocMonthly = () => {
       });
   
       if (response.data.success) {
+        toast.success(response.data.message);
         // Remove the deleted item from reports array
         const updatedReports = reports.filter((item) => item._id !== reportId);
         setReports(updatedReports);
@@ -136,7 +139,7 @@ const MentorDocMonthly = () => {
         setGroupedReports(regrouped);
         setFilteredGroupedReports(regrouped);
       } else {
-        alert("Failed to delete the report.");
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.error("Error deleting report:", error);
@@ -221,14 +224,7 @@ const MentorDocMonthly = () => {
                           }}
                           title="View Report"
                         />
-                        <FiTrash2
-                          className="text-gray-600 text-lg cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(report._id);
-                          }}
-                          title="Delete Report"
-                        />
+                        <ConfirmDeleteButton onConfirm={() => handleDelete(report._id)} />
                       </td>
                     </tr>
                   ))}

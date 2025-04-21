@@ -55,10 +55,12 @@ const AdminProfile = () => {
   };
 
   const handleDelete = async (email) => {
-    console.log(email);
-
+    const emails = {
+      email: email,
+      registeredEmail:registeredEmail,
+    }
     const response = await axios.post(`${url}/api/admin/deleteAdmin`, {
-      email,
+      emails,
     });
     if (response.data.success) {
       setAdminsData((prevItems) =>
