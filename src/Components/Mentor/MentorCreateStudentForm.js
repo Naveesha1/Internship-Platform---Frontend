@@ -23,6 +23,8 @@ const MentorCreateStudentForm = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
 
     const token = localStorage.getItem("authToken");
     const decodedToken = jwtDecode(token);
@@ -44,6 +46,7 @@ const MentorCreateStudentForm = ({
 
   const handleIdChange = (e) => {
     handleChange(e);
+    setError("");
     const input = e.target.value;
     if (input.trim() !== "") {
       const filtered = registeredIds.filter((id) =>
@@ -90,6 +93,14 @@ const MentorCreateStudentForm = ({
   };
 
   const handleAddStudent = async () => {
+    if (!newStudent.id) {
+      setError("Index Number is required.");
+      return;
+    }
+    if (!registeredIds.includes(newStudent.id)) {
+      setError("Invalid Index Number. Please select a valid one.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       const studentData = {
@@ -138,8 +149,7 @@ const MentorCreateStudentForm = ({
             onChange={handleIdChange}
             onFocus={() => newStudent.id && setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-            className="w-full p-2 border rounded"
-          />
+            className={`w-full p-2 border rounded ${error ? "border-red-500" : ""}`}          />
           {showSuggestions && (
             <ul className="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto rounded shadow">
               {filteredIds.length > 0 ? (
