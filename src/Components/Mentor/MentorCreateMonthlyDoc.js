@@ -68,7 +68,6 @@ const formatCardDateForInput = (dateString) => {
       try {
         // First check if we have student data from the card
         if (studentFromCard) {
-          console.log("Using student data from card:", studentFromCard);
           
           // Auto-populate student fields from card data
           setFormData(prevState => ({
@@ -83,7 +82,6 @@ const formatCardDateForInput = (dateString) => {
           }));
         } else {
           // Fetch student data from the backend if no card data available
-          console.log("No student data from card, fetching from API");
           const studentResponse = await axios.post(`${url}/api/student/getCvDetails`, { 
             registeredEmail: userEmail 
           });
@@ -245,7 +243,6 @@ const formatCardDateForInput = (dateString) => {
           reportUrl: downloadURL,
         };
   
-        console.log("Sending data to mentor backend:", monthlyData);
   
         const response = await axios.post(
           `${url}/api/mentor/saveMonthlyReportData`,
@@ -285,7 +282,6 @@ const formatCardDateForInput = (dateString) => {
               reportUrl: downloadURL,
             };
   
-            console.log("Sending data to student backend:", studentReportData);
   
             const response = await axios.post(
               `${url}/api/student/saveMonthlyReportStudent`,
@@ -321,106 +317,6 @@ const formatCardDateForInput = (dateString) => {
     }
   };
   
-
-  // const sendToMentor = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // Generate PDF blob
-  //     const blob = await generatePDFBlob();
-      
-  //     // Extract month and year for the filename
-  //     const reportDate = new Date(formData.reportPeriodFrom);
-  //     const month = reportDate.toLocaleString('default', { month: 'short' });
-  //     const year = reportDate.getFullYear();
-      
-  //     // Create a meaningful filename with registration number and month/year
-  //     const fileName = `${formData.regNo}-${month}-${year}.pdf`;
-      
-  //     // Upload to Firebase and get download URL
-  //     const storageRef = ref(storage, `monthlyReports/${formData.regNo}/${fileName}`);
-  //     await uploadBytes(storageRef, blob);
-  //     const downloadURL = await getDownloadURL(storageRef);
-      
-  //     if (downloadURL) {
-  //       // Prepare data to send to backend
-  //       const monthlyData = {
-  //         registeredEmail: userEmail,
-  //         month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
-  //         name: formData.name,
-  //         index: formData.regNo,
-  //         reportUrl: downloadURL,
-  //       };
-        
-  //       console.log("Sending data to backend:", monthlyData);
-        
-  //       // Send data to backend - THIS WAS MISSING
-  //       const response = await axios.post(
-  //         `${url}/api/mentor/saveMonthlyReportData`,
-  //         monthlyData
-  //       );
-        
-  //       if (response.data.success) {
-  //         alert("Report sent to mentor successfully!");
-          
-  //       } else {
-  //         alert("Failed to send report to mentor: " + response.data.message);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Upload failed:", error);
-  //     alert("Failed to send report to mentor: " + error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  //   const sendToStudent = async (downloadURL) => {
-  //     try {
-  //       // Ensure student email is available
-  //       const studentEmail = studentFromCard?.email || studentData?.email;
-  //       if (!studentEmail) {
-  //         console.error("Student email not found");
-  //         return;
-  //       }
-    
-  //       // Calculate duration in the format 'YYYY/MM/DD - YYYY/MM/DD'
-  //       const formatDateForDuration = (date) => {
-  //         const d = new Date(date);
-  //         return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
-  //       };
-    
-  //       const duration = `${formatDateForDuration(formData.reportPeriodFrom)} - ${formatDateForDuration(formData.reportPeriodTo)}`;
-    
-  //       // Get the current number of monthly reports and increment
-  //       const existingReports = studentData?.monthly || [];
-  //       const number = existingReports.length + 1;
-    
-  //       const studentReportData = {
-  //         registeredEmail: studentEmail,
-  //         month: new Date(formData.reportPeriodFrom).toLocaleString('default', { month: 'long' }),
-  //         number: number,
-  //         duration: duration,
-  //         reportUrl: downloadURL,
-  //       };
-    
-  //       console.log("Sending data to student backend:", studentReportData);
-    
-  //       const response = await axios.post(
-  //         `${url}/api/student/saveMonthlyReportData`,
-  //         studentReportData
-  //       );
-    
-  //       if (response.data.success) {
-  //         alert("Report saved for student successfully!");
-  //       } else {
-  //         alert("Failed to save report for student: " + response.data.message);
-  //       }
-    
-  //     } catch (error) {
-  //       console.error("Error sending data to student backend:", error);
-  //       alert("Failed to save report for student: " + error.message);
-  //     }
-  //   };
-    
-  // };
   
   // Function for local PDF download
   const downloadPDF = async () => {
@@ -473,7 +369,6 @@ const formatCardDateForInput = (dateString) => {
   // Main handler for form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     
     // Ask user if they want to download locally or send to mentor
     const choice = window.confirm('Do you want to send this report to your mentor? Click OK to send, or Cancel to download locally.');

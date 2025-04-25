@@ -46,7 +46,6 @@ const Internship = () => {
     const getAllInternships = async () => {
       const response = await axios.get(`${url}/api/student/allInternships`);
       if (response.data.success) {
-        console.log("data",response.data);
         setInternships(response.data.data);
         setFilteredInternships(response.data.data); // Initially set filtered data to full data
       } else {
@@ -62,7 +61,6 @@ const Internship = () => {
         registeredEmail,
       });
       if (response.data.success) {
-        console.log("Suggested Internships: ", response.data.data);
         setSuggestInternships(response.data.data);
         setFilteredSuggestInternships(response.data.data);
       } else {

@@ -35,7 +35,6 @@ const ManageCVUpdate = ({ onClose, cvPath, cvId }) => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    console.log(selectedFile.name);
     
     const { name, files } = e.target;
     if (selectedFile && selectedFile.type === 'application/pdf') {
@@ -59,7 +58,6 @@ const ManageCVUpdate = ({ onClose, cvPath, cvId }) => {
             try {
               const fileRef = ref(storage, cvPath);
               await deleteObject(fileRef);
-              console.log("delete success");
               
               for (const key in file) {
                 if (file[key]) {
@@ -76,7 +74,6 @@ const ManageCVUpdate = ({ onClose, cvPath, cvId }) => {
                 registeredEmail:userEmail,
                 id:cvId,
               }
-              console.log(updatedCvData);
               
               if(uploadedUrls.cv) {
                 const response = await axios.put(`${url}/api/student/updateNewCv`,updatedCvData);
