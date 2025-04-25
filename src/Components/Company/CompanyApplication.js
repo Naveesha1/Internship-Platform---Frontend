@@ -26,7 +26,6 @@ const CompanyApplication = () => {
       const response = await axios.post(`${url}/api/company/getApplicants`, {
         registeredEmail,
       });
-      console.log("data",response.data);
       if (response.data.success) {
         setApplicants(response.data.data);
         setFilteredApplicants(response.data.data); 
@@ -95,7 +94,6 @@ const CompanyApplication = () => {
       // For each applicant, analyze their CV
       const analyzed = await Promise.all(positionApplicants.map(async (applicant) => {
         try {
-          console.log('data',applicant.userCv,applicant.internshipId)
           // Call the backend to analyze the CV against the internship requirements
           const response = await axios.post(`${url}/api/company/analyzeCvController`, {
             cvUrl: applicant.userCv,

@@ -56,7 +56,6 @@ const Step3 = ({ formData, handleChange, setName }) => {
   // Handle select changes
   const handleSelectChange = (selectedOptions, { name }) => {
     const values = selectedOptions.map((option) => option.value);
-    console.log(`Selected ${name}:`, values);
     handleChange({
       target: {
         name,

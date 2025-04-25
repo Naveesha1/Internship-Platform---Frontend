@@ -86,7 +86,6 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
   };
 
   const handleViewPdf = (reportUrl) => {
-    console.log(reportUrl);
     if (reportUrl) {
       setSelectedPdf(reportUrl);
       setShowPdfModal(true);

@@ -119,9 +119,8 @@ const Profile = () => {
         if (response.data.success) {
           setSubmitted(true);
         } else {
-          setError("An error occured please try again");
+          setError("An error occurred please try again");
         }
-        console.log(response.data.message);
       } catch (error) {
         console.error("Error submitting form", error);
       }

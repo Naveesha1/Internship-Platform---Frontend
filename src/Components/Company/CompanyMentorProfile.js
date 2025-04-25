@@ -48,9 +48,7 @@ const handleAddMentor = async () => {
       ...newMentor,
       registeredEmail: registeredEmail 
     };
-    
-    console.log(mentorWithCompany);
-    
+        
     const response = await axios.post(
       `${url}/api/mentor/createMentor`,
       mentorWithCompany
@@ -91,7 +89,6 @@ const handleAddMentor = async () => {
       const response = await axios.post(`${url}/api/mentor/getCompanyMentorsController`, {
         registeredEmail: registeredEmail
       });
-      console.log("mentorData",response.data);
       
       if (response.data.success) {
         setMentorsData(response.data.mentors);

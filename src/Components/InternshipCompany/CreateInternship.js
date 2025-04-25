@@ -33,7 +33,6 @@ const CreateInternship = () => {
       workMode,
       aboutIntern,
     };
-    console.log(newInternship);
     try {
       const response = await axios.post(`${url}/api/company/createIntern`, newInternship);
       if (response.data.success) {

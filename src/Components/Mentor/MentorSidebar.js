@@ -47,7 +47,6 @@ const MentorSidebar = ({ isOpen, toggleSidebar }) => {
       history("/");
       window.location.reload();
     } else {
-      console.log("No authentication token found. Redirecting to login page.");
       history("/");
       window.location.reload();
     }
