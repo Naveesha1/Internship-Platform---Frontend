@@ -6,65 +6,41 @@ import employee from "../../Images/AdminDashboard/Payroll.png";
 import document from "../../Images/sidebar/Document.png";
 import pendingDocument from "../../Images/AdminDashboard/Document.png";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
 
 const AdminDashboard = () => {
   const { url } = useContext(StoreContext);
+  const [counts, setCounts] = useState({
+    weeklyCount: 0,
+    monthlyCount: 0,
+    studentCount: 0,
+  });
 
-  const [verifiedCompaniesCount, setVerifiedCompaniesCount] = useState(0);
-  const [verifiedStudentsCount, setVerifiedStudentsCount] = useState(0);
-  const [pendingStudentsCount, setPendingStudentsCount] = useState(0);
-  const [pendingCompaniesCount, setPendingCompaniesCount] = useState(0);
-  const [newChancesCount, setNewChancesCount] = useState(0);
 
   const token = localStorage.getItem("authToken");
+  const decodedToken = jwtDecode(token);
+  const registeredEmail = decodedToken.email;
 
   useEffect(() => {
-    const getVerifiedCompanies = async () => {
-      const response = await axios.get(`${url}/api/admin/getVerifiedCompanies`);
-      if (response.data.success) {
-        setVerifiedCompaniesCount(response.data.count);
-      } else {
-        setVerifiedCompaniesCount(0);
-      }
-    };
-    getVerifiedCompanies();
-  }, [token]);
+    const fetchCounts = async () => {
+      try {
+        const response = await axios.post(`${url}/api/mentor/countStudentWeeklyMonthly`, {
+          registeredEmail,
+        });
 
-  useEffect(() => {
-    const getVerifiedStudents = async () => {
-      const response = await axios.get(`${url}/api/admin/getVerifiedStudents`);
-      if (response.data.success) {
-        setVerifiedStudentsCount(response.data.count);
-      } else {
-        setVerifiedStudentsCount(0);
+        if (response.data.success) {
+          setCounts(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching mentor data counts", error);
       }
     };
-    getVerifiedStudents();
-  }, [token]);
 
-  useEffect(() => {
-    const getPendingStudents = async () => {
-      const response = await axios.get(`${url}/api/admin/getPendingStudents`);
-      if (response.data.success) {
-        setPendingStudentsCount(response.data.count);
-      } else {
-        setPendingStudentsCount(0);
-      }
-    };
-    getPendingStudents();
-  }, [token]);
+    fetchCounts();
+  }, [registeredEmail]);
 
-  useEffect(() => {
-    const getPendingCompanies = async () => {
-      const response = await axios.get(`${url}/api/admin/getPendingCompanies`);
-      if (response.data.success) {
-        setPendingCompaniesCount(response.data.count);
-      } else {
-        setPendingCompaniesCount(0);
-      }
-    };
-    getPendingCompanies();
-  }, [token]);
+  
 
   return (
     <div className="flex flex-col flex-1 p-6 transition-all duration-300 py-16">
@@ -73,27 +49,27 @@ const AdminDashboard = () => {
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={document} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
-            {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
+            {counts.weeklyCount}
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">All Weekly Reports</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={document} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
-            {verifiedCompaniesCount ? <>{verifiedCompaniesCount}</> : <>0</>}
+            {counts.monthlyCount}
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">All Monthly Reports</p>
         </div>
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={student} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
-            {newChancesCount ? <>{newChancesCount}</> : <>0</>}
+            {counts.studentCount}
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">All Students</p>
         </div>
       </div>
 
-      {/* Separate Wrapper for Recommendations and Invitations Section */}
+
       <div className="mt-6">
         {/* Internship Recommendations and Interview Invitations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -106,11 +82,7 @@ const AdminDashboard = () => {
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
                 <img src={pendingDocument} alt="" className="pt-2 pb-5" />
                 <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
-                  {pendingCompaniesCount ? (
-                    <>{pendingCompaniesCount}</>
-                  ) : (
-                    <>0</>
-                  )}
+                  {}
                 </h3>
                 <p className="pl-2 font-bold text-sm pt-3 ">Weekly Reports</p>
               </div>
@@ -118,7 +90,7 @@ const AdminDashboard = () => {
               <div className="bg-[#C5C6C7] p-4 rounded-lg shadow-md">
                 <img src={pendingDocument} alt="" className="pt-2 pb-5" />
                 <h3 className="text-3xl font-bold pl-2 text-[#155E75]">
-                  {pendingStudentsCount ? <>{pendingStudentsCount}</> : <>0</>}
+                  {}
                 </h3>
                 <p className="pl-2 font-bold text-sm pt-3">Monthly Reports</p>
               </div>
