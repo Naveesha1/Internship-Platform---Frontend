@@ -6,7 +6,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton.js";
-
+import { ThreeDot } from "react-loading-indicators";
 
 const StudentDocMonthly = () => {
   const { url } = useContext(StoreContext);
@@ -15,7 +15,7 @@ const StudentDocMonthly = () => {
   const [reportUrl, setReportUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMonthlyReport, setShowMonthlyReport] = useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
@@ -30,18 +30,22 @@ const StudentDocMonthly = () => {
   };
 
   useEffect(() => {
-    if(token){
-    const getMonthlyReports = async () => {
-      const response = await axios.post(`${url}/api/student/getMonthlyReports`, {
-        userEmail,
-      });
-      if (response.data.success) {
-        setMonthlyReports(response.data.data);
-      }
-    };
-    getMonthlyReports();
-}
-  }, [token,monthlyReports]);
+    if (token) {
+      const getMonthlyReports = async () => {
+        const response = await axios.post(
+          `${url}/api/student/getMonthlyReports`,
+          {
+            userEmail,
+          }
+        );
+        if (response.data.success) {
+          setLoading(true);
+          setMonthlyReports(response.data.data);
+        }
+      };
+      getMonthlyReports();
+    }
+  }, [token, monthlyReports]);
 
   const filteredDocuments = monthlyReports.filter(
     (doc) =>
@@ -60,19 +64,20 @@ const StudentDocMonthly = () => {
     setIsModalOpen(false);
   };
 
-  
-const deleteDocument = async(id) => {
-    const response = await axios.delete(`${url}/api/student/deleteMonthlyReport`,{
+  const deleteDocument = async (id) => {
+    const response = await axios.delete(
+      `${url}/api/student/deleteMonthlyReport`,
+      {
         data: { userEmail, id },
-      });
-    if(response.data.success){
-        toast.success(response.data.message);
-        setMonthlyReports(response.data.data);
+      }
+    );
+    if (response.data.success) {
+      toast.success(response.data.message);
+      setMonthlyReports(response.data.data);
+    } else {
+      toast.error(response.data.message);
     }
-    else {
-        toast.error(response.data.message);
-    }
-}
+  };
 
   return (
     <div className="w-full p-6">
@@ -100,33 +105,57 @@ const deleteDocument = async(id) => {
             </tr>
           </thead>
           {monthlyReports.length === 0 ? (
-            <tbody>
-              <tr>
-                <td colSpan="4" className="text-center py-6 text-gray-500">
-                  Loading...
-                </td>
-              </tr>
-            </tbody>
+            <>
+              <tbody>
+                <tr>
+                  <td colSpan="4" className="text-center py-6 text-gray-500">
+                    No data available
+                  </td>
+                </tr>
+              </tbody>
+            </>
           ) : (
-            <tbody className="divide-y divide-gray-200">
-            {filteredDocuments.map((doc, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="py-4 px-4 text-blue-600 font-medium">{doc.number}</td>
-                <td className="py-4 px-4 text-green-600">{doc.duration}</td>
-                <td className="py-4 px-4 text-purple-600">{doc.month}</td>
-                <td className="py-4 px-4 flex space-x-3">
-                  <button
-                    onClick={() => openModal(doc.reportUrl)}
-                    className="text-red-500 text-lg"
-                  >
-                    <AiOutlineFilePdf className="ml-4" />
-                  </button>
-                  <ConfirmDeleteButton onConfirm={() => deleteDocument(doc._id)} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          
+            <>
+              {loading ? (
+                <>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredDocuments.map((doc, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="py-4 px-4 text-blue-600 font-medium">
+                          {doc.number}
+                        </td>
+                        <td className="py-4 px-4 text-green-600">
+                          {doc.duration}
+                        </td>
+                        <td className="py-4 px-4 text-purple-600">
+                          {doc.month}
+                        </td>
+                        <td className="py-4 px-4 flex space-x-3">
+                          <button
+                            onClick={() => openModal(doc.reportUrl)}
+                            className="text-red-500 text-lg"
+                          >
+                            <AiOutlineFilePdf className="ml-4" />
+                          </button>
+                          <ConfirmDeleteButton
+                            onConfirm={() => deleteDocument(doc._id)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <>
+                  <ThreeDot
+                    color="#3498db"
+                    size="medium"
+                    text=""
+                    textColor=""
+                  />
+                </>
+              )}
+            </>
           )}
         </table>
       </div>
