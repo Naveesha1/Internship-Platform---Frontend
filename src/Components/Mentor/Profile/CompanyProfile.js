@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ImageIcon } from "lucide-react";
 import { User } from "lucide-react";
-
+import { FaUserCircle } from 'react-icons/fa';
 
 const ProfileContent = ({ mentorDetails }) => {
 
@@ -11,7 +11,7 @@ const ProfileContent = ({ mentorDetails }) => {
         {/* Profile Card */}
         <div className="w-full lg:w-72 bg-white rounded-lg shadow-sm p-4 mb-6 lg:mb-0">
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32 bg-gray-200 rounded-full mb-4"><img className="w-32 h-32 items-center rounded-full" src={User}  alt=""/></div>
+            <div className="mb-4"><FaUserCircle className="text-gray-400 " size={130} /></div>
 
             <div className="w-full space-y-3">
               {[
