@@ -7,6 +7,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton.js";
 import { toast } from "react-toastify";
+import { ThreeDot } from "react-loading-indicators";
 
 const StudentDocWeekly = () => {
   const { url } = useContext(StoreContext);
@@ -15,6 +16,7 @@ const StudentDocWeekly = () => {
   const [weeklyReports, setWeeklyReports] = useState([]);
   const [reportUrl, setReportUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [showWeeklyReport, setShowWeeklyReport] = useState(false);
 
@@ -33,10 +35,14 @@ const StudentDocWeekly = () => {
   useEffect(() => {
     if (token) {
       const getWeeklyReports = async () => {
-        const response = await axios.post(`${url}/api/student/getWeeklyReports`, {
-          userEmail,
-        });
+        const response = await axios.post(
+          `${url}/api/student/getWeeklyReports`,
+          {
+            userEmail,
+          }
+        );
         if (response.data.success) {
+          setLoading(true);
           setWeeklyReports(response.data.data);
         }
       };
@@ -61,17 +67,19 @@ const StudentDocWeekly = () => {
   };
 
   const deleteDocument = async (id) => {
-    const response = await axios.delete(`${url}/api/student/deleteWeeklyReport`, {
-      data: { userEmail, id },
-    });
+    const response = await axios.delete(
+      `${url}/api/student/deleteWeeklyReport`,
+      {
+        data: { userEmail, id },
+      }
+    );
     if (response.data.success) {
       toast.success(response.data.message);
       setWeeklyReports(response.data.data);
-    }
-    else {
+    } else {
       toast.error(response.data.message);
     }
-  }
+  };
 
   return (
     <div className="w-full p-6">
@@ -108,39 +116,62 @@ const StudentDocWeekly = () => {
           </thead>
           {weeklyReports.length === 0 ? (
             <>
-              <p className="text-center">Loading...</p>
+              <tbody>
+                <td colSpan="4" className="text-center py-6 text-gray-500">
+                  No data available
+                </td>
+              </tbody>
             </>
           ) : (
             <>
-              <tbody className="divide-y divide-gray-200">
-                {filteredDocuments.map((doc, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-4 px-4 text-blue-600 font-medium">{doc.weekNo}</td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`px-4 py-1 rounded-full text-xs font-medium 
-                      ${"done" === "Done"
-                            ? "bg-teal-600 text-white"
-                            : "bg-gray-500 text-white"
-                          }`}
-                      >
-                        {/* {doc.status} */} Done
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-purple-600">{doc.month}</td>
-                    <td className="py-4 px-4 flex space-x-3">
-                      <button
-                        onClick={() => openModal(doc.reportUrl)}
-                        className="text-red-500 text-lg"
-                      >
-                        <AiOutlineFilePdf className="ml-4" />
-                      </button>
-                      <ConfirmDeleteButton onConfirm={() => deleteDocument(doc._id)} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-
+              {loading ? (
+                <>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredDocuments.map((doc, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="py-4 px-4 text-blue-600 font-medium">
+                          {doc.weekNo}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span
+                            className={`px-4 py-1 rounded-full text-xs font-medium 
+                      ${
+                        "done" === "Done"
+                          ? "bg-teal-600 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
+                          >
+                            {/* {doc.status} */} Done
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-purple-600">
+                          {doc.month}
+                        </td>
+                        <td className="py-4 px-4 flex space-x-3">
+                          <button
+                            onClick={() => openModal(doc.reportUrl)}
+                            className="text-red-500 text-lg"
+                          >
+                            <AiOutlineFilePdf className="ml-4" />
+                          </button>
+                          <ConfirmDeleteButton
+                            onConfirm={() => deleteDocument(doc._id)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              ) : (
+                <>
+                  <ThreeDot
+                    color="#3498db"
+                    size="medium"
+                    text=""
+                    textColor=""
+                  />
+                </>
+              )}
             </>
           )}
         </table>

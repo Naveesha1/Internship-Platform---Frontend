@@ -26,8 +26,7 @@ const CompanyApplication = () => {
       const response = await axios.post(`${url}/api/company/getApplicants`, {
         registeredEmail,
       });
-      console.log("data", response.data);
-      
+
       if (response.data.success) {
         // Sort applications by date (assuming there's a timestamp field)
         // If there's no timestamp field, simply reverse the array to put new ones first
@@ -100,7 +99,6 @@ const CompanyApplication = () => {
       // For each applicant, analyze their CV
       const analyzed = await Promise.all(positionApplicants.map(async (applicant) => {
         try {
-          console.log('data',applicant.userCv,applicant.internshipId)
           // Call the backend to analyze the CV against the internship requirements
           const response = await axios.post(`${url}/api/company/analyzeCvController`, {
             cvUrl: applicant.userCv,

@@ -86,7 +86,6 @@ const MentorDocWeekly = () => {
   };
 
   const handleViewPdf = (reportUrl) => {
-    console.log(reportUrl);
     if (reportUrl) {
       setSelectedPdf(reportUrl);
       setShowPdfModal(true);

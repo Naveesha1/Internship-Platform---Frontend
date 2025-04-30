@@ -61,12 +61,10 @@ const ProfilePage = () => {
           formData
         );
         if (response.data.success) {
-          console.log(response.data.message);
           setSubmitted(true);
         } else {
           setError(response.data.message);
         }
-        console.log(response.data.message);
       } catch (error) {
         console.error("Error submitting form", error);
       }

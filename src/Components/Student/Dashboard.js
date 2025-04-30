@@ -69,7 +69,6 @@ const Dashboard = () => {
         userEmail: registeredEmail,
       });
 
-      console.log("Received response:", response.data);
 
       if (response.data.success) {
         setResponseCompanies(response.data.responseCount); // <-- use the correct key
@@ -85,7 +84,6 @@ const Dashboard = () => {
       const response = await axios.post(`${url}/api/student/getMatchingInternshipsController`, {
         registeredEmail,
       });
-      console.log("suggest", response.data);
       if (response.data.success) {
         const sorted = response.data.data.sort((a, b) => new Date(b.date) - new Date(a.date));
         const latestFour = sorted.slice(0, 4);

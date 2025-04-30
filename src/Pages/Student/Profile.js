@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { ThreeDot } from "react-loading-indicators";
 import Sidebar from "../../Components/Student/Sidebar";
 import Navbar from "../../Components/Navbar/Navbar";
 import Step1 from "../../Components/Student/Profile/Step1";
@@ -119,9 +120,8 @@ const Profile = () => {
         if (response.data.success) {
           setSubmitted(true);
         } else {
-          setError("An error occured please try again");
+          setError("An error occurred please try again");
         }
-        console.log(response.data.message);
       } catch (error) {
         console.error("Error submitting form", error);
       }
@@ -267,12 +267,23 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  {submitted && (
+                  {submitted ? (
                     <>
                       <img src={done_icon} alt="Success" />
                       <p className="text-[#0C7075] font-bold text-2xl">
                         Profile Created Successfully
                       </p>
+                    </>
+                  ) : (
+                    <>
+                    {!profileVisible && (
+                      <ThreeDot
+                        color="#3498db"
+                        size="medium"
+                        text=""
+                        textColor=""
+                      />
+                    )}
                     </>
                   )}
                   {profileVisible && (
