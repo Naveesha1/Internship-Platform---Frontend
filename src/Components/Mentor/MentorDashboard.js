@@ -12,10 +12,10 @@ import { jwtDecode } from "jwt-decode";
 const AdminDashboard = () => {
   const { url } = useContext(StoreContext);
   const [counts, setCounts] = useState({
-    weeklyCount: 0,
     monthlyCount: 0,
     studentCount: 0,
   });
+  const [weeklyReport,setWeeklyReport] = useState ("");
 
 
   const token = localStorage.getItem("authToken");
@@ -40,6 +40,26 @@ const AdminDashboard = () => {
     fetchCounts();
   }, [registeredEmail]);
 
+  useEffect(() => {
+    const getWeeklyReportCount = async () => {
+      try {
+        const response = await axios.post(`${url}/api/mentor/getWeeklyReportsCount`, {
+          registeredEmail,
+        });
+        console.log("weekly",response.data);
+
+        if (response.data.success) {
+          setWeeklyReport(response.data.count);
+        }
+      } catch (error) {
+        console.error("Error fetching mentor count:", error);
+      }
+    };
+
+    if (registeredEmail) {
+      getWeeklyReportCount();
+    }
+  }, [registeredEmail]);
   
 
   return (
@@ -49,7 +69,7 @@ const AdminDashboard = () => {
         <div className="bg-[#1F2833] p-4 rounded-lg shadow-md">
           <img src={document} alt="" className="pt-2 pb-5" />
           <h3 className="text-3xl font-bold pl-2">
-            {counts.weeklyCount}
+            {weeklyReport || 0}
           </h3>
           <p className="pl-2 font-bold text-sm pt-3">All Weekly Reports</p>
         </div>

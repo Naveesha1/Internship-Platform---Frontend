@@ -25,7 +25,7 @@ const MentorSidebar = ({ isOpen, toggleSidebar }) => {
       href: `/MProfile?${userId}`,
     },
     {
-      name: "Documents",
+      name: "Progree Submission",
       icon: require("../../Images/sidebar/Document.png"),
       href: `/MDocument?${userId}`,
     },

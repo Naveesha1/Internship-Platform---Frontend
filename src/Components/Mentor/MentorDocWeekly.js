@@ -23,9 +23,9 @@ const MentorDocWeekly = () => {
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [selectedPdf, setSelectedPdf] = useState(null);
 
-const [showUploadModal, setShowUploadModal] = useState(false);
-const [uploadingPdf, setUploadingPdf] = useState(null);
-const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '', weekNo: '' });
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '', weekNo: '' });
 
 
   const token = localStorage.getItem("authToken");
@@ -98,27 +98,36 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
     setSelectedPdf(null);
   };
 
-  const handleEdit = async(registrationNumber,weekNo) => {
+  const handleEdit = async (registrationNumber, weekNo) => {
     setSelectedStudent({ registrationNumber, weekNo });
-  setShowUploadModal(true);
+    setShowUploadModal(true);
   };
 
   const handleUploadPdf = async () => {
     const { registrationNumber, weekNo } = selectedStudent;
     if (!uploadingPdf) return;
-  
+
     const fileRef = ref(storage, `weekly-reports/${registrationNumber}-${weekNo}.pdf`);
     try {
       await uploadBytes(fileRef, uploadingPdf);
-      const downloadURL = await getDownloadURL(fileRef);  
-      if(downloadURL){
+      const downloadURL = await getDownloadURL(fileRef);
+      if (downloadURL) {
         const response = await axios.post(`${url}/api/student/updateWeeklyReport`, {
           registrationNumber,
           weekNo,
           reportUrl: downloadURL,
+          status: 'Viewed' // Add status update here
         });
         if (response.data.success) {
           toast.success(response.data.message);
+
+          // Update the local state to reflect the status change
+          setReports(reports.map(report => {
+            if (report.registrationNumber === registrationNumber && report.weekNo === weekNo) {
+              return { ...report, reportUrl: downloadURL, status: 'Viewed' };
+            }
+            return report;
+          }));
         } else {
           toast.error(response.data.message);
         }
@@ -126,12 +135,12 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
       setShowUploadModal(false);
       setUploadingPdf(null);
       setSelectedStudent({ registrationNumber: '', weekNo: '' });
-  
+
     } catch (error) {
       toast.error("Upload failed");
     }
   };
-  
+
 
   return (
     <div className="w-full p-6">
@@ -154,6 +163,7 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
             <tr className="bg-gray-200 text-left">
               <th className="py-3 px-4">Student</th>
               <th className="py-3 px-4">Index</th>
+              <th className="py-3 px-4">status</th>
               <th className="py-3 px-4">Reports</th>
               <th className="py-3 px-4"></th>
             </tr>
@@ -199,6 +209,11 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
                           {report.registrationNumber}
                         </td>
                         <td className="py-3 px-4">Week {report.weekNo}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs ${report.status === 'Viewed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                            {report.status || 'View'}
+                          </span>
+                        </td>
                         <td className="py-3 px-4 flex space-x-6">
                           <AiOutlineFilePdf
                             className="text-red-500 text-xl cursor-pointer"
@@ -211,7 +226,7 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
                           <FiEdit2
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEdit(report.registrationNumber,report.weekNo);
+                              handleEdit(report.registrationNumber, report.weekNo);
                             }}
                             className="text-gray-600 text-lg cursor-pointer"
                             title="Edit Report"
@@ -272,37 +287,38 @@ const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '',
       )}
 
 
-{showUploadModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg shadow-lg w-96 p-6">
-      <h2 className="text-lg font-semibold mb-4">Upload Weekly Report</h2>
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => setUploadingPdf(e.target.files[0])}
-        className="mb-4"
-      />
-      <div className="flex justify-end">
-        <button
-          onClick={handleUploadPdf}
-          disabled={!uploadingPdf}
-          className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded mr-2 disabled:opacity-50"
-        >
-          Upload
-        </button>
-        <button
-          onClick={() => {
-            setShowUploadModal(false);
-            setUploadingPdf(null);
-          }}
-          className="bg-gray-300 hover:bg-gray-400 py-2 px-4 rounded"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+            <h2 className="text-lg font-semibold mb-4">Upload Signed Weekly Report</h2>
+            <p className="text-sm text-gray-600 mb-4">Please upload the report after signing it.</p>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setUploadingPdf(e.target.files[0])}
+              className="mb-4"
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={handleUploadPdf}
+                disabled={!uploadingPdf}
+                className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded mr-2 disabled:opacity-50"
+              >
+                Upload Signed Report
+              </button>
+              <button
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setUploadingPdf(null);
+                }}
+                className="bg-gray-300 hover:bg-gray-400 py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

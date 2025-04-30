@@ -14,7 +14,7 @@ const CompanyMentorProfile = () => {
   const decodedToken = jwtDecode(token);
   const registeredEmail = decodedToken.email;
   const name = decodedToken.name;
-
+  
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [position, setPosition] = useState("");
@@ -49,7 +49,7 @@ const handleAddMentor = async () => {
       registeredEmail: registeredEmail 
     };
     
-    console.log(mentorWithCompany);
+    console.log("hey",mentorWithCompany);
     
     const response = await axios.post(
       `${url}/api/mentor/createMentor`,

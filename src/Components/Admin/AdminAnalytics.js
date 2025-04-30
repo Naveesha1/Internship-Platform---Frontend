@@ -595,7 +595,7 @@ import { StoreContext } from '../../Context/StoreContext';
 
       {/* Registration Trends Over Time */}
       <div className="col-span-1 bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Registration Trends</h2>
+        <h2 className="text-lg font-semibold mb-4">System's Registration Trends</h2>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart
             data={monthlyRegistrationData}

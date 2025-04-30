@@ -26,13 +26,18 @@ const CompanyApplication = () => {
       const response = await axios.post(`${url}/api/company/getApplicants`, {
         registeredEmail,
       });
-      console.log("data",response.data);
+      console.log("data", response.data);
+      
       if (response.data.success) {
-        setApplicants(response.data.data);
-        setFilteredApplicants(response.data.data); 
+        // Sort applications by date (assuming there's a timestamp field)
+        // If there's no timestamp field, simply reverse the array to put new ones first
+        const sortedApplicants = [...response.data.data].reverse();
         
+        setApplicants(sortedApplicants);
+        setFilteredApplicants(sortedApplicants);
+  
         // Extract unique positions
-        const uniquePositions = [...new Set(response.data.data.map(app => app.position))];
+        const uniquePositions = [...new Set(sortedApplicants.map(app => app.position))];
         setPositions(uniquePositions);
         
         // Initialize selected positions state
@@ -48,7 +53,7 @@ const CompanyApplication = () => {
     };
     
     getApplicants();
-  }, [registeredEmail, url]);
+  }, [url, registeredEmail]);
 
   // Filter applicants based on search input
   useEffect(() => {

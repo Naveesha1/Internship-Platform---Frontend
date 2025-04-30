@@ -82,6 +82,7 @@ const Internship = () => {
         internship.position.toLowerCase().includes(searchRole.toLowerCase())
     );
     setFilteredInternships(filtered);
+    setCurrentPage(0); // Reset to first page when filtering
   }, [searchCompany, searchRole, internships]);
 
   // Filtering suggested internships
@@ -96,6 +97,7 @@ const Internship = () => {
           .includes(searchSuggestRole.toLowerCase())
     );
     setFilteredSuggestInternships(filtered);
+    setCurrentSuggestionsPage(0); // Reset to first page when filtering
   }, [searchSuggestCompany, searchSuggestRole, suggestInternships]);
 
   const startIndex = currentPage * internshipsPerPage;
@@ -119,7 +121,7 @@ const Internship = () => {
   const handleNextPageSuggestions = () => {
     if (
       startSuggestionIndex + internshipsPerPage <
-      suggestedInternships.length
+      filteredSuggestInternships.length // Changed from suggestedInternships.length
     ) {
       setCurrentSuggestionsPage((previousPage) => previousPage + 1);
     }
@@ -132,7 +134,7 @@ const Internship = () => {
   };
 
   const handleNextPage = () => {
-    if (startIndex + internshipsPerPage < internships.length) {
+    if (startIndex + internshipsPerPage < filteredInternships.length) { // Changed from internships.length
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
