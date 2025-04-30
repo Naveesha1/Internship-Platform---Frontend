@@ -48,8 +48,59 @@ const WeeklyReport = ({ onClose }) => {
     getStudentRegistrationNumber();
   }, [token]);
 
+  // const handleChange = (e) => {
+  //   setUserData({ ...userData, [e.target.name]: e.target.value });
+  // };
+
+
+  const calculateWeekDates = (endDate) => {
+    if (!endDate) return {};
+    
+    const endDateObj = new Date(endDate);
+    const dates = {};
+    
+    // Create dates for each day of the week, ending with the provided Sunday
+    for (let i = 6; i >= 0; i--) {
+      const dayDate = new Date(endDateObj);
+      dayDate.setDate(endDateObj.getDate() - i);
+      
+      // Map 0-6 (Sunday-Saturday in JS) to our day names
+      const dayMap = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+      const dayIndex = dayDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const day = dayMap[dayIndex];
+      
+      dates[day] = dayDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    }
+    
+    return dates;
+  };
+
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === "weekEnding") {
+      // When the week ending date changes, update all daily activity dates
+      const weekDates = calculateWeekDates(value);
+      
+      setUserData(prevData => ({
+        ...prevData,
+        [name]: value,
+        activities: {
+          monday: { ...prevData.activities.monday, date: weekDates.monday || "" },
+          tuesday: { ...prevData.activities.tuesday, date: weekDates.tuesday || "" },
+          wednesday: { ...prevData.activities.wednesday, date: weekDates.wednesday || "" },
+          thursday: { ...prevData.activities.thursday, date: weekDates.thursday || "" },
+          friday: { ...prevData.activities.friday, date: weekDates.friday || "" },
+          saturday: { ...prevData.activities.saturday, date: weekDates.saturday || "" },
+          sunday: { ...prevData.activities.sunday, date: weekDates.sunday || "" }
+        }
+      }));
+    } else {
+      setUserData(prevData => ({
+        ...prevData,
+        [name]: value
+      }));
+    }
   };
 
   const handleActivityChange = (day, field, value) => {
@@ -765,14 +816,27 @@ const WeeklyReport = ({ onClose }) => {
             Weekly Report Information
           </h2>
           <label>Month</label>
-          <input
-            type="text"
+          <select
             name="month"
-            placeholder="Enter Month"
             value={userData.month}
             onChange={handleChange}
             className="p-2 border rounded w-full mb-3"
-          />
+          >
+            <option value="">Select Month</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+
           <label>Week Number</label>
           <input
             type="text"
@@ -792,14 +856,18 @@ const WeeklyReport = ({ onClose }) => {
             className="p-2 border rounded w-full mb-3"
           />
           <label>Training Mode</label>
-          <input
-            type="text"
+          <select
             name="trainingMode"
-            placeholder="Training Mode"
             value={userData.trainingMode}
             onChange={handleChange}
             className="p-2 border rounded w-full"
-          />
+          >
+            <option value="">Select Training Mode</option>
+            <option value="On-site">On-site</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Online">Online</option>
+          </select>
+
         </div>
       </div>
 

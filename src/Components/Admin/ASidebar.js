@@ -30,7 +30,7 @@ const ASidebar = ({ isOpen, toggleSidebar }) => {
       href: `/AdminInternships?${userId}`,
     },
     {
-      name: "Document",
+      name: "Progress Submissions",
       icon: require("../../Images/sidebar/Document.png"),
       href: `/AdminDocument?${userId}`,
     },
