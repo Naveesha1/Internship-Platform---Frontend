@@ -182,13 +182,13 @@ const LoginSignUp = () => {
               {currentState === "Sign Up" ? "Create account" : "Sign in"}
             </button>
             <p className="mt-2">or</p>
+          </form>
             <div className="flex justify-center">
               <button className="flex items-center justify-center mt-2 w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] rounded-full bg-white text-gray-600">
                 <FcGoogle className="mr-2" size={20} />
                 <p>Continue with Google</p>
               </button>
             </div>
-          </form>
         </div>
 
         {/* right-side-div */}

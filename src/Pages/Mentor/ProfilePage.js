@@ -26,7 +26,7 @@ const ProfilePage = () => {
   const [availability, setAvailability] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-
+  const [positionAndCompany, setPositionAndCompany] = useState({});
   const [formData, setFormData] = useState({
     mentorName: "",
     position: "",
@@ -50,7 +50,10 @@ const ProfilePage = () => {
   // for submitted form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const finalFormData = { ...formData,
+      position: positionAndCompany.position,
+      company: positionAndCompany.companyName,
+    }
     if (step === 1) {
       setLoading(true);
       setSuccess(true);
@@ -58,7 +61,7 @@ const ProfilePage = () => {
         // api call for saving gathered data
         const response = await axios.post(
           `${url}/api/mentor/createProfile`,
-          formData
+          finalFormData
         );
         if (response.data.success) {
           setSubmitted(true);
@@ -70,6 +73,16 @@ const ProfilePage = () => {
       }
     }
   };
+
+  // for checking availability of company details
+  const getCompanyAndPosition = async () => {
+    try {
+      const response  = await axios.post(`${url}/api/mentor/getCompanyAndPosition`,{registeredEmail});
+      setPositionAndCompany(response.data.data);
+    } catch (error) {
+      console.log("Error fetching company and position", error);
+    }
+  }
 
   useEffect(() => {
     // for checking availability of company details
@@ -90,10 +103,9 @@ const ProfilePage = () => {
         }
       }
     };
-
+    getCompanyAndPosition();
     getCompany();
   }, [registeredEmail]);
-
   return (
     <div className="flex flex-col min-h-screen">
       {/* Main Navigation Bar */}
@@ -117,7 +129,7 @@ const ProfilePage = () => {
               <div className="bg-[#D9D9D947] p-6 rounded-lg shadow-md w-full max-w-3xl">
                 <form onSubmit={handleSubmit}>
                   {/* Render Step1 Component */}
-                  <Step1 formData={formData} handleChange={handleChange} />
+                  <Step1 formData={formData} handleChange={handleChange} details={positionAndCompany} />
                   <div className="flex justify-center">
                     <button
                       type="submit"

@@ -54,7 +54,7 @@ const CreateMentorForm = ({
             onClick={handleAddMentor}
             className="bg-[#45A29E] text-white px-4 py-2 rounded-lg hover:bg-[#367c79] transition-colors"
           >
-            Create Admin
+            Create Mentor
           </button>
         </div>
       </div>

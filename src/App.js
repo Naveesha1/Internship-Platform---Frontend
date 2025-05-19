@@ -38,6 +38,7 @@ import MentorDocMonthly from "./Components/Mentor/MentorDocMonthly.js";
 import MentorCreateMOnthlyReportPage from "./Pages/Mentor/MonthlyReports/MentorCreateMOnthlyReportPage.js";
 import MentorMonthlyReportViewPage from "./Pages/Mentor/MonthlyReports/MentorMonthlyReportViewPage.js";
 import CompanyMentorsPage from "./Pages/Company/CompanyMentorsPage.js";
+import InternEmployees from "./Pages/Company/InternEmployees.js";
 
 function App() {
   return (
@@ -73,6 +74,10 @@ function App() {
         <Route
           path="/CompanyApplicationPage"
           element={<CompanyApplicationPage />}
+        ></Route>
+        <Route
+          path="/InternEmployees"
+          element={<InternEmployees />}
         ></Route>
 
         {/* Admin routes */}
