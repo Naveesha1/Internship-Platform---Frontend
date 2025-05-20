@@ -72,16 +72,20 @@ const Internship = () => {
 
   // Filtering internships
   useEffect(() => {
-    const filtered = internships.filter(
+  const filtered = internships
+    .filter(
       (internship) =>
         internship.companyName
           .toLowerCase()
           .includes(searchCompany.toLowerCase()) &&
         internship.position.toLowerCase().includes(searchRole.toLowerCase())
-    );
-    setFilteredInternships(filtered);
-    setCurrentPage(0); // Reset to first page when filtering
-  }, [searchCompany, searchRole, internships]);
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date)); // Descending by date
+
+  setFilteredInternships(filtered);
+  setCurrentPage(0); // Reset to first page when filtering
+}, [searchCompany, searchRole, internships]);
+
 
   // Filtering suggested internships
   useEffect(() => {

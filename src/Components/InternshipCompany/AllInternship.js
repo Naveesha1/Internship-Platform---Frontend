@@ -28,6 +28,7 @@ const AllInternship = () => {
 
   const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
 
+  // Fetching all internships
   useEffect(() => {
     const getCompanySpecificInternships = async () => {
       const response = await axios.post(`${url}/api/company/allInternships`, {
@@ -72,7 +73,7 @@ const AllInternship = () => {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
-
+  
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="p-6 flex-1 overflow-y-auto">

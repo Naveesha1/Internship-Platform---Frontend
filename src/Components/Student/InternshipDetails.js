@@ -6,13 +6,14 @@ import { StoreContext } from "../../Context/StoreContext.js";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { formatDistanceToNow } from 'date-fns';
 
 const InternshipDetails = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [gpa, setGpa] = useState("");
 
-  const { selectedInternship, url, setSelectedInternship } =
-    useContext(StoreContext);
+  const { selectedInternship, url, setSelectedInternship } = useContext(StoreContext);
+  const formattedDate = formatDistanceToNow(new Date(selectedInternship.date), { addSuffix: true });
 
   const token = localStorage.getItem("authToken");
   const decodedToken = jwtDecode(token);
@@ -97,10 +98,10 @@ const InternshipDetails = () => {
               <h1 className="font-serif text-2xl  font-semibold mb-2">
                 {selectedInternship.position}
               </h1>
-              <p className="text-sm text-slate-500">
-                <span className="text-cyan-600">{selectedInternship.date}</span>{" "}
+              {/* <p className="text-sm text-slate-500">
+                <span className="text-cyan-600">{formattedDate}</span>{" "}
                 &nbsp; • &nbsp; 50 Applications
-              </p>
+              </p> */}
             </div>
 
             <div className="text-gray-600 mb-4 mt-4">
