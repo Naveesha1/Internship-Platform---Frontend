@@ -59,9 +59,9 @@ const AdminProfile = () => {
       email: email,
       registeredEmail:registeredEmail,
     }
-    const response = await axios.post(`${url}/api/admin/deleteAdmin`, {
-      emails,
-    });
+    const response = await axios.post(`${url}/api/admin/deleteAdmin`, 
+      emails
+    );
     if (response.data.success) {
       setAdminsData((prevItems) =>
         prevItems.filter((item) => item.email !== email)

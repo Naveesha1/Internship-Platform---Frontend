@@ -14,7 +14,6 @@ const CStep1 = ({ formData, handleChange , details}) => {
       handleChange(e);
     }
   };
-console.log("position",details);
   return (
     <>
       <div className="mb-4 flex items-center">
