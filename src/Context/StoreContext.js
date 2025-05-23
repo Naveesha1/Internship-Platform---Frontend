@@ -14,6 +14,7 @@ const StoreContextProvider = ({ children }) => {
 
   const [adminsData, setAdminsData] = useState([]);
   const [mentorsData, setMentorsData] = useState([]);
+  const [token,setToken] = useState();
   const url = "http://localhost:4000";
 
   const contextValue = {
@@ -32,6 +33,8 @@ const StoreContextProvider = ({ children }) => {
     setIdStatus,
     mentorsData,
     setMentorsData,
+    token,
+    setToken,
   };
 
   return (

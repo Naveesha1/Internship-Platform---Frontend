@@ -11,7 +11,7 @@ import ForgetPassword from "./ForgetPassword";
 import { jwtDecode } from "jwt-decode";
 
 const LoginSignUp = () => {
-  const { url } = useContext(StoreContext);
+  const { url,token,setToken } = useContext(StoreContext);
   const navigate = useNavigate();
 
   const [currentState, setCurrentState] = useState("Sign in");
@@ -54,18 +54,16 @@ const LoginSignUp = () => {
       const response = await axios.post(newURL, data);
       const userData = response.data.userData;
       if (response.data.success) {
+        setToken(response.data.token);
         localStorage.setItem("authToken", response.data.token);
-        const token = localStorage.getItem("authToken");
-        const decodedToken = jwtDecode(token);
-
         let redirectPath;
         // send user to relevant paths
         if (userData.role === "Student") {
-          redirectPath = `/STDashboard?${decodedToken._id}`;
+          redirectPath = `/STDashboard`;
         } else if (userData.role === "Company") {
-          redirectPath = `/ComDashboard?${decodedToken._id}`;
+          redirectPath = `/ComDashboard`;
         } else if (userData.role === "Admin") {
-          redirectPath = `/AdminDashboard?${decodedToken._id}`;
+          redirectPath = `/AdminDashboard`;
         } else {
           redirectPath = `/MDashboard`;
         }

@@ -3,10 +3,11 @@ import { AiOutlineFilePdf } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
 import { StoreContext } from "../../Context/StoreContext.js";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import { toast } from "react-toastify";
 import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton.js";
 import { ThreeDot } from "react-loading-indicators";
+import { useNavigate } from "react-router-dom";
 
 const StudentDocMonthly = () => {
   const { url } = useContext(StoreContext);
@@ -16,36 +17,52 @@ const StudentDocMonthly = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMonthlyReport, setShowMonthlyReport] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const userEmail = decodedToken.email;
+  const navigate = useNavigate();
 
-  const handleOpenReport = () => {
-    setShowMonthlyReport(true);
-  };
-
-  const handleCloseReport = () => {
-    setShowMonthlyReport(false);
-  };
-
+  // Validate token & get user email
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
     if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.exp * 1000 < Date.now()) {
+          localStorage.removeItem("authToken");
+          navigate("/");
+        } else {
+          setUserEmail(decodedToken.email);
+        }
+      } catch (error) {
+        localStorage.removeItem("authToken");
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  // Fetch monthly reports when userEmail is set
+  useEffect(() => {
+    if (userEmail) {
       const getMonthlyReports = async () => {
-        const response = await axios.post(
-          `${url}/api/student/getMonthlyReports`,
-          {
+        try {
+          const response = await axios.post(`${url}/api/student/getMonthlyReports`, {
             userEmail,
+          });
+          if (response.data.success) {
+            setMonthlyReports(response.data.data);
+            setLoading(true);
+          } else {
+            toast.error("Failed to fetch reports");
           }
-        );
-        if (response.data.success) {
-          setLoading(true);
-          setMonthlyReports(response.data.data);
+        } catch (err) {
+          toast.error("Error fetching reports");
         }
       };
       getMonthlyReports();
     }
-  }, [token, monthlyReports]);
+  }, [userEmail, url]);
 
   const filteredDocuments = monthlyReports.filter(
     (doc) =>
@@ -65,18 +82,27 @@ const StudentDocMonthly = () => {
   };
 
   const deleteDocument = async (id) => {
-    const response = await axios.delete(
-      `${url}/api/student/deleteMonthlyReport`,
-      {
+    try {
+      const response = await axios.delete(`${url}/api/student/deleteMonthlyReport`, {
         data: { userEmail, id },
+      });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setMonthlyReports(response.data.data);
+      } else {
+        toast.error(response.data.message);
       }
-    );
-    if (response.data.success) {
-      toast.success(response.data.message);
-      setMonthlyReports(response.data.data);
-    } else {
-      toast.error(response.data.message);
+    } catch (err) {
+      toast.error("Error deleting document");
     }
+  };
+
+  const handleOpenReport = () => {
+    setShowMonthlyReport(true);
+  };
+
+  const handleCloseReport = () => {
+    setShowMonthlyReport(false);
   };
 
   return (
@@ -104,58 +130,42 @@ const StudentDocMonthly = () => {
               <th className="py-3 px-4">Report</th>
             </tr>
           </thead>
+
           {monthlyReports.length === 0 ? (
-            <>
-              <tbody>
-                <tr>
-                  <td colSpan="4" className="text-center py-6 text-gray-500">
-                    No data available
+            <tbody>
+              <tr>
+                <td colSpan="4" className="text-center py-6 text-gray-500">
+                  No data available
+                </td>
+              </tr>
+            </tbody>
+          ) : loading ? (
+            <tbody className="divide-y divide-gray-200">
+              {filteredDocuments.map((doc, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="py-4 px-4 text-blue-600 font-medium">{doc.number}</td>
+                  <td className="py-4 px-4 text-green-600">{doc.duration}</td>
+                  <td className="py-4 px-4 text-purple-600">{doc.month}</td>
+                  <td className="py-4 px-4 flex space-x-3">
+                    <button
+                      onClick={() => openModal(doc.reportUrl)}
+                      className="text-red-500 text-lg"
+                    >
+                      <AiOutlineFilePdf className="ml-4" />
+                    </button>
+                    <ConfirmDeleteButton onConfirm={() => deleteDocument(doc._id)} />
                   </td>
                 </tr>
-              </tbody>
-            </>
+              ))}
+            </tbody>
           ) : (
-            <>
-              {loading ? (
-                <>
-                  <tbody className="divide-y divide-gray-200">
-                    {filteredDocuments.map((doc, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="py-4 px-4 text-blue-600 font-medium">
-                          {doc.number}
-                        </td>
-                        <td className="py-4 px-4 text-green-600">
-                          {doc.duration}
-                        </td>
-                        <td className="py-4 px-4 text-purple-600">
-                          {doc.month}
-                        </td>
-                        <td className="py-4 px-4 flex space-x-3">
-                          <button
-                            onClick={() => openModal(doc.reportUrl)}
-                            className="text-red-500 text-lg"
-                          >
-                            <AiOutlineFilePdf className="ml-4" />
-                          </button>
-                          <ConfirmDeleteButton
-                            onConfirm={() => deleteDocument(doc._id)}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </>
-              ) : (
-                <>
-                  <ThreeDot
-                    color="#3498db"
-                    size="medium"
-                    text=""
-                    textColor=""
-                  />
-                </>
-              )}
-            </>
+            <tbody>
+              <tr>
+                <td colSpan="4" className="text-center py-6">
+                  <ThreeDot color="#3498db" size="medium" />
+                </td>
+              </tr>
+            </tbody>
           )}
         </table>
       </div>
@@ -163,18 +173,15 @@ const StudentDocMonthly = () => {
       {showMonthlyReport && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
           <div className="bg-white p-6 rounded-xl w-full max-w-4xl shadow-xl relative max-h-[90vh] overflow-y-auto">
-            {/* Close Button */}
             <button
               onClick={handleCloseReport}
               className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl"
             >
               &times;
             </button>
-
-            {/* Monthly Report Component inside the modal */}
-            <div className="overflow-y-auto h-full">
-              <monthlyReports onClose={handleCloseReport} />
-            </div>
+            
+              <monthlyReports onClose={handleCloseReport} /> 
+            
           </div>
         </div>
       )}
@@ -192,7 +199,7 @@ const StudentDocMonthly = () => {
               src={reportUrl}
               className="w-full h-full border-0"
               title="Document Preview"
-            ></iframe>
+            />
           </div>
         </div>
       )}

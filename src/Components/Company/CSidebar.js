@@ -5,8 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import logout_icon from "../../Images/sidebar/logout.png";
 
 const CSidebar = ({ isOpen, toggleSidebar }) => {
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,12 +13,12 @@ const CSidebar = ({ isOpen, toggleSidebar }) => {
   const [hoverItem, setHoverItem] = useState(null);
 
   const menuItems = [
-    { name: "Dashboard", icon: require("../../Images/sidebar/dashboard.png"), href: `/ComDashboard?${decodedToken._id}` },
-    { name: "Profile", icon: require("../../Images/sidebar/profile.png"), href: `/CompanyProfile?${decodedToken._id}` },
-    { name: "Mentors", icon: require("../../Images/sidebar/mentor.png"), href: `/CreateMentor?${decodedToken._id}` },
-    { name: "Internship", icon: require("../../Images/sidebar/internship.png"), href: `/CompanyInternshipPage?${decodedToken._id}` },
-    { name: "Applications", icon: require("../../Images/sidebar/applications.png"), href: `/CompanyApplicationPage?${decodedToken._id}` },
-    { name: "Calendar", icon: require("../../Images/sidebar/calender.png"), href: `/CompanyCalendar?${decodedToken._id}` },
+    { name: "Dashboard", icon: require("../../Images/sidebar/dashboard.png"), href: `/ComDashboard` },
+    { name: "Profile", icon: require("../../Images/sidebar/profile.png"), href: `/CompanyProfile` },
+    { name: "Mentors", icon: require("../../Images/sidebar/mentor.png"), href: `/CreateMentor` },
+    { name: "Internship", icon: require("../../Images/sidebar/internship.png"), href: `/CompanyInternshipPage` },
+    { name: "Applications", icon: require("../../Images/sidebar/applications.png"), href: `/CompanyApplicationPage` },
+    { name: "Calendar", icon: require("../../Images/sidebar/calender.png"), href: `/CompanyCalendar` },
   ];
 
   useEffect(() => {

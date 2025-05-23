@@ -13,10 +13,11 @@ import { StoreContext } from "../../Context/StoreContext.js";
 import { jwtDecode } from "jwt-decode";
 import ProfileContent from "../../Components/Student/Profile/FullProfile.js";
 import done_icon from "../../Images/done.png";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { url } = useContext(StoreContext);
-
+  const { url,token, setToken } = useContext(StoreContext);
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar open/close state
   const [step, setStep] = useState(1); // Step state to control the stepper
   const [loading, setLoading] = useState(false); // For handling loading state
@@ -27,11 +28,8 @@ const Profile = () => {
   const [submitted, setSubmitted] = useState(false); // for control profile details visibility
   const [error, setError] = useState(null);
   const [cvName, setCvName] = useState(null);
-
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-  const userId = decodedToken._id;
+  let registeredEmail;
+  let userId;
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -128,21 +126,48 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    const getStudentProfile = async () => {
-      const response = await axios.post(`${url}/api/student/getprofile`, {
-        registeredEmail,
-      });
-      if (response.data.success) {
-        setUser(response.data.data);
-        setProfileVisible(true);
-        setStepperVisibility(true);
-        setSubmitted(false);
-        setSuccess(true);
+useEffect(() => {
+  
+  const token = localStorage.getItem("authToken");
+  if(!token){
+    navigate("/");
+    return;
+  } else {
+    const decodedToken = jwtDecode(token);
+    registeredEmail = decodedToken.email;
+    userId = decodedToken._id;
+  }
+  const getStudentProfile = async () => {
+    try {
+      const response = await axios.post(
+        `${url}/api/student/getProfile`,
+        { registeredEmail },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUser(response.data.data);
+      setProfileVisible(true);
+      setStepperVisibility(true);
+      setSubmitted(false);
+      setSuccess(true);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("authToken");
+        navigate("/");
+        return;
+      } else {
+        console.error("An error occurred:", error);
       }
-    };
-    getStudentProfile();
-  }, [userId]);
+    }
+  };
+
+  getStudentProfile();
+}, [userId]);
+
 
   return (
     <div className="flex flex-col min-h-screen">

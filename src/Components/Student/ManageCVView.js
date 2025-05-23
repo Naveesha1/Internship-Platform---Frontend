@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ManageCVUpdate from './ManageCVUpdate';
@@ -17,22 +18,54 @@ const ManageCVView = () => {
   const [showNewCVUpload, setNewCVUpload] = useState(false);
   const [path, setPath] = useState(null);
   const [id, setId] = useState(null);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
+  const navigate = useNavigate();
 
-  const handleDelete = async (exisitingPath, existingId) => {
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
     try {
-      const fileRef = ref(storage, exisitingPath);
+      const decodedToken = jwtDecode(token);
+      setRegisteredEmail(decodedToken.email);
+    } catch (error) {
+      console.error("Invalid token:", error);
+      navigate("/");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    const getCvDetails = async () => {
+      if (!registeredEmail) return;
+      try {
+        const response = await axios.post(`${url}/api/student/getCvDetails`, { registeredEmail });
+        if (response.data.success) {
+          setCvDetails(response.data.data);
+        } else {
+          console.log(response.data.message);
+        }
+      } catch (err) {
+        console.error("Error fetching CVs:", err);
+      }
+    };
+
+    getCvDetails();
+  }, [registeredEmail]);
+
+  const handleDelete = async (existingPath, existingId) => {
+    try {
+      const fileRef = ref(storage, existingPath);
       await deleteObject(fileRef);
 
-      const cvToBeDeleted = {
-        registeredEmail: registeredEmail,
-        id: existingId
-      };
+      const response = await axios.put(`${url}/api/student/deleteCv`, {
+        registeredEmail,
+        id: existingId,
+      });
 
-      const response = await axios.put(`${url}/api/student/deleteCv`, cvToBeDeleted);
       if (response.data.success) {
         setCvDetails(response.data.data);
         toast.success(response.data.message);
@@ -40,22 +73,9 @@ const ManageCVView = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Delete error:", error);
     }
   };
-
-  useEffect(() => {
-    const getCvDetails = async () => {
-      const response = await axios.post(`${url}/api/student/getCvDetails`, { registeredEmail });
-
-      if (response.data.success) {
-        setCvDetails(response.data.data);
-      } else {
-        console.log(response.data.message);
-      }
-    };
-    getCvDetails();
-  }, [registeredEmail]);
 
   return (
     <div className="p-4 bg-white px-6">
@@ -71,8 +91,8 @@ const ManageCVView = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <button 
-          className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700" 
+        <button
+          className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700"
           onClick={() => setNewCVUpload(true)}
         >
           ADD NEW
@@ -93,20 +113,17 @@ const ManageCVView = () => {
           {cvDetails && cvDetails.length > 0 ? (
             <>
               {cvDetails.map((cv, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="grid grid-cols-4 p-4 border-t items-center hover:bg-gray-50"
                 >
-                  <div className="text-fuchsia-800 text-center">
-                      {cv.title}
-                
-                  </div>
+                  <div className="text-fuchsia-800 text-center">{cv.title}</div>
 
                   <div className="text-center text-sky-800">
-                    <a 
-                      href={cv.cvUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={cv.cvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="hover:underline text-sky-800"
                     >
                       {cv.fileName}
@@ -115,22 +132,22 @@ const ManageCVView = () => {
 
                   {/* Update Button */}
                   <div className="flex justify-center">
-                    <button 
-                      className="text-gray-500" 
+                    <button
+                      className="text-gray-500"
                       onClick={() => {
                         setPath(`${cv}/${cv.fileName}`);
                         setId(cv._id);
                         setUpdateCVModel(true);
                       }}
                     >
-                      <FaEdit /> 
+                      <FaEdit />
                     </button>
                   </div>
 
                   {/* Delete Button */}
                   <div className="flex justify-center">
-                    <button 
-                      className="text-gray-500" 
+                    <button
+                      className="text-gray-500"
                       onClick={() => {
                         const existingPath = `${cv}/${cv.fileName}`;
                         const existingId = cv._id;
@@ -143,12 +160,12 @@ const ManageCVView = () => {
                 </div>
               ))}
             </>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
 
-        {showUpdateCVModel && <ManageCVUpdate onClose={() => setUpdateCVModel(false)} cvPath={path} cvId={id} />}
+        {showUpdateCVModel && (
+          <ManageCVUpdate onClose={() => setUpdateCVModel(false)} cvPath={path} cvId={id} />
+        )}
         {showNewCVUpload && <ManageCVNewAdd onClose={() => setNewCVUpload(false)} />}
       </div>
     </div>

@@ -5,8 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import logout_icon from "../../Images/sidebar/logout.png";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
 
   // Access the current route using useLocation hook
   const location = useLocation();
@@ -18,13 +16,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [hoverItem, setHoverItem] = useState(null);
 
   const menuItems = [
-    { name: 'Dashboard', icon: require("../../Images/sidebar/dashboard.png"), href: `/STDashboard?${decodedToken._id}` },
-    { name: 'Profile', icon: require("../../Images/sidebar/profile.png"), href: `/SProfile?${decodedToken._id}` },
-    { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage?${decodedToken._id}` },
-    { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage?${decodedToken._id}` },
-    { name: 'Progress Report', icon: require("../../Images/sidebar/applications.png"), href: `/DocumentPage?${decodedToken._id}` },
-    { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage?${decodedToken._id}` },
-    { name: 'FAQ', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatbotPage?${decodedToken._id}` },
+    { name: 'Dashboard', icon: require("../../Images/sidebar/dashboard.png"), href: `/STDashboard` },
+    { name: 'Profile', icon: require("../../Images/sidebar/profile.png"), href: `/SProfile` },
+    { name: 'Internship', icon: require("../../Images/sidebar/internship.png"), href: `/InternshipPage` },
+    { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage` },
+    { name: 'Progress Report', icon: require("../../Images/sidebar/applications.png"), href: `/DocumentPage` },
+    { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage` },
+    { name: 'FAQ', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatbotPage` },
   ];
 
   // Update active item based on current path whenever location changes

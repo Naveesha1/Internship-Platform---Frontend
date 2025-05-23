@@ -8,11 +8,6 @@ import InternEmployeesComponent from "../../Components/Company/InternEmployees.j
 const InternEmployees = () => {
   const { state } = useLocation();
   const mentor = state?.mentor;
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-
-  const { url } = useContext(StoreContext);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -20,14 +15,6 @@ const InternEmployees = () => {
       <Navbar />
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        {/* <div
-          className={`transition-all duration-300 ${
-            isSidebarOpen ? "w-64" : "w-20"
-          } bg-[#45A29E]`}
-        >
-          <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        </div> */}
 
         {/* Main Content Area */}
         <div className="flex-1 p-4 transition-all flex flex-col justify-start items-left overflow-x-hidden">

@@ -33,7 +33,6 @@ const ResetPassword = () => {
       password,
       confirmPassword,
     };
-    console.log(resetData);
 
     try {
       const response = await axios.post(`${url}/api/user/resetPassword`,resetData);

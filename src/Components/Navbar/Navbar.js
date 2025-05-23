@@ -6,18 +6,38 @@ import { jwtDecode } from 'jwt-decode';
 import { StoreContext } from '../../Context/StoreContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const role = decodedToken.role;
-  const registeredEmail = decodedToken.email;
-
   const { url } = useContext(StoreContext);
+  const navigate = useNavigate();
+
+  const [userReady, setUserReady] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [role, setRole] = useState("");
 
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [checkedNotifications, setCheckedNotifications] = useState({});
+
+  // Check auth on mount
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      setRegisteredEmail(decoded.email);
+      setRole(decoded.role);
+      setUserReady(true);
+    } catch (error) {
+      localStorage.removeItem("authToken");
+      navigate("/");
+    }
+  }, []);
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -45,14 +65,13 @@ const Navbar = () => {
     }
   };
 
-  // Fetch notifications when the component mounts or when the token changes
+  // Fetch notifications when user is ready
   useEffect(() => {
-    if (role) {
+    if (userReady) {
       fetchNotifications();
     }
-  }, [token]);
+  }, [userReady]);
 
-  // Mark one as read
   const toggleCheck = async (notificationId) => {
     try {
       const response = await axios.post(`${url}/api/notification/changeNotificationStatus`, { notificationId });
@@ -71,7 +90,6 @@ const Navbar = () => {
     }
   };
 
-  // Mark all as read
   const markAllAsRead = async () => {
     try {
       const unreadIds = notifications.filter(n => !n.isRead).map(n => n._id);
@@ -88,14 +106,15 @@ const Navbar = () => {
       toast.error("An error occurred while marking all as read");
     }
   };
-  // Count unread notifications
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  if (!userReady) return null;
 
   return (
     <div className="bg-white shadow-custom relative">
       <nav className="flex justify-between items-center px-6 py-0">
         <img src={logo} alt="Logo" className="h-20" />
-
         <div className="flex items-center space-x-6 relative">
           <div className="relative cursor-pointer" onClick={() => setShowDropdown(!showDropdown)}>
             <img src={doorbell} alt="Doorbell" className="h-6" />
@@ -105,7 +124,6 @@ const Navbar = () => {
               </span>
             )}
           </div>
-
           {/* <img src={profile} alt="Profile" className="h-6 cursor-pointer" /> */}
         </div>
       </nav>
