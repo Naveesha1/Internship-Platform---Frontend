@@ -3,14 +3,18 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { StoreContext } from "../../Context/StoreContext.js";
+import { formatDistanceToNow } from 'date-fns';
+
 
 const AllInternshipCard = ({ internships }) => {
   const navigate = useNavigate();
   const { setSelectedInternship } = useContext(StoreContext);
+  const formattedDate = formatDistanceToNow(new Date(internships.date), { addSuffix: true });
+
 
   const handleCardClick = () => {
     setSelectedInternship(internships);
-    navigate("/InternshipDetailsPage");
+    navigate("/InternshipDetailsViewAdmin");
   };
 
   return (
@@ -26,7 +30,7 @@ const AllInternshipCard = ({ internships }) => {
         />
       </button>
       <div className="text-zinc-400 text-sm absolute top-2 right-4">
-        {internships.date}
+        {formattedDate}
       </div>
       <div className="mt-20">
         <div className="text-lg font-semibold text-zinc-800 mb-1">

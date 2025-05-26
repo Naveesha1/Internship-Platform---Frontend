@@ -13,10 +13,11 @@ import { StoreContext } from "../../Context/StoreContext.js";
 import { jwtDecode } from "jwt-decode";
 import ProfileContent from "../../Components/Student/Profile/FullProfile.js";
 import done_icon from "../../Images/done.png";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { url } = useContext(StoreContext);
-
+  const { url,token, setToken } = useContext(StoreContext);
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Manage sidebar open/close state
   const [step, setStep] = useState(1); // Step state to control the stepper
   const [loading, setLoading] = useState(false); // For handling loading state
@@ -27,24 +28,67 @@ const Profile = () => {
   const [submitted, setSubmitted] = useState(false); // for control profile details visibility
   const [error, setError] = useState(null);
   const [cvName, setCvName] = useState(null);
+  const [userEmail,setUserEmail] = useState(null);
+  let registeredEmail;
+  let userId;
 
+useEffect(() => {
+  
   const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-  const userId = decodedToken._id;
+  if(!token){
+    navigate("/");
+    return;
+  } else {
+    const decodedToken = jwtDecode(token);
+    registeredEmail = decodedToken.email;
+    setUserEmail(registeredEmail);
+    userId = decodedToken._id;
+  }
+  const getStudentProfile = async () => {
+    try {
+      const response = await axios.post(
+        `${url}/api/student/getProfile`,
+        { registeredEmail },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if(response.data.success){
+      setUser(response.data.data);
+      setProfileVisible(true);
+      setStepperVisibility(true);
+      setSubmitted(false);
+      setSuccess(true);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("authToken");
+        navigate("/");
+        return;
+      } else {
+        console.error("An error occurred:", error);
+      }
+    }
+  };
+
+  getStudentProfile();
+}, [userId]);
+
 
   const [formData, setFormData] = useState({
     fullName: "",
     registrationNumber: "",
     degree: "",
     universityMail: "",
-    userEmail: registeredEmail,
     contactNumber: "",
     gpa: "",
     profileImage: "",
     idFrontImage: "",
     idBackImage: "",
     skills: "",
+    verify: false,
     position: "",
     qualification: "",
     cv: "",
@@ -101,13 +145,16 @@ const Profile = () => {
         } catch (error) {
           console.error("Error uploading files:", error);
         }
-
+        const token = localStorage.getItem("authToken");
+        const decodedToken = jwtDecode(token);
+        const email = decodedToken.email;
         // update state variable values with access links to files
         const updatedFormData = {
           ...formData,
           idFrontImage: uploadedUrls.idFrontImage,
           idBackImage: uploadedUrls.idBackImage,
           profileImage: uploadedUrls.profileImage,
+          userEmail: email,
           cv: uploadedUrls.cv,
           cvName: cvName,
         };
@@ -120,29 +167,13 @@ const Profile = () => {
         if (response.data.success) {
           setSubmitted(true);
         } else {
-          setError("An error occurred please try again");
+          setError(response.data.message);
         }
       } catch (error) {
         console.error("Error submitting form", error);
       }
     }
   };
-
-  useEffect(() => {
-    const getStudentProfile = async () => {
-      const response = await axios.post(`${url}/api/student/getprofile`, {
-        registeredEmail,
-      });
-      if (response.data.success) {
-        setUser(response.data.data);
-        setProfileVisible(true);
-        setStepperVisibility(true);
-        setSubmitted(false);
-        setSuccess(true);
-      }
-    };
-    getStudentProfile();
-  }, [userId]);
 
   return (
     <div className="flex flex-col min-h-screen">

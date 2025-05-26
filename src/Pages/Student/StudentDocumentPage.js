@@ -34,14 +34,7 @@ const StudentDocumentPage = () => {
                     {activeTab === 'weekly' && <StudentDocWeekly />}
                     {activeTab === 'monthly' && <StudentDocMonthly />}
                 </div>
-            </div>
-
-
-
-
-
-
-      
+            </div>    
         </div>
     );
 };

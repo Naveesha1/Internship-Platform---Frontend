@@ -11,9 +11,11 @@ const StoreContextProvider = ({ children }) => {
   const [addedEvents, setAddedEvents] = useState([]);
   const [cvStatus, setCvStatus] = useState(null);
   const [idStatus, setIdStatus] = useState(null);
+  const [isProfileVerified, setIsProfileVerified] = useState(false);
 
   const [adminsData, setAdminsData] = useState([]);
   const [mentorsData, setMentorsData] = useState([]);
+  const [token,setToken] = useState();
   const url = "http://localhost:4000";
 
   const contextValue = {
@@ -32,6 +34,10 @@ const StoreContextProvider = ({ children }) => {
     setIdStatus,
     mentorsData,
     setMentorsData,
+    token,
+    setToken,
+    isProfileVerified,
+    setIsProfileVerified,
   };
 
   return (

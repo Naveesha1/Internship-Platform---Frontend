@@ -6,9 +6,11 @@ import { jwtDecode } from "jwt-decode";
 import { StoreContext } from "../Context/StoreContext.js";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const WeeklyReport = ({ onClose }) => {
-  const { url } = useContext(StoreContext);
+  const navigate = useNavigate();
+  const { url,token, setToken } = useContext(StoreContext);
   const [signatureImage, setSignatureImage] = useState(null);
   const [registrationId, setRegistrationId] = useState();
   const [userData, setUserData] = useState({
@@ -27,26 +29,36 @@ const WeeklyReport = ({ onClose }) => {
       sunday: { date: "", description: "" },
     },
   });
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const userEmail = decodedToken.email;
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const getStudentRegistrationNumber = async () => {
-      try {
-        const response = await axios.post(
-          `${url}/api/student/getRegistrationId`,
-          { userEmail }
-        );
-        if (response.data.success) {
-          setRegistrationId(response.data.data);
+    const token = localStorage.getItem("authToken");
+    if(!token){
+      navigate("/");
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserEmail(decodedToken.email);
+      const getStudentRegistrationNumber = async () => {
+        try {
+          const response = await axios.post(
+            `${url}/api/student/getRegistrationId`,
+            { userEmail }
+          );
+          if (response.data.success) {
+            setRegistrationId(response.data.data);
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getStudentRegistrationNumber();
-  }, [token]);
+      };
+      getStudentRegistrationNumber();
+    } catch (error) {
+      localStorage.removeItem("authToken");
+      navigate("/");
+    }
+  }, [navigate]);
 
   // const handleChange = (e) => {
   //   setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -477,6 +489,7 @@ const WeeklyReport = ({ onClose }) => {
           weeklyData
         );
         if (response.data.success) {
+          
           toast.success("Report sent to mentor successfully!");
         } else {
           toast.error("Failed to send report to mentor!");

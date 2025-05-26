@@ -5,10 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import logout_icon from "../../Images/sidebar/logout.png";
 
 const ASidebar = ({ isOpen, toggleSidebar }) => {
-  // Safe token decode
-  const token = localStorage.getItem("authToken");
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken?._id;
 
   const location = useLocation();
   const history = useNavigate();
@@ -17,32 +13,32 @@ const ASidebar = ({ isOpen, toggleSidebar }) => {
     {
       name: "Dashboard",
       icon: require("../../Images/sidebar/dashboard.png"),
-      href: `/AdminDashboard?${userId}`,
+      href: `/AdminDashboard`,
     },
     {
       name: "Profiles",
       icon: require("../../Images/sidebar/profile.png"),
-      href: `/AdminProfiles?${userId}`,
+      href: `/AdminProfiles`,
     },
     {
       name: "Internship",
       icon: require("../../Images/sidebar/internship.png"),
-      href: `/AdminInternships?${userId}`,
+      href: `/AdminInternships`,
     },
     {
       name: "Progress Submissions",
       icon: require("../../Images/sidebar/Document.png"),
-      href: `/AdminDocument?${userId}`,
+      href: `/AdminDocument`,
     },
     {
       name: "Calendar",
       icon: require("../../Images/sidebar/calender.png"),
-      href: `/AdminCalender?${userId}`,
+      href: `/AdminCalender`,
     },
     {
       name: "Analytics",
       icon: require("../../Images/AdminDashboard/Analytics.png"),
-      href: `/AdminAnalyticsPage?${userId}`,
+      href: `/AdminAnalyticsPage`,
     },
   ];
 

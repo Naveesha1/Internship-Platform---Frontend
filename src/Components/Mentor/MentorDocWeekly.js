@@ -25,6 +25,7 @@ const MentorDocWeekly = () => {
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(null);
+  const [uploadingButton, setUploadingButton] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '', weekNo: '' });
 
 
@@ -105,7 +106,7 @@ const MentorDocWeekly = () => {
   const handleUploadPdf = async () => {
     const { registrationNumber, weekNo } = selectedStudent;
     if (!uploadingPdf) return;
-
+    setUploadingButton(true);
     const fileRef = ref(storage, `weekly-reports/${registrationNumber}-${weekNo}.pdf`);
     try {
       await uploadBytes(fileRef, uploadingPdf);
@@ -300,7 +301,7 @@ const MentorDocWeekly = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleUploadPdf}
-                disabled={!uploadingPdf}
+                disabled={!uploadingPdf || uploadingButton}
                 className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded mr-2 disabled:opacity-50"
               >
                 Upload Signed Report

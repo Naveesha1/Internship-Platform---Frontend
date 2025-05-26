@@ -3,7 +3,6 @@ import {
   FaFilter,
   FaArrowCircleRight,
   FaArrowCircleLeft,
-  FaSearch,
 } from "react-icons/fa";
 import InternshipCard from "../../Components/Student/InternshipCard";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -18,11 +17,8 @@ const Internship = () => {
   const [showAllFilters, setShowAllFilters] = useState(false);
   const [internships, setInternships] = useState([]);
   const [suggestInternships, setSuggestInternships] = useState([]);
-
   const [filteredInternships, setFilteredInternships] = useState([]);
-  const [filteredSuggestInternships, setFilteredSuggestInternships] = useState(
-    []
-  );
+  const [filteredSuggestInternships, setFilteredSuggestInternships] = useState([]);
 
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
@@ -33,27 +29,40 @@ const Internship = () => {
   const [currentSuggestionsPage, setCurrentSuggestionsPage] = useState(0);
   const internshipsPerPage = 4;
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken._id;
-  const registeredEmail = decodedToken.email;
+  const [userReady, setUserReady] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
-  const toggleSuggestFilters = () =>
-    setShowSuggestionFilters(!showSuggestionFilters);
-  const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) return;
+
+    try {
+      const decodedToken = jwtDecode(token);
+      setUserId(decodedToken._id);
+      setRegisteredEmail(decodedToken.email);
+      setUserReady(true);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const getAllInternships = async () => {
       const response = await axios.get(`${url}/api/student/allInternships`);
       if (response.data.success) {
         setInternships(response.data.data);
-        setFilteredInternships(response.data.data); // Initially set filtered data to full data
+        setFilteredInternships(response.data.data);
       } else {
         console.log(response.data.message);
       }
     };
-    getAllInternships();
-  }, [userId]);
+
+    if (userReady) {
+      getAllInternships();
+    }
+  }, [userReady, url]);
 
   useEffect(() => {
     const getSuggestInternships = async () => {
@@ -67,73 +76,67 @@ const Internship = () => {
         console.log(response.data.message);
       }
     };
-    getSuggestInternships();
-  }, [userId]);
 
-  // Filtering internships
+    if (userReady) {
+      getSuggestInternships();
+    }
+  }, [userReady, registeredEmail, url]);
+
   useEffect(() => {
-    const filtered = internships.filter(
-      (internship) =>
-        internship.companyName
-          .toLowerCase()
-          .includes(searchCompany.toLowerCase()) &&
-        internship.position.toLowerCase().includes(searchRole.toLowerCase())
-    );
+    const filtered = internships
+      .filter(
+        (internship) =>
+          internship.companyName.toLowerCase().includes(searchCompany.toLowerCase()) &&
+          internship.position.toLowerCase().includes(searchRole.toLowerCase())
+      )
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
     setFilteredInternships(filtered);
-    setCurrentPage(0); // Reset to first page when filtering
+    setCurrentPage(0);
   }, [searchCompany, searchRole, internships]);
 
-  // Filtering suggested internships
   useEffect(() => {
     const filtered = suggestInternships.filter(
       (internship) =>
-        internship.companyName
-          .toLowerCase()
-          .includes(searchSuggestCompany.toLowerCase()) &&
-        internship.position
-          .toLowerCase()
-          .includes(searchSuggestRole.toLowerCase())
+        internship.companyName.toLowerCase().includes(searchSuggestCompany.toLowerCase()) &&
+        internship.position.toLowerCase().includes(searchSuggestRole.toLowerCase())
     );
     setFilteredSuggestInternships(filtered);
-    setCurrentSuggestionsPage(0); // Reset to first page when filtering
+    setCurrentSuggestionsPage(0);
   }, [searchSuggestCompany, searchSuggestRole, suggestInternships]);
+
+  const toggleSuggestFilters = () => setShowSuggestionFilters(!showSuggestionFilters);
+  const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
 
   const startIndex = currentPage * internshipsPerPage;
   const startSuggestionIndex = currentSuggestionsPage * internshipsPerPage;
-  const currentInternships = filteredInternships.slice(
-    startIndex,
-    startIndex + internshipsPerPage
-  );
+  const currentInternships = filteredInternships.slice(startIndex, startIndex + internshipsPerPage);
   const suggestedInternships = filteredSuggestInternships.slice(
     startSuggestionIndex,
     startSuggestionIndex + internshipsPerPage
   );
 
-  // Page navigation functions
   const handlePrevPageSuggestions = () => {
     if (currentSuggestionsPage > 0) {
-      setCurrentSuggestionsPage((previousPage) => previousPage - 1);
+      setCurrentSuggestionsPage((prev) => prev - 1);
     }
   };
 
   const handleNextPageSuggestions = () => {
-    if (
-      startSuggestionIndex + internshipsPerPage <
-      filteredSuggestInternships.length // Changed from suggestedInternships.length
-    ) {
-      setCurrentSuggestionsPage((previousPage) => previousPage + 1);
+    if (startSuggestionIndex + internshipsPerPage < filteredSuggestInternships.length) {
+      setCurrentSuggestionsPage((prev) => prev + 1);
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 0) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage((prev) => prev - 1);
     }
   };
 
   const handleNextPage = () => {
-    if (startIndex + internshipsPerPage < filteredInternships.length) { // Changed from internships.length
-      setCurrentPage((prevPage) => prevPage + 1);
+    if (startIndex + internshipsPerPage < filteredInternships.length) {
+      setCurrentPage((prev) => prev + 1);
     }
   };
 

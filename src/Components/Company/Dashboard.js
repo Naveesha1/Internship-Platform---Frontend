@@ -23,6 +23,7 @@ const Dashboard = () => {
   const decodedToken = jwtDecode(token);
   const registeredEmail = decodedToken.email;
 
+  // get mentors count
   useEffect(() => {
     const getMentorCount = async () => {
       try {
@@ -43,11 +44,11 @@ const Dashboard = () => {
     }
   }, [registeredEmail]);
 
-
+  // get intern employee count
   useEffect(() => {
     const getInternCount = async () => {
       try {
-        const response = await axios.post(`${url}/api/mentor/getInternEmployeeCountController`, {
+        const response = await axios.post(`${url}/api/mentor/getInternEmployeeCount`, {
           registeredEmail,
         });
 

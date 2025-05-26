@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import { IoLocationSharp } from "react-icons/io5";
 import { MdShoppingBag } from "react-icons/md";
-import CvSelectionModal from "../../Components/Student/CVSelectionModal";
+import CvSelectionModal from "../Student/CVSelectionModal.js";
 import { StoreContext } from "../../Context/StoreContext.js";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { formatDistanceToNow } from 'date-fns';
 
-const InternshipDetails = () => {
+const InternshipDetailsView = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [gpa, setGpa] = useState("");
 
@@ -20,54 +20,54 @@ const InternshipDetails = () => {
   const registeredEmail = decodedToken.email;
   const role = decodedToken.role;
 
-  const handleApplySubmit = async (selectedCvId) => {
-    try {
-      const applicationDetails = {
-        userEmail: registeredEmail,
-        userName: decodedToken.name,
-        userCv: selectedCvId,
-        userGpa: gpa,
-        position: selectedInternship.position,
-        companyName: selectedInternship.companyName,
-        companyEmail: selectedInternship.companyEmail,
-        companyRegisteredEmail: selectedInternship.registeredEmail,
-        internshipId: selectedInternship._id,
-      };
-      const response = await axios.post(
-        `${url}/api/student/applications`,
-        applicationDetails
-      );
-      if (response.data.success) {
-        toast.success(response.data.message);
-      } else {
-        toast.error(response.data.message);
-      }
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      toast.error(error);
-    }
-  };
+  // const handleApplySubmit = async (selectedCvId) => {
+  //   try {
+  //     const applicationDetails = {
+  //       userEmail: registeredEmail,
+  //       userName: decodedToken.name,
+  //       userCv: selectedCvId,
+  //       userGpa: gpa,
+  //       position: selectedInternship.position,
+  //       companyName: selectedInternship.companyName,
+  //       companyEmail: selectedInternship.companyEmail,
+  //       companyRegisteredEmail: selectedInternship.registeredEmail,
+  //       internshipId: selectedInternship._id,
+  //     };
+  //     const response = await axios.post(
+  //       `${url}/api/student/applications`,
+  //       applicationDetails
+  //     );
+  //     if (response.data.success) {
+  //       toast.success(response.data.message);
+  //     } else {
+  //       toast.error(response.data.message);
+  //     }
+  //     setIsOpen(false);
+  //   } catch (error) {
+  //     console.error("Error submitting application:", error);
+  //     toast.error(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    const getStudentProfile = async () => {
-      const response = await axios.post(
-              `${url}/api/student/getProfile`,
-              { registeredEmail },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-      if (response.data.success) {
-        setGpa(response.data.data.gpa);
-      } else {
-        setGpa("Not Added");
-      }
-    };
-    getStudentProfile();
-  }, [registeredEmail]);
+  // useEffect(() => {
+  //   const getStudentProfile = async () => {
+  //     const response = await axios.post(
+  //             `${url}/api/student/getProfile`,
+  //             { registeredEmail },
+  //             {
+  //               headers: {
+  //                 Authorization: `Bearer ${token}`,
+  //               },
+  //             }
+  //           );
+  //     if (response.data.success) {
+  //       setGpa(response.data.data.gpa);
+  //     } else {
+  //       setGpa("Not Added");
+  //     }
+  //   };
+  //   getStudentProfile();
+  // }, [registeredEmail]);
 
   useEffect(() => {
     if (selectedInternship) {
@@ -150,7 +150,7 @@ const InternshipDetails = () => {
               </ul>
             </div>
 
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
               {role === "Admin" ? (
                 <></>
               ) : (
@@ -169,7 +169,7 @@ const InternshipDetails = () => {
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               onSubmit={handleApplySubmit}
-            />
+            /> */}
           </div>
         </>
       ) : (
@@ -179,4 +179,4 @@ const InternshipDetails = () => {
   );
 };
 
-export default InternshipDetails;
+export default InternshipDetailsView;

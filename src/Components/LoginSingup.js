@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import loginIMG from "../Images/login.png";
 import signupIMG from "../Images/signup.png";
-import { FcGoogle } from "react-icons/fc"; // Import google icon
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
-import { StoreContext } from "../Context/StoreContext"; // Import StoreContext
+import { FcGoogle } from "react-icons/fc";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { StoreContext } from "../Context/StoreContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +11,11 @@ import ForgetPassword from "./ForgetPassword";
 import { jwtDecode } from "jwt-decode";
 
 const LoginSignUp = () => {
-  const { url } = useContext(StoreContext);
+  const { url,token,setToken } = useContext(StoreContext);
   const navigate = useNavigate();
 
-  const [currentState, setCurrentState] = useState("Sign in"); // hold user's current state whether sign in or sign up
-  // state object to hold sign in or sign up data
+  const [currentState, setCurrentState] = useState("Sign in");
+  // object to hold sign in or sign up data
   const [data, setData] = useState({
     name: "",
     role: "",
@@ -23,10 +23,11 @@ const LoginSignUp = () => {
     password: "",
   });
 
-  const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
-  const [hide, setHide] = useState(false); // Hide first option in select tag
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [hide, setHide] = useState(false);
+  const [open, setOpen] = useState(false); // state variable to hold forget password box opening function
 
-  // Handle input changes for all fields, including select
+  // Handle input changes for all fields
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setData((prevData) => ({
@@ -34,13 +35,15 @@ const LoginSignUp = () => {
       [name]: value,
     }));
     if (name === "role") {
-      setHide(true); // Hide the placeholder when a role is selected
+      setHide(true);
     }
   };
 
+  // Toggle the state of password
   const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible); // Toggle the state of password
+    setPasswordVisible(!passwordVisible);
   };
+  
   // login and registering function
   const onLogin = async (e) => {
     e.preventDefault();
@@ -51,18 +54,16 @@ const LoginSignUp = () => {
       const response = await axios.post(newURL, data);
       const userData = response.data.userData;
       if (response.data.success) {
+        setToken(response.data.token);
         localStorage.setItem("authToken", response.data.token);
-        const token = localStorage.getItem("authToken");
-        const decodedToken = jwtDecode(token);
-
         let redirectPath;
         // send user to relevant paths
         if (userData.role === "Student") {
-          redirectPath = `/STDashboard?${decodedToken._id}`;
+          redirectPath = `/STDashboard`;
         } else if (userData.role === "Company") {
-          redirectPath = `/ComDashboard?${decodedToken._id}`;
+          redirectPath = `/ComDashboard`;
         } else if (userData.role === "Admin") {
-          redirectPath = `/AdminDashboard?${decodedToken._id}`;
+          redirectPath = `/AdminDashboard`;
         } else {
           redirectPath = `/MDashboard`;
         }
@@ -83,8 +84,6 @@ const LoginSignUp = () => {
       }
     }
   };
-
-  const [open, setOpen] = useState(false); // state variable to hold forget password box opening function
 
   // forget password button function
   const handleForgetPassword = (e) => {
@@ -118,13 +117,13 @@ const LoginSignUp = () => {
                     type="text"
                     placeholder="Full Name"
                     required
-                    className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4"
+                    className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4 focus:outline-none"
                   />
                   <select
                     name="role"
                     onChange={onChangeHandler} // Use the same onChange handler
                     value={data.role}
-                    className={`rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4 ${
+                    className={`rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] focus:outline-none mb-2 pl-4 ${
                       hide ? "text-black-500" : "text-gray-400"
                     }`}
                   >
@@ -141,7 +140,7 @@ const LoginSignUp = () => {
                 type="email"
                 placeholder="Email"
                 required
-                className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4"
+                className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4 focus:outline-none"
               />
 
               {/* Password input with eye icon */}
@@ -153,19 +152,26 @@ const LoginSignUp = () => {
                   type={passwordVisible ? "text" : "password"} // Toggle between text and password
                   placeholder="Password"
                   required
-                  className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4 pr-10"
+                  className="rounded-full w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] bg-[#D9D9D9] mb-2 pl-4 pr-10 focus:outline-none"
                 />
                 <span
-                  className="absolute right-2 top-3 cursor-pointer text-gray-600 pr-12"
+                  className="absolute right-2 top-3 cursor-pointer text-gray-600 pr-2 md:pr-12"
                   onClick={togglePasswordVisibility}
                 >
                   {passwordVisible ? <FaEye /> : <FaEyeSlash />}{" "}
                   {/* Show the eye icon based on state */}
                 </span>
               </div>
+              <button
+              type="submit"
+              className="mt-4 w-full sm:w-[117px] h-[39px] hover:bg-[#358179] font-bold hover:text-gray rounded-full text-white bg-[#45A29E]"
+            >
+              {/* checking current state whether sign in or sign up */}
+              {currentState === "Sign Up" ? "Sign up" : "Sign in"}
+            </button>
               {currentState === "Sign in" ? (
                 <button
-                  className="text-center w-full underline"
+                  className="text-center mt-2 w-full underline"
                   onClick={handleForgetPassword}
                 >
                   Forget Password
@@ -174,21 +180,15 @@ const LoginSignUp = () => {
                 ""
               )}
             </div>
-            <button
-              type="submit"
-              className="mt-4 w-full sm:w-[117px] h-[39px] border-2 border-[#45A29E] rounded-full text-white bg-[#45A29E]"
-            >
-              {/* checking current state whether sign in or sign up */}
-              {currentState === "Sign Up" ? "Create account" : "Sign in"}
-            </button>
-            <p className="mt-2">or</p>
-            <div className="flex justify-center">
-              <button className="flex items-center justify-center mt-2 w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] rounded-full bg-white text-gray-600">
-                <FcGoogle className="mr-2" size={20} />
-                <p>Continue with Google</p>
-              </button>
-            </div>
+            
+            {/* <p className="mt-2">or</p> */}
           </form>
+          {/* <div className="flex justify-center">
+            <button className="flex items-center justify-center mt-2 w-full sm:w-[273px] h-[40px] border-2 border-[#45A29E] rounded-full bg-white text-gray-600">
+              <FcGoogle className="mr-2" size={20} />
+              <p>Continue with Google</p>
+            </button>
+          </div> */}
         </div>
 
         {/* right-side-div */}

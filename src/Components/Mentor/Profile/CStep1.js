@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const CStep1 = ({ formData, handleChange }) => {
+const CStep1 = ({ formData, handleChange , details}) => {
   const [preview, setPreview] = useState(null);
 
   const handleFileChange = (e) => {
@@ -14,7 +14,6 @@ const CStep1 = ({ formData, handleChange }) => {
       handleChange(e);
     }
   };
-
   return (
     <>
       <div className="mb-4 flex items-center">
@@ -37,10 +36,11 @@ const CStep1 = ({ formData, handleChange }) => {
         <input
           type="text"
           name="company"
-          value={formData.company}
+          value={details.companyName}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          className="w-full border text-gray-600 border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
           placeholder="Place your company name here"
+          disabled
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -48,10 +48,11 @@ const CStep1 = ({ formData, handleChange }) => {
         <input
           type="text"
           name="position"
-          value={formData.position}
+          value={details.position}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
+          className="w-full border text-gray-600 border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
           placeholder="Place your rating level out of 5"
+          disabled
         />
       </div>
       <div className="mb-4 flex items-center">

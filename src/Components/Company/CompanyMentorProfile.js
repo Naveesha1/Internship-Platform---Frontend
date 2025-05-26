@@ -6,6 +6,8 @@ import { StoreContext } from "../../Context/StoreContext";
 import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
 import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton";
+import { useNavigate } from 'react-router-dom';
+
 
 const CompanyMentorProfile = () => {
   const { url, mentorsData, setMentorsData } = useContext(StoreContext);
@@ -14,6 +16,8 @@ const CompanyMentorProfile = () => {
   const decodedToken = jwtDecode(token);
   const registeredEmail = decodedToken.email;
   const name = decodedToken.name;
+  const navigate = useNavigate();
+
   
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,61 +35,57 @@ const CompanyMentorProfile = () => {
     setNewMentor((prev) => ({ ...prev, [name]: value }));
   };
 
-// Function to add a new mentor
-const handleAddMentor = async () => {
-  if(newMentor.password.length < 8){
-      toast.error("Password should be at least 8 characters long");
-      return;
-  }
-  if (
-    newMentor.name &&
-    newMentor.position &&
-    newMentor.email &&
-    newMentor.password
-  ) {
-    // Add company email to the mentor data
-    const mentorWithCompany = {
-      ...newMentor,
-      registeredEmail: registeredEmail 
-    };
-
-    const response = await axios.post(
-      `${url}/api/mentor/createMentor`,
-      mentorWithCompany
-    );
-    
-    if (response.data.success) {
-      toast.success(response.data.message);
-      setMentorsData((previousData) => [...previousData, newMentor]);
-      setNewMentor({ name: "", position: "", email: "", password: "" });
-    } else {
-      toast.error(response.data.message);
+  // Function to add a new mentor
+  const handleAddMentor = async () => {
+    if(newMentor.password.length < 8){
+        toast.error("Password should be at least 8 characters long");
+        return;
     }
+    if (
+      newMentor.name &&
+      newMentor.position &&
+      newMentor.email &&
+      newMentor.password
+    ) {
+      // Add company email to the mentor data
+      const mentorWithCompany = {
+        ...newMentor,
+        registeredEmail: registeredEmail 
+      };
 
-    setIsModalOpen(false);
-  }
-};
+      const response = await axios.post(
+        `${url}/api/mentor/createMentor`,
+        mentorWithCompany
+      );
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchCompanyMentors();
+        setNewMentor({ name: "", position: "", email: "", password: "" });
+      } else {
+        toast.error(response.data.message);
+      }
 
+      setIsModalOpen(false);
+    }
+  };
 
+  // Function to delete a mentor
   const deleteMentor = async (email) => {
     const response = await axios.post(`${url}/api/mentor/deleteMentor`, {
       email,
       registeredEmail:registeredEmail
     });
     if (response.data.success) {
-      setMentorsData((prevItems) =>
-        prevItems.filter((item) => item.email !== email)
-      );
+      fetchCompanyMentors();
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
     }
   };
 
-
-
-  useEffect(() => {
-    const fetchCompanyMentors = async () => {
+  // Function to fetch mentors data
+  const fetchCompanyMentors = async () => {
       const response = await axios.post(`${url}/api/mentor/getCompanyMentorsController`, {
         registeredEmail: registeredEmail
       });
@@ -96,9 +96,11 @@ const handleAddMentor = async () => {
         toast.error("Failed to fetch mentors");
       }
     };
+
+  // Fetch mentors data when the component mounts
+  useEffect(() => {
     fetchCompanyMentors();
   }, [registeredEmail]);
-
 
 
   return (
@@ -121,18 +123,27 @@ const handleAddMentor = async () => {
               <th className="text-left py-3 px-4">Name</th>
               <th className="text-left py-3 px-4">Position</th>
               <th className="text-left py-3 px-4">Email</th>
+              <th className="text-left py-3 px-4">Intern Details</th>
               <th className="text-left py-3 px-4">Remove</th>
             </tr>
           </thead>
           <tbody>
             {mentorsData && mentorsData.map((mentor, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                <td className="py-2 px-4 border-b">{mentor.mentorName || mentor.name}</td>
-                <td className="py-2 px-4 border-b">{mentor.mentorPosition || mentor.position}</td>
-                <td className="py-2 px-4 border-b">{mentor.mentorEmail || mentor.email}</td>
+                <td className="py-2 px-4 border-b">{mentor.mentorName}</td>
+                <td className="py-2 px-4 border-b">{mentor.mentorPosition}</td>
+                <td className="py-2 px-4 border-b">{mentor.mentorEmail}</td>
+                <td className="py-2 px-4 border-b">
+                  <button
+                      onClick={() => navigate("/InternEmployees", { state: { mentor } })}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm mb-1 shadow-lg"
+                    >
+                      View Interns
+                    </button>
+                </td>
                 <td className="py-2 px-4 border-b">
                   <ConfirmDeleteButton
-                    onConfirm={() => deleteMentor(mentor.mentorEmail || mentor.email)}
+                    onConfirm={() => deleteMentor(mentor.mentorEmail)}
                     icon={<FaTrash className="text-red-500 hover:text-red-700 cursor-pointer" />}
                     confirmText="Are you sure you want to delete this mentor?"
                   />

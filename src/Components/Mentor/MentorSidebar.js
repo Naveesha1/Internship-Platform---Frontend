@@ -5,10 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import logout_icon from "../../Images/sidebar/logout.png";
 
 const MentorSidebar = ({ isOpen, toggleSidebar }) => {
-  // Safely get and decode the token
-  const token = localStorage.getItem("authToken");
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken?._id;
 
   const location = useLocation();
   const history = useNavigate();
@@ -17,27 +13,27 @@ const MentorSidebar = ({ isOpen, toggleSidebar }) => {
     {
       name: "Dashboard",
       icon: require("../../Images/sidebar/dashboard.png"),
-      href: `/MDashboard?${userId}`,
+      href: `/MDashboard`,
     },
     {
       name: "Profile",
       icon: require("../../Images/sidebar/profile.png"),
-      href: `/MProfile?${userId}`,
+      href: `/MProfile`,
     },
     {
-      name: "Progree Submission",
+      name: "Progress Submission",
       icon: require("../../Images/sidebar/Document.png"),
-      href: `/MDocument?${userId}`,
+      href: `/MDocument`,
     },
     {
       name: "Calendar",
       icon: require("../../Images/sidebar/calender.png"),
-      href: `/MCalender?${userId}`,
+      href: `/MCalender`,
     },
     {
       name: "Students",
       icon: require("../../Images/sidebar/student.png"),
-      href: `/MStudent?${userId}`,
+      href: `/MStudent`,
     },
   ];
 

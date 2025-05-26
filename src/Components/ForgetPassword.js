@@ -18,7 +18,6 @@ const ForgetPassword = ({ open, onClose }) => {
     } else {
       toast.error(response.data.message);
     }
-    console.log(email);
   };
 
   if (!open) return null;

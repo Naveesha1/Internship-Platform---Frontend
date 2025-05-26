@@ -46,7 +46,6 @@ const AdminDashboard = () => {
         const response = await axios.post(`${url}/api/mentor/getWeeklyReportsCount`, {
           registeredEmail,
         });
-        console.log("weekly",response.data);
 
         if (response.data.success) {
           setWeeklyReport(response.data.count);
