@@ -116,7 +116,7 @@ const Dashboard = () => {
 
     const getAcceptedRejectedCount = async () => {
       try {
-      const response = await axios.post(`${url}/api/student/respinseCompaniesRejectOrAccept`, {
+      const response = await axios.post(`${url}/api/student/responseCompaniesRejectOrAccept`, {
         userEmail: registeredEmail,
       });
       if (response.data.success) {

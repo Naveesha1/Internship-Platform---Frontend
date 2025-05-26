@@ -12,6 +12,7 @@ import InternshipDetailsPage from "./Pages/Student/InternshipDetailsPage.js";
 import ApplicationPage from "./Pages/Student/ApplicationPage.js";
 import StudentDocumentPage from "./Pages/Student/StudentDocumentPage.js";
 
+import InternshipDetailsView from "./Pages/Company/InternshipDetailsViewPage.js";
 import CalendarPage from "./Pages/Student/CalendarPage.js";
 import ChatbotPage from "./Pages/Student/ChatbotPage.js";
 import ComDashboardPage from "./Pages/Company/ComDashboardPage.js";
@@ -20,6 +21,7 @@ import CompanyInternshipPage from "./Pages/Company/CompanyInternshipPage.js";
 import CompanyCalendarPage from "./Pages/Company/CompanyCalendarPage.js";
 import CompanyApplicationPage from "./Pages/Company/CompanyApplicationPage.js";
 
+import InternshipDetailsViewAdmin from "./Pages/Admin/InternshipDetailsViewPage.js";
 import AdminDashboard from "./Pages/Admin/DashboardPage.js";
 import AdminInternshipPage from "./Pages/Admin/InternshipPage.js";
 import AdminProfilePage from "./Pages/Admin/ProfilesPage.js";
@@ -79,6 +81,10 @@ function App() {
           path="/InternEmployees"
           element={<InternEmployees />}
         ></Route>
+        <Route
+          path="/InternshipDetailsView"
+          element={<InternshipDetailsView />}
+        ></Route>
 
         {/* Admin routes */}
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
@@ -87,6 +93,10 @@ function App() {
         <Route path="/AdminCalender" element={<AdminCalenderPage />} />
         <Route path="/AdminDocument" element={<AdminDocumentPage />} />
         <Route path="/AdminAnalyticsPage" element={<AdminAnalyticsPage/>}></Route>
+        <Route
+          path="/InternshipDetailsViewAdmin"
+          element={<InternshipDetailsViewAdmin />}
+        ></Route>
 
         {/* Mentor routes */}
         <Route path="/MDashboard" element={<MentorDashboard />} />

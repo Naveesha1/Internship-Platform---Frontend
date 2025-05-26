@@ -14,7 +14,7 @@ const AllInternshipCard = ({ internships }) => {
 
   const handleCardClick = () => {
     setSelectedInternship(internships);
-    navigate("/InternshipDetailsPage");
+    navigate("/InternshipDetailsViewAdmin");
   };
 
   return (

@@ -21,17 +21,17 @@ const MentorStudent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [newStudent, setNewStudent] = useState({
-    registrationNumber: "",
-    name: "",
-    position: "",
-    startDate: "",
-    endDate: "",
-    email: "",
-    phone: "",
-    address: "",
-  });
+  // const [showModal, setShowModal] = useState(false);
+  // const [newStudent, setNewStudent] = useState({
+  //   registrationNumber: "",
+  //   name: "",
+  //   position: "",
+  //   startDate: "",
+  //   endDate: "",
+  //   email: "",
+  //   phone: "",
+  //   address: "",
+  // });
 
     const token = localStorage.getItem("authToken");
     const decodedToken = jwtDecode(token);
@@ -70,23 +70,23 @@ const MentorStudent = () => {
       student.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewStudent((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setNewStudent((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
 
 
 
-  const openModal = () => {
-    setShowModal(true);
-  };
+  // const openModal = () => {
+  //   setShowModal(true);
+  // };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  // const closeModal = () => {
+  //   setShowModal(false);
+  // };
 
 
   return (
@@ -119,12 +119,12 @@ const MentorStudent = () => {
             </div>
           </div>
         </div>
-        <button
+        {/* <button
           onClick={openModal}
           className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out flex items-center"
         >
           Add Student
-        </button>
+        </button> */}
       </div>
 
       {students.length === 0 ? (
@@ -139,13 +139,13 @@ const MentorStudent = () => {
         </div>
       )}
 
-      {showModal && (
+      {/* {showModal && (
         <MentorCreateStudentForm
           newStudent={newStudent}
           handleChange={handleChange}
           closeModal={closeModal}
         />
-      )}
+      )} */}
     </div>
   );
 };

@@ -45,14 +45,18 @@ const Navbar = () => {
       let response;
 
       if (role === "Admin") {
-        response = await axios.post(`${url}/api/notification/getAdminNotifications`, { role });
+        const data = { registeredEmail,role };
+        response = await axios.post(`${url}/api/notification/getAdminNotifications`, data);
       } else if (role === "Student") {
-        response = await axios.post(`${url}/api/notification/getStudentNotifications`, { registeredEmail });
+        const data = { registeredEmail,role };
+        response = await axios.post(`${url}/api/notification/getStudentNotifications`, data);
       } else if (role === "Company") {
-        response = await axios.post(`${url}/api/notification/getCompanyNotifications`, { registeredEmail });
+        const data = { registeredEmail,role };
+        response = await axios.post(`${url}/api/notification/getCompanyNotifications`, data);
       } else {
         const mentor = "Mentor";
-        response = await axios.post(`${url}/api/notification/getMentorNotifications`, { mentor });
+        const data = { registeredEmail, mentor };
+        response = await axios.post(`${url}/api/notification/getMentorNotifications`, data);
       }
 
       if (response?.data.success) {
