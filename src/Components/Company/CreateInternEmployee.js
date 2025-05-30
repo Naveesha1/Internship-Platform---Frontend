@@ -152,7 +152,7 @@ const CreateInternEmployee = ({
                 filteredIds.map((id) => (
                   <li
                     key={id}
-                    onClick={() => handleSelectId(id)}
+                    onMouseDown={() => handleSelectId(id)}
                     className="p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     {id}
