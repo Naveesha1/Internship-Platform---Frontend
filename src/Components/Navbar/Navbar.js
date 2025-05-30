@@ -19,6 +19,7 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [checkedNotifications, setCheckedNotifications] = useState({});
+  const [image,setImage] = useState("");
 
   // Check auth on mount
   useEffect(() => {
@@ -30,9 +31,21 @@ const Navbar = () => {
 
     try {
       const decoded = jwtDecode(token);
+      const decodedEmail = decoded.email;
       setRegisteredEmail(decoded.email);
       setRole(decoded.role);
       setUserReady(true);
+      if(decoded.email){
+        const getProfileImage = async() => {
+        const response = await axios.post(`${url}/api/user/getProfileImage`,{decodedEmail});
+        if(response.data.success) {
+          setImage(response.data.url);
+        } else {
+          setImage("");
+        }
+      }
+      getProfileImage();
+      }
     } catch (error) {
       localStorage.removeItem("authToken");
       navigate("/");
@@ -76,6 +89,7 @@ const Navbar = () => {
     }
   }, [userReady]);
 
+  // mark one notification as read
   const toggleCheck = async (notificationId) => {
     try {
       const response = await axios.post(`${url}/api/notification/changeNotificationStatus`, { notificationId });
@@ -94,6 +108,7 @@ const Navbar = () => {
     }
   };
 
+  // mark all notifications as read
   const markAllAsRead = async () => {
     try {
       const unreadIds = notifications.filter(n => !n.isRead).map(n => n._id);
@@ -112,8 +127,8 @@ const Navbar = () => {
   };
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
-
   if (!userReady) return null;
+
 
   return (
     <div className="bg-white shadow-custom relative">
@@ -128,7 +143,13 @@ const Navbar = () => {
               </span>
             )}
           </div>
-          {/* <img src={profile} alt="Profile" className="h-6 cursor-pointer" /> */}
+          {image && (role==="Company" || role==="Student") ? <>
+          <img src={image} alt="Profile" className="h-6 w-6 rounded-full cursor-pointer" />
+          </> : <>
+          {!image && (role==="Company" || role==="Student") ? <>
+          <img src={profile} alt="Profile" className="h-6 cursor-pointer" />
+          </>:<></>}
+          </>}
         </div>
       </nav>
 

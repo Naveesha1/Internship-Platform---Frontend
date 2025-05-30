@@ -199,7 +199,7 @@ useEffect(() => {
             </tr>
           </thead>
           <tbody>
-            {students ? students.map((student, index) => (
+            {students.length>0 ? students.map((student, index) => (
               <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                 <td className="py-2 px-4 border-b">{student.registrationNumber}</td>
                 <td className="py-2 px-4 border-b">{student.name}</td>
@@ -215,7 +215,7 @@ useEffect(() => {
               </tr>
             )) : 
             <>
-            <tr><td>No students to be found</td></tr>
+            <tr><td colSpan="5" className="text-center">No students to be found</td></tr>
             </>}
           </tbody>
         </table>
