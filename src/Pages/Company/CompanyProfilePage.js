@@ -66,7 +66,6 @@ const CompanyProfilePage = () => {
       setFormData((prev) => ({ ...prev, registeredEmail: decoded.email }));
       setUserReady(true);
     } catch (err) {
-      console.error("Invalid token:", err);
       localStorage.removeItem("authToken");
       navigate("/");
     }

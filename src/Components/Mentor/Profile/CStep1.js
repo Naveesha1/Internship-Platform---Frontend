@@ -26,7 +26,7 @@ const CStep1 = ({ formData, handleChange , details}) => {
           value={formData.mentorName}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your company name here"
+          placeholder="Enter Your Name"
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -39,7 +39,7 @@ const CStep1 = ({ formData, handleChange , details}) => {
           value={details.companyName}
           onChange={handleChange}
           className="w-full border text-gray-600 border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your company name here"
+          placeholder="Company Name"
           disabled
         />
       </div>
@@ -51,7 +51,7 @@ const CStep1 = ({ formData, handleChange , details}) => {
           value={details.position}
           onChange={handleChange}
           className="w-full border text-gray-600 border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your rating level out of 5"
+          placeholder="Position"
           disabled
         />
       </div>
@@ -63,7 +63,7 @@ const CStep1 = ({ formData, handleChange , details}) => {
           value={formData.address}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your industry here"
+          placeholder="Enter Your Address"
         />
       </div>
       <div className="mb-4 flex items-center">
@@ -74,7 +74,7 @@ const CStep1 = ({ formData, handleChange , details}) => {
           value={formData.contactNumber}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45A29E]"
-          placeholder="Place your company contact number here"
+          placeholder="Enter Your Company Contact Number"
         />
       </div>
     </>

@@ -1,55 +1,43 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FaUserGraduate, FaCalendarAlt, FaFileAlt, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
-import MentorCreateStudentForm from "./MentorCreateStudentForm";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { MdEmail } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
-import { MdEmail } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 
-
-// Main StudentList component
 const MentorStudent = () => {
   const { url } = useContext(StoreContext);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [showModal, setShowModal] = useState(false);
-  // const [newStudent, setNewStudent] = useState({
-  //   registrationNumber: "",
-  //   name: "",
-  //   position: "",
-  //   startDate: "",
-  //   endDate: "",
-  //   email: "",
-  //   phone: "",
-  //   address: "",
-  // });
+  const navigate = useNavigate();
 
-    const token = localStorage.getItem("authToken");
-    const decodedToken = jwtDecode(token);
-    const userEmail = decodedToken.email;
-
-  // Fetch students data when component mounts
   useEffect(() => {
-    fetchStudents();
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.email;
+      fetchStudents(userEmail);
+    } catch (error) {
+      navigate("/");
+    }
   }, []);
 
-  // Fetch all students for the logged-in mentor
-  const fetchStudents = async () => {
+  const fetchStudents = async (userEmail) => {
     try {
-      setLoading(true);      
+      setLoading(true);
       const response = await axios.post(`${url}/api/mentor/getAllStudent`, {
-        registeredEmail: userEmail
+        registeredEmail: userEmail,
       });
-      
+
       if (response.data.success) {
         setStudents(response.data.data);
       } else {
@@ -69,25 +57,6 @@ const MentorStudent = () => {
       student.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setNewStudent((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-
-
-
-  // const openModal = () => {
-  //   setShowModal(true);
-  // };
-
-  // const closeModal = () => {
-  //   setShowModal(false);
-  // };
-
 
   return (
     <div className="p-4 w-full">
@@ -119,17 +88,13 @@ const MentorStudent = () => {
             </div>
           </div>
         </div>
-        {/* <button
-          onClick={openModal}
-          className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out flex items-center"
-        >
-          Add Student
-        </button> */}
       </div>
 
-      {students.length === 0 ? (
+      {loading ? (
+        <div className="text-center text-gray-500">Loading...</div>
+      ) : students.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          No students found. Add your first student using the button above.
+          No students found.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -138,14 +103,6 @@ const MentorStudent = () => {
           ))}
         </div>
       )}
-
-      {/* {showModal && (
-        <MentorCreateStudentForm
-          newStudent={newStudent}
-          handleChange={handleChange}
-          closeModal={closeModal}
-        />
-      )} */}
     </div>
   );
 };
@@ -205,12 +162,12 @@ const StudentCard = ({ student }) => {
       alert("No monthly reports available yet");
       return;
     }
-    
+
     navigate("/MCreateMonthlyDocPage", {
       state: {
         student: student,
-        availableMonths: availableMonths
-      }
+        availableMonths: availableMonths,
+      },
     });
   };
 

@@ -1,19 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { FiEdit2, FiSearch } from "react-icons/fi";
-import {
-  FaFolder,
-  FaFolderOpen,
-  FaChevronRight,
-  FaChevronDown,
-} from "react-icons/fa";
+import { FaFolder, FaFolderOpen, FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { StoreContext } from "../../Context/StoreContext";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.js";
 import { toast } from "react-toastify";
-
 
 const MentorDocWeekly = () => {
   const { url } = useContext(StoreContext);
@@ -22,28 +16,33 @@ const MentorDocWeekly = () => {
   const [reports, setReports] = useState([]);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [selectedPdf, setSelectedPdf] = useState(null);
-
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(null);
   const [uploadingButton, setUploadingButton] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState({ registrationNumber: '', weekNo: '' });
 
-
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    const decodedToken = jwtDecode(token);
+    const registeredEmail = decodedToken.email;
+
     const getWeeklyReports = async () => {
-      const response = await axios.post(`${url}/api/mentor/getWeeklyReports`, {
-        registeredEmail,
-      });
-      if (response.data.success) {
-        setReports(response.data.data);
+      try {
+        const response = await axios.post(`${url}/api/mentor/getWeeklyReports`, {
+          registeredEmail,
+        });
+        if (response.data.success) {
+          setReports(response.data.data);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch reports");
       }
     };
+
     getWeeklyReports();
-  }, [token]);
+  }, []);
 
   const groupedReports = reports.reduce((acc, report) => {
     if (!acc[report.registrationNumber]) {
@@ -59,25 +58,18 @@ const MentorDocWeekly = () => {
     return acc;
   }, {});
 
-  const filteredGroupedReports = Object.keys(groupedReports).reduce(
-    (acc, studentIndex) => {
-      const group = groupedReports[studentIndex];
-      const matches =
-        group.studentInfo.name
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        group.studentInfo.index
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        group.reports.some((r) =>
-          r.weekNo.toLowerCase().includes(searchText.toLowerCase())
-        );
+  const filteredGroupedReports = Object.keys(groupedReports).reduce((acc, studentIndex) => {
+    const group = groupedReports[studentIndex];
+    const matches =
+      group.studentInfo.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      group.studentInfo.index.toLowerCase().includes(searchText.toLowerCase()) ||
+      group.reports.some((r) =>
+        r.weekNo.toLowerCase().includes(searchText.toLowerCase())
+      );
 
-      if (matches) acc[studentIndex] = group;
-      return acc;
-    },
-    {}
-  );
+    if (matches) acc[studentIndex] = group;
+    return acc;
+  }, {});
 
   const toggleExpand = (studentIndex) => {
     setExpandedStudents((prev) => ({
@@ -116,12 +108,10 @@ const MentorDocWeekly = () => {
           registrationNumber,
           weekNo,
           reportUrl: downloadURL,
-          status: 'Viewed' // Add status update here
+          status: 'Viewed'
         });
         if (response.data.success) {
           toast.success(response.data.message);
-
-          // Update the local state to reflect the status change
           setReports(reports.map(report => {
             if (report.registrationNumber === registrationNumber && report.weekNo === weekNo) {
               return { ...report, reportUrl: downloadURL, status: 'Viewed' };
@@ -135,12 +125,12 @@ const MentorDocWeekly = () => {
       setShowUploadModal(false);
       setUploadingPdf(null);
       setSelectedStudent({ registrationNumber: '', weekNo: '' });
-
     } catch (error) {
       toast.error("Upload failed");
+    } finally {
+      setUploadingButton(false);
     }
   };
-
 
   return (
     <div className="w-full p-6">
@@ -170,8 +160,7 @@ const MentorDocWeekly = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {Object.keys(filteredGroupedReports).map((studentIndex) => {
-              const { studentInfo, reports } =
-                filteredGroupedReports[studentIndex];
+              const { studentInfo, reports } = filteredGroupedReports[studentIndex];
               const isExpanded = expandedStudents[studentIndex];
 
               return (
@@ -205,9 +194,7 @@ const MentorDocWeekly = () => {
                         className="hover:bg-gray-50 text-sm text-[#0C7075]"
                       >
                         <td className="py-3 px-4 pl-12">Weekly Report</td>
-                        <td className="py-3 px-4">
-                          {report.registrationNumber}
-                        </td>
+                        <td className="py-3 px-4">{report.registrationNumber}</td>
                         <td className="py-3 px-4">Week {report.weekNo}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${report.status === 'Viewed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
@@ -241,7 +228,6 @@ const MentorDocWeekly = () => {
         </table>
       </div>
 
-      {/* PDF Modal */}
       {showPdfModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 h-5/6 flex flex-col">
@@ -286,7 +272,6 @@ const MentorDocWeekly = () => {
         </div>
       )}
 
-
       {showUploadModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-96 p-6">
@@ -319,7 +304,6 @@ const MentorDocWeekly = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

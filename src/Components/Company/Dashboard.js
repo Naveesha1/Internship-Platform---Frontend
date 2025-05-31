@@ -1,27 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import application from '../../Images/Company/ComApplication.png';
 import employee from '../../Images/Company/ComEmployee.png';
 import vacancies from '../../Images/Company/ComVacanci.png';
-import { useEffect, useState, useContext } from 'react';
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext.js";
 import { jwtDecode } from "jwt-decode";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer
+} from "recharts";
 
 const Dashboard = () => {
-
+  const navigate = useNavigate();
   const { url } = useContext(StoreContext);
+
   const [mentorCount, setMentorCount] = useState("");
   const [internCount, setInternCount] = useState("");
   const [applicationCount, setApplicationCount] = useState("");
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
 
+  // Token handling and redirection
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        navigate("/");
+      };
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
+      const decodedToken = jwtDecode(token);
+      setRegisteredEmail(decodedToken.email);
+    } catch (error) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   // get mentors count
   useEffect(() => {
@@ -42,7 +56,7 @@ const Dashboard = () => {
     if (registeredEmail) {
       getMentorCount();
     }
-  }, [registeredEmail]);
+  }, [registeredEmail, url]);
 
   // get intern employee count
   useEffect(() => {
@@ -56,15 +70,16 @@ const Dashboard = () => {
           setInternCount(response.data.count);
         }
       } catch (error) {
-        console.error("Error fetching mentor count:", error);
+        console.error("Error fetching intern count:", error);
       }
     };
 
     if (registeredEmail) {
       getInternCount();
     }
-  }, [registeredEmail]);
+  }, [registeredEmail, url]);
 
+  // get application count
   useEffect(() => {
     const getApplicationCount = async () => {
       try {
@@ -76,24 +91,18 @@ const Dashboard = () => {
           setApplicationCount(response.data.count);
         }
       } catch (error) {
-        console.error("Error fetching mentor count:", error);
+        console.error("Error fetching application count:", error);
       }
     };
 
     if (registeredEmail) {
       getApplicationCount();
     }
-  }, [registeredEmail]);
+  }, [registeredEmail, url]);
 
-
+  // get chart data
   useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem("authToken");
-      if (!token) return;
-
-      const decodedToken = jwtDecode(token);
-      const registeredEmail = decodedToken.email;
-
       try {
         const response = await axios.post(`${url}/api/company/getPositionStatsController`, {
           registeredEmail,
@@ -111,8 +120,10 @@ const Dashboard = () => {
       }
     };
 
-    fetchData();
-  }, [url]);
+    if (registeredEmail) {
+      fetchData();
+    }
+  }, [registeredEmail, url]);
 
   if (loading) {
     return (
@@ -194,5 +205,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-

@@ -12,6 +12,7 @@ const WeeklyReport = ({ onClose }) => {
   const navigate = useNavigate();
   const { url,token, setToken } = useContext(StoreContext);
   const [signatureImage, setSignatureImage] = useState(null);
+  const [isSending, setIsSending] = useState(false);
   const [registrationId, setRegistrationId] = useState();
   const [userData, setUserData] = useState({
     month: "",
@@ -467,6 +468,7 @@ const WeeklyReport = ({ onClose }) => {
   };
 
   const sendToMentor = async () => {
+    setIsSending(true);
     try {
       const blob = await generatePDFBlob();
       const fileRef = ref(
@@ -986,9 +988,12 @@ const WeeklyReport = ({ onClose }) => {
 
         <button
           onClick={sendToMentor}
-          className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 font-medium"
+          disabled={isSending}
+          className={`${
+        isSending ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
+      } text-white px-6 py-2 rounded-lg font-medium transition`}
         >
-          Send to Mentor
+          {isSending ? 'Sending...' : 'Send to Mentor'}
         </button>
       </div>
     </div>

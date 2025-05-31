@@ -5,14 +5,28 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const AdminProfile = () => {
   const { url, adminsData, setAdminsData } = useContext(StoreContext);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
+  const [name, setName] = useState(null);
+    const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-  const name = decodedToken.name;
+  useEffect(() => {
+          try {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+              navigate("/");
+            };
+      
+            const decodedToken = jwtDecode(token);
+            setRegisteredEmail(decodedToken.email);
+            setName(decodedToken.name);
+          } catch (error) {
+            navigate("/");
+          }
+        }, [navigate]);
 
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,7 +106,7 @@ const AdminProfile = () => {
       }
     };
     getAllProfiles();
-  }, [token]);
+  }, []);
   
 
   return (

@@ -28,7 +28,7 @@ const Profile = () => {
   const [submitted, setSubmitted] = useState(false); // for control profile details visibility
   const [error, setError] = useState(null);
   const [cvName, setCvName] = useState(null);
-  const [userEmail,setUserEmail] = useState(null);
+  const [visibility,setVisibility] = useState(false);
   let registeredEmail;
   let userId;
 
@@ -41,7 +41,6 @@ useEffect(() => {
   } else {
     const decodedToken = jwtDecode(token);
     registeredEmail = decodedToken.email;
-    setUserEmail(registeredEmail);
     userId = decodedToken._id;
   }
   const getStudentProfile = async () => {
@@ -56,6 +55,7 @@ useEffect(() => {
         }
       );
       if(response.data.success){
+      setVisibility(true);
       setUser(response.data.data);
       setProfileVisible(true);
       setStepperVisibility(true);
@@ -191,6 +191,7 @@ useEffect(() => {
         </div>
 
         {/* Main Content Area */}
+        {visibility ? <>
         <div className="flex-1 p-6 transition-all duration-300 flex flex-col justify-center items-center">
           <div className="flex justify-center mb-4">
             <div className="flex items-center">
@@ -327,6 +328,12 @@ useEffect(() => {
             </>
           )}
         </div>
+        </> : 
+        <>
+        <div className="flex-1 p-6 transition-all duration-300 flex justify-center items-center">
+        <ThreeDot color="#3176cc" size="medium" text="" textColor="" />
+        </div>
+        </>}
       </div>
     </div>
   );
