@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
-import { jwtDecode } from "jwt-decode";
+import React, { useState, useContext, useEffect } from 'react';
+import {jwtDecode} from "jwt-decode";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { StoreContext } from '../../Context/StoreContext.js';
 import Select from 'react-select';
+import { useNavigate } from "react-router-dom";
 
 const CreateInternship = () => {
-
   const { url } = useContext(StoreContext);
 
   const [position, setPosition] = useState('');
@@ -16,24 +16,45 @@ const CreateInternship = () => {
   const [workMode, setWorkMode] = useState('');
   const [aboutIntern, setAboutIntern] = useState('');
   const [selectedKeywords, setSelectedKeywords] = useState([]);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
+  // Token decoding and redirect handling
+    useEffect(() => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          navigate("/");
+        };
+  
+        const decodedToken = jwtDecode(token);
+        setRegisteredEmail(decodedToken.email);
+      } catch (error) {
+        navigate("/");
+      }
+    }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!registeredEmail) {
+      toast.error("You must be logged in to create an internship.");
+      return;
+    }
+
     const newInternship = {
       registeredEmail,
-      position,
+      position: position.trim(),
       jobType,
-      responsibilities,
-      requirements,
+      responsibilities: responsibilities.trim(),
+      requirements: requirements.trim(),
       keywords: selectedKeywords.map(k => k.value).join(', '),
       workMode,
-      aboutIntern,
+      aboutIntern: aboutIntern.trim(),
     };
+
     try {
+      setLoading(true);
       const response = await axios.post(`${url}/api/company/createIntern`, newInternship);
       if (response.data.success) {
         toast.success(response.data.message);
@@ -44,6 +65,8 @@ const CreateInternship = () => {
     } catch (error) {
       toast.error("Something went wrong");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +80,7 @@ const CreateInternship = () => {
     setSelectedKeywords([]);
   };
 
-  // === Keywords ===
+  // Keywords options remain same as yours
   const keywords = [
     "HTML", "CSS", "JavaScript", "TypeScript", "React", "Angular", "Vue", "Svelte",
     "Node.js", "Express", "Nest.js", "Django", "Flask", "FastAPI",
@@ -80,10 +103,10 @@ const CreateInternship = () => {
     ".NET", "ASP.NET", "Spring", "Laravel", "Rails", "Next.js", "Gatsby",
     "SASS", "LESS", "Tailwind CSS", "Bootstrap", "Material UI", "Styled Components",
     "PWA", "SPA", "SSR", "SSG", "JAMstack", "Webpack", "Babel", "Rollup", "Vite"
-  ].map((keyword) => ({ value: keyword, label: keyword }));
+  ].map(keyword => ({ value: keyword, label: keyword }));
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-md p-4 mt-12 ml-10">
+    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-md p-4 mt-12 ml-10 max-w-3xl">
       <div className="mb-4">
         <label htmlFor="position" className="block font-medium text-gray-700 mb-2">
           Position
@@ -96,38 +119,39 @@ const CreateInternship = () => {
           className="border border-gray-300 rounded-md px-3 py-2 w-full"
           required
           placeholder='Internship position'
+          disabled={loading}
         />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="timePeriod" className="block font-medium text-gray-700 mb-2">
+        <label className="block font-medium text-gray-700 mb-2">
           Time Period
         </label>
-        <div className='flex'>
-          <div className="flex items-center">
+        <div className='flex space-x-8'>
+          <label className="flex items-center cursor-pointer">
             <input
-              type="checkbox"
-              id="6months"
+              type="radio"
+              name="jobType"
+              value="6 Months"
               checked={jobType === '6 Months'}
-              onChange={() => setJobType(jobType === '6 Months' ? '' : '6 Months')}
+              onChange={() => setJobType('6 Months')}
               className="mr-2"
+              disabled={loading}
             />
-            <label htmlFor="6months" className="text-gray-700">
-              6 Months
-            </label>
-          </div>
-          <div className="flex items-center ml-16">
+            6 Months
+          </label>
+          <label className="flex items-center cursor-pointer">
             <input
-              type="checkbox"
-              id="1year"
+              type="radio"
+              name="jobType"
+              value="1 Year"
               checked={jobType === '1 Year'}
-              onChange={() => setJobType(jobType === '1 Year' ? '' : '1 Year')}
+              onChange={() => setJobType('1 Year')}
               className="mr-2"
+              disabled={loading}
             />
-            <label htmlFor="1year" className="text-gray-700">
-              1 Year
-            </label>
-          </div>
+            1 Year
+          </label>
         </div>
       </div>
 
@@ -142,7 +166,8 @@ const CreateInternship = () => {
           className="border border-gray-300 rounded-md px-3 py-2 w-full"
           required
           placeholder='Add details about internship'
-        ></textarea>
+          disabled={loading}
+        />
       </div>
 
       <div className="mb-4">
@@ -156,7 +181,8 @@ const CreateInternship = () => {
           className="border border-gray-300 rounded-md px-3 py-2 w-full"
           required
           placeholder='Separate each by ","'
-        ></textarea>
+          disabled={loading}
+        />
       </div>
 
       <div className="mb-4">
@@ -170,7 +196,8 @@ const CreateInternship = () => {
           className="border border-gray-300 rounded-md px-3 py-2 w-full"
           required
           placeholder='Separate each by ","'
-        ></textarea>
+          disabled={loading}
+        />
       </div>
 
       <div className="mb-4">
@@ -183,8 +210,9 @@ const CreateInternship = () => {
           options={keywords}
           value={selectedKeywords}
           onChange={setSelectedKeywords}
-          className="border border-gray-300 rounded-md px-3 py-2 w-full"
+          className="border border-gray-300 rounded-md"
           placeholder='Select the matching keywords'
+          isDisabled={loading}
         />
       </div>
 
@@ -198,6 +226,7 @@ const CreateInternship = () => {
           onChange={(e) => setWorkMode(e.target.value)}
           className="border border-gray-300 rounded-md px-3 py-2 w-full"
           required
+          disabled={loading}
         >
           <option value="">Select mode</option>
           <option value="On-site">On-site</option>
@@ -206,20 +235,21 @@ const CreateInternship = () => {
         </select>
       </div>
 
-
       <div className="flex justify-end space-x-4">
         <button
           type="button"
           onClick={resetForm}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          disabled={loading}
         >
           Cancel
         </button>
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          disabled={loading}
         >
-          Create
+          {loading ? "Creating..." : "Create"}
         </button>
       </div>
     </form>

@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AiOutlineFilePdf } from 'react-icons/ai';
-import { FiTrash2, FiSearch } from 'react-icons/fi';
-import { FaFolder, FaFolderOpen, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FiSearch } from 'react-icons/fi';
+import { FaFolder, FaFolderOpen, FaChevronRight, FaChevronDown,FaTrash } from 'react-icons/fa';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import { StoreContext } from '../../Context/StoreContext';
 import { jwtDecode } from 'jwt-decode';
 import ConfirmDeleteButton from "../Helpers/ConfirmDeleteButton";
 import { toast } from 'react-toastify';
 
-
 const MentorDocMonthly = () => {
   const { url } = useContext(StoreContext);
+  const [userEmail, setUserEmail] = useState(null);
   const [reports, setReports] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [groupedReports, setGroupedReports] = useState({});
@@ -20,11 +19,21 @@ const MentorDocMonthly = () => {
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [selectedPdf, setSelectedPdf] = useState(null);
 
-  const token = localStorage.getItem("authToken");
-  const decoded = jwtDecode(token);
-  const userEmail = decoded.email;
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserEmail(decoded.email);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
+    if (!userEmail) return;
+
     const fetchReports = async () => {
       try {
         const response = await axios.post(`${url}/api/mentor/getMonthlyReports`, {
@@ -32,8 +41,7 @@ const MentorDocMonthly = () => {
         });
         if (response.data.success) {
           setReports(response.data.data);
-          
-          // Group reports by student index
+
           const grouped = groupReportsByStudent(response.data.data);
           setGroupedReports(grouped);
           setFilteredGroupedReports(grouped);
@@ -44,16 +52,14 @@ const MentorDocMonthly = () => {
         console.error('Error fetching reports:', error);
       }
     };
+
     fetchReports();
   }, [url, userEmail]);
 
-  // Function to group reports by student index
   const groupReportsByStudent = (reportsList) => {
     const grouped = {};
-    
     reportsList.forEach(report => {
       const studentIndex = report.index;
-      
       if (!grouped[studentIndex]) {
         grouped[studentIndex] = {
           studentInfo: {
@@ -63,37 +69,27 @@ const MentorDocMonthly = () => {
           reports: []
         };
       }
-      
       grouped[studentIndex].reports.push(report);
     });
-    
     return grouped;
   };
 
   useEffect(() => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      
-      // Filter the grouped data
       const filtered = {};
       Object.keys(groupedReports).forEach(studentIndex => {
         const studentGroup = groupedReports[studentIndex];
-        
-        // Check if student info matches
-        const studentMatches = 
+        const studentMatches =
           studentGroup.studentInfo.name.toLowerCase().includes(term) ||
           studentGroup.studentInfo.index.toLowerCase().includes(term);
-        
-        // Check if any report matches
-        const reportMatches = studentGroup.reports.some(report => 
+        const reportMatches = studentGroup.reports.some(report =>
           report.month?.toLowerCase().includes(term)
         );
-        
         if (studentMatches || reportMatches) {
           filtered[studentIndex] = studentGroup;
         }
       });
-      
       setFilteredGroupedReports(filtered);
     } else {
       setFilteredGroupedReports(groupedReports);
@@ -120,21 +116,16 @@ const MentorDocMonthly = () => {
   };
 
   const handleDelete = async (reportId) => {
-    // const confirmDelete = window.confirm("Are you sure you want to delete this report?");
-    // if (!confirmDelete) return;
     try {
       const response = await axios.post(`${url}/api/mentor/deleteMonthlyReport`, {
         userEmail: userEmail,
         reportId: reportId,
       });
-  
+
       if (response.data.success) {
         toast.success(response.data.message);
-        // Remove the deleted item from reports array
         const updatedReports = reports.filter((item) => item._id !== reportId);
         setReports(updatedReports);
-        
-        // Re-group reports after deletion
         const regrouped = groupReportsByStudent(updatedReports);
         setGroupedReports(regrouped);
         setFilteredGroupedReports(regrouped);
@@ -150,7 +141,6 @@ const MentorDocMonthly = () => {
   return (
     <div className="w-full p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center my-4">
-        {/* Search Bar */}
         <div className="relative w-full md:w-1/3 lg:w-1/5 max-w-sm">
           <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
@@ -161,99 +151,87 @@ const MentorDocMonthly = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        <Link to="/MCreateMonthlyDocView">
-          <button className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-10 rounded-md transition duration-300 ease-in-out flex items-center mt-4 md:mt-0">
-            ADD
-          </button>
-        </Link>
       </div>
 
-      {/* Desktop View - Folder Structure Table */}
+      {/* Desktop View */}
       <div className="hidden md:block bg-gray-100 rounded-lg">
-      <div className="max-h-[500px] overflow-y-auto rounded-lg">        
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="py-3 px-4">Student</th>
-              <th className="py-3 px-4">Index</th>
-              <th className="py-3 px-4">Reports</th>
-              <th className="py-3 px-4"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {Object.keys(filteredGroupedReports).map((studentIndex) => {
-              const { studentInfo, reports } = filteredGroupedReports[studentIndex];
-              const isExpanded = expandedStudents[studentIndex];
-              
-              return (
-                <React.Fragment key={studentIndex}>
-                  {/* Student row (folder) */}
-                  <tr 
-                    className="hover:bg-gray-50 cursor-pointer bg-gray-50" 
-                    onClick={() => toggleExpand(studentIndex)}
-                  >
-                    <td className="py-4 px-4 flex items-center">
-                      {isExpanded ? 
-                        <FaChevronDown className="mr-2 text-gray-500" /> : 
-                        <FaChevronRight className="mr-2 text-gray-500" />
-                      }
-                      {isExpanded ? 
-                        <FaFolderOpen className="mr-2 text-yellow-500" /> : 
-                        <FaFolder className="mr-2 text-yellow-500" />
-                      }
-                      {studentInfo.name}
-                    </td>
-                    <td className="py-4 px-4">{studentInfo.index}</td>
-                    <td className="py-4 px-4">{reports.length} reports</td>
-                    <td className="py-4 px-4"></td>
-                  </tr>
-                  
-                  {/* Report rows (shown when expanded) */}
-                  {isExpanded && reports.map((report, idx) => (
-                    <tr key={`${studentIndex}-${idx}`} className="hover:bg-gray-50 text-sm text-[#0C7075]">
-                      <td className="py-3 px-4 pl-12">Monthly Report</td>
-                      <td className="py-3 px-4">{report.index}</td>
-                      <td className="py-3 px-4">{report.month}</td>
-                      <td className="py-3 px-4 flex space-x-6">
-                        <AiOutlineFilePdf
-                          className="text-red-500 text-xl cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewPdf(report.reportUrl);
-                          }}
-                          title="View Report"
-                        />
-                        <ConfirmDeleteButton onConfirm={() => handleDelete(report._id)} />
+        <div className="max-h-[500px] overflow-y-auto rounded-lg">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="py-3 px-4">Student</th>
+                <th className="py-3 px-4">Index</th>
+                <th className="py-3 px-4">Reports</th>
+                <th className="py-3 px-4"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {Object.keys(filteredGroupedReports).map((studentIndex) => {
+                const { studentInfo, reports } = filteredGroupedReports[studentIndex];
+                const isExpanded = expandedStudents[studentIndex];
+
+                return (
+                  <React.Fragment key={studentIndex}>
+                    <tr
+                      className="hover:bg-gray-50 cursor-pointer bg-gray-50"
+                      onClick={() => toggleExpand(studentIndex)}
+                    >
+                      <td className="py-4 px-4 flex items-center">
+                        {isExpanded ?
+                          <FaChevronDown className="mr-2 text-gray-500" /> :
+                          <FaChevronRight className="mr-2 text-gray-500" />}
+                        {isExpanded ?
+                          <FaFolderOpen className="mr-2 text-yellow-500" /> :
+                          <FaFolder className="mr-2 text-yellow-500" />}
+                        {studentInfo.name}
                       </td>
+                      <td className="py-4 px-4">{studentInfo.index}</td>
+                      <td className="py-4 px-4">{reports.length} reports</td>
+                      <td className="py-4 px-4"></td>
                     </tr>
-                  ))}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+
+                    {isExpanded && reports.map((report, idx) => (
+                      <tr key={`${studentIndex}-${idx}`} className="hover:bg-gray-50 text-sm text-[#0C7075]">
+                        <td className="py-3 px-4 pl-12">Monthly Report</td>
+                        <td className="py-3 px-4">{report.index}</td>
+                        <td className="py-3 px-4">{report.month}</td>
+                        <td className="py-3 px-4 flex space-x-6">
+                          <AiOutlineFilePdf
+                            className="text-red-500 text-xl cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewPdf(report.reportUrl);
+                            }}
+                            title="View Report"
+                          />
+                          <ConfirmDeleteButton onConfirm={() => handleDelete(report._id)} />
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Mobile View - Accordion Cards */}
+      {/* Mobile View */}
       <div className="md:hidden space-y-4">
         {Object.keys(filteredGroupedReports).map((studentIndex) => {
           const { studentInfo, reports } = filteredGroupedReports[studentIndex];
           const isExpanded = expandedStudents[studentIndex];
-          
+
           return (
             <div key={studentIndex} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {/* Student header */}
-              <div 
+              <div
                 className="p-4 flex items-center justify-between bg-gray-50 cursor-pointer"
                 onClick={() => toggleExpand(studentIndex)}
               >
                 <div className="flex items-center">
-                  {isExpanded ? 
-                    <FaFolderOpen className="mr-2 text-yellow-500" /> : 
-                    <FaFolder className="mr-2 text-yellow-500" />
-                  }
+                  {isExpanded ?
+                    <FaFolderOpen className="mr-2 text-yellow-500" /> :
+                    <FaFolder className="mr-2 text-yellow-500" />}
                   <div>
                     <div className="font-medium">{studentInfo.name}</div>
                     <div className="text-sm text-gray-500">{studentInfo.index}</div>
@@ -261,18 +239,16 @@ const MentorDocMonthly = () => {
                 </div>
                 <div className="flex items-center">
                   <span className="mr-2 text-sm text-gray-500">{reports.length} reports</span>
-                  {isExpanded ? 
-                    <FaChevronDown className="text-gray-500" /> : 
-                    <FaChevronRight className="text-gray-500" />
-                  }
+                  {isExpanded ?
+                    <FaChevronDown className="text-gray-500" /> :
+                    <FaChevronRight className="text-gray-500" />}
                 </div>
               </div>
-              
-              {/* Report list (shown when expanded) */}
+
               {isExpanded && (
                 <div className="border-t border-gray-200">
                   {reports.map((report, idx) => (
-                    <div 
+                    <div
                       key={`mobile-${studentIndex}-${idx}`}
                       className="p-4 border-b border-gray-100 flex justify-between items-center"
                     >
@@ -286,11 +262,16 @@ const MentorDocMonthly = () => {
                           onClick={() => handleViewPdf(report.reportUrl)}
                           title="View Report"
                         />
-                        <FiTrash2
+                        {/* <FiTrash2
                           className="text-gray-600 text-lg cursor-pointer"
                           onClick={() => handleDelete(report._id)}
                           title="Delete Report"
-                        />
+                        /> */}
+                        <ConfirmDeleteButton
+                                            onConfirm={() => handleDelete(report._id)}
+                                            icon={<FaTrash className="text-red-500 hover:text-red-700 cursor-pointer" />}
+                                            confirmText="Are you sure you want to delete this mentor?"
+                                          />
                       </div>
                     </div>
                   ))}

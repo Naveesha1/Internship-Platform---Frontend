@@ -4,16 +4,30 @@ import Navbar from "../../Components/Navbar/Navbar";
 import { StoreContext } from "../../Context/StoreContext.js";
 import { jwtDecode } from "jwt-decode";
 import CompanyMentorProfile from "../../Components/Company/CompanyMentorProfile.js";
+import { useNavigate } from "react-router-dom";
 
 const CompanyMentorsPage = () => {
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
-
+  const navigate = useNavigate();
   const { url } = useContext(StoreContext);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // for toggle sidebar
+  // Handle token and redirection
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        navigate("/");
+      };
+
+      const decodedToken = jwtDecode(token);
+      setRegisteredEmail(decodedToken.email);
+    } catch (error) {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  // Toggle sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -35,7 +49,7 @@ const CompanyMentorsPage = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 p-4 transition-all flex flex-col justify-start items-left overflow-x-hidden">
-          <CompanyMentorProfile/>
+          {registeredEmail && <CompanyMentorProfile />}
         </div>
       </div>
     </div>

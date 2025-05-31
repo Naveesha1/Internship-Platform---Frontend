@@ -9,9 +9,11 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext.js";
+import { useNavigate } from "react-router-dom";
 
 const AllInternship = () => {
   const { url } = useContext(StoreContext);
+  const navigate = useNavigate();
 
   const [showAllFilters, setShowAllFilters] = useState(false);
   const [internships, setInternships] = useState([]);
@@ -19,30 +21,48 @@ const AllInternship = () => {
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
   const internshipsPerPage = 8;
-
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken._id;
-  const registeredEmail = decodedToken.email;
 
   const toggleAllFilters = () => setShowAllFilters(!showAllFilters);
 
+  // Token decoding and redirect handling
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        navigate("/");
+      };
+
+      const decodedToken = jwtDecode(token);
+      setRegisteredEmail(decodedToken.email);
+    } catch (error) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   // Fetching all internships
   useEffect(() => {
+    if (!registeredEmail) return;
+
     const getCompanySpecificInternships = async () => {
-      const response = await axios.post(`${url}/api/company/allInternships`, {
-        registeredEmail,
-      });
-      if (response.data.success) {
-        setInternships(response.data.data);
-        setFilteredInternships(response.data.data);
-      } else {
-        console.log(response.data.message);
+      try {
+        const response = await axios.post(`${url}/api/company/allInternships`, {
+          registeredEmail,
+        });
+        if (response.data.success) {
+          setInternships(response.data.data);
+          setFilteredInternships(response.data.data);
+        } else {
+          console.log(response.data.message);
+        }
+      } catch (error) {
+        console.error("Failed to fetch internships:", error);
       }
     };
+
     getCompanySpecificInternships();
-  }, [userId]);
+  }, [registeredEmail, url]);
 
   // Filtering internships
   useEffect(() => {
@@ -69,11 +89,11 @@ const AllInternship = () => {
   };
 
   const handleNextPage = () => {
-    if (startIndex + internshipsPerPage < internships.length) {
+    if (startIndex + internshipsPerPage < filteredInternships.length) {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
-  
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="p-6 flex-1 overflow-y-auto">

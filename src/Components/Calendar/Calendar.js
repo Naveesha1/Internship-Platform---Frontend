@@ -12,7 +12,6 @@ const STATUS_COLORS = {
   Normal: "bg-green-500",
 };
 
-// Main Calendar Component
 const Calendar = () => {
   const { url, addedEvents, setAddedEvents } = useContext(StoreContext);
 
@@ -23,17 +22,19 @@ const Calendar = () => {
   const [event, setEvent] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [registeredEmail, setRegisteredEmail] = useState(null);
 
   const getDaysInMonth = (month, year) =>
     new Date(year, month + 1, 0).getDate();
-  const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
+
+  const getFirstDayOfMonth = (month, year) =>
+    new Date(year, month, 1).getDay();
 
   const generateCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentMonth, currentYear);
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
     const days = [];
 
-    // Previous month days
     for (let i = 0; i < firstDay; i++) {
       const prevMonthDays = getDaysInMonth(currentMonth - 1, currentYear);
       const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -46,7 +47,6 @@ const Calendar = () => {
       });
     }
 
-    // Current month days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({
         day: i,
@@ -56,7 +56,6 @@ const Calendar = () => {
       });
     }
 
-    // Next month days
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
@@ -79,6 +78,7 @@ const Calendar = () => {
       .toString()
       .padStart(2, "0")}-${day.day.toString().padStart(2, "0")}`;
     setSelectedDate(dateString);
+
     const eventsForDate = addedEvents.filter(
       (event) => event.date === dateString
     );
@@ -100,14 +100,12 @@ const Calendar = () => {
   };
 
   const getHighestPriorityColor = (dateString) => {
-    // Find events that match the current date
     const dateReminders = addedEvents.filter(
       (event) => event.date === dateString
     );
 
-    if (!dateReminders || dateReminders.length === 0) return ""; // No color if no events
+    if (!dateReminders || dateReminders.length === 0) return "";
 
-    // Check the highest priority among the events for this date
     if (dateReminders.some((event) => event.status === "High")) {
       return STATUS_COLORS.High;
     } else if (dateReminders.some((event) => event.status === "Medium")) {
@@ -150,27 +148,43 @@ const Calendar = () => {
     "December",
   ];
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
+  // Decode token once
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setRegisteredEmail(decoded.email);
+      } catch (error) {
+        console.error("Failed to decode token", error);
+      }
+    }
+  }, []);
 
+  // Fetch events when email is ready
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await axios.post(`${url}/api/calender/getEvents`, {
-        registeredEmail,
-      });
-      if (response.data.success) {
-        setAddedEvents(response.data.data);
-      } else {
-        setAddedEvents([]);
+      try {
+        const response = await axios.post(`${url}/api/calender/getEvents`, {
+          registeredEmail,
+        });
+        if (response.data.success) {
+          setAddedEvents(response.data.data);
+        } else {
+          setAddedEvents([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events", error);
       }
     };
-    fetchEvents();
+
+    if (registeredEmail) {
+      fetchEvents();
+    }
   }, [registeredEmail]);
 
   return (
     <div className="p-4 ml-4 mr-4 mt-20 bg-gray-100 rounded-lg">
-      {/* Calendar Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">
           {monthNames[currentMonth]} {currentYear}
@@ -191,7 +205,6 @@ const Calendar = () => {
         </div>
       </div>
 
-      {/* Priority Legend */}
       <div className="flex gap-4 mb-4">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-red-500 rounded"></div>
@@ -207,7 +220,6 @@ const Calendar = () => {
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-1 h-96 mb-4">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
@@ -229,12 +241,10 @@ const Calendar = () => {
             <div
               key={index}
               onClick={() => day.isCurrentMonth && handleDateClick(day)}
-              className={`
-                p-2 text-center cursor-pointer relative
+              className={`p-2 text-center cursor-pointer relative
                 ${day.isCurrentMonth ? "hover:bg-blue-200" : "text-gray-400"}
                 ${priorityColor ? `${priorityColor} text-black` : "bg-white"}
-                border border-gray-200
-              `}
+                border border-gray-200`}
             >
               <span>{day.day}</span>
               {hasReminders && (
@@ -247,7 +257,6 @@ const Calendar = () => {
         })}
       </div>
 
-      {/* Popups */}
       {showAddPopup && (
         <AddReminderPopup
           selectedDate={selectedDate}

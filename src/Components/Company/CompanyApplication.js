@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext.js";
+import { useNavigate } from "react-router-dom";
 
 const CompanyApplication = () => {
   const { url, cvStatus, setCvStatus } = useContext(StoreContext);
@@ -16,10 +17,22 @@ const CompanyApplication = () => {
   const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [matchThreshold, setMatchThreshold] = useState(70);
+  const [registeredEmail, setRegisteredEmail] = useState(null);
+  const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-  const decodedToken = jwtDecode(token);
-  const registeredEmail = decodedToken.email;
+  useEffect(() => {
+        try {
+          const token = localStorage.getItem("authToken");
+          if (!token) {
+            navigate("/");
+          };
+    
+          const decodedToken = jwtDecode(token);
+          setRegisteredEmail(decodedToken.email);
+        } catch (error) {
+          navigate("/");
+        }
+      }, [navigate]);
 
   // Fetch applicants when the component mounts
   useEffect(() => {
