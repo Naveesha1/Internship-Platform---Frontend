@@ -47,6 +47,8 @@ const Dashboard = () => {
 
         if (response.data.success) {
           setMentorCount(response.data.count);
+        } else {
+          setMentorCount(0);
         }
       } catch (error) {
         console.error("Error fetching mentor count:", error);
@@ -68,6 +70,8 @@ const Dashboard = () => {
 
         if (response.data.success) {
           setInternCount(response.data.count);
+        } else {
+          setInternCount(0);
         }
       } catch (error) {
         console.error("Error fetching intern count:", error);
@@ -89,6 +93,8 @@ const Dashboard = () => {
 
         if (response.data.success) {
           setApplicationCount(response.data.count);
+        } else {
+          setApplicationCount(0);
         }
       } catch (error) {
         console.error("Error fetching application count:", error);
@@ -111,7 +117,7 @@ const Dashboard = () => {
         if (response.data.success) {
           setChartData(response.data.positionStats);
         } else {
-          console.error("Failed to fetch position analytics");
+          setChartData();
         }
       } catch (error) {
         console.error("Error fetching position analytics:", error);

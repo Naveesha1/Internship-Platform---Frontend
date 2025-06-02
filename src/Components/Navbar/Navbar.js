@@ -74,9 +74,7 @@ const Navbar = () => {
 
       if (response?.data.success) {
         setNotifications(response.data.data);
-      } else {
-        console.log(response?.data.message);
-      }
+      } 
     } catch (error) {
       console.log("An error occurred while fetching notifications:", error);
     }

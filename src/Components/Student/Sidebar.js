@@ -45,13 +45,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         
         const response = await axios.post(`${url}/api/student/checkProfileVerification`, { registeredEmail });
         if (response.data.success) {
-          
-          const isVerified = response.data.isVerified;
-          setIsUserVerified(isVerified);
+          setIsUserVerified(true);
+        } else {
+          setIsUserVerified(false);
         }
       } catch (error) {
         console.log(error);
-        setIsUserVerified(false); // Default to not verified on error
+        setIsUserVerified(false);
       }
     };
 

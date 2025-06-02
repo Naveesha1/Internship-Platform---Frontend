@@ -93,7 +93,7 @@ const CompanyMentorProfile = () => {
       if (response.data.success) {
         setMentorsData(response.data.mentors);
       } else {
-        toast.error("Failed to fetch mentors");
+        setMentorsData();
       }
     };
 
