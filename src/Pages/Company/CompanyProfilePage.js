@@ -12,6 +12,7 @@ import { jwtDecode } from "jwt-decode";
 import done_icon from "../../Images/done.png";
 import ProfileContent from "../../Components/Company/Profile/CompanyProfile.js";
 import { useNavigate } from "react-router-dom";
+import { ThreeDot } from "react-loading-indicators";
 
 const CompanyProfilePage = () => {
   const navigate = useNavigate();
@@ -109,7 +110,6 @@ const CompanyProfilePage = () => {
         };
 
         const response = await axios.post(`${url}/api/company/createprofile`, updatedFormData);
-
         if (response.data.success) {
           setSubmitted(true);
         } else {
@@ -212,10 +212,14 @@ const CompanyProfilePage = () => {
           ) : (
             <>
               {availability && <ProfileContent companyDetails={company} />}
-              {submitted && (
+              {submitted ? (
                 <>
                   <img src={done_icon} alt="Success" />
                   <p className="text-[#0C7075] font-bold text-2xl">Profile Created Successfully</p>
+                </>
+              ) : (
+                <>
+                <ThreeDot color="#3498db" size="medium" text="" textColor=""/>
                 </>
               )}
             </>
