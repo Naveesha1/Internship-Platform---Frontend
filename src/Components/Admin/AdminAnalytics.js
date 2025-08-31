@@ -8,7 +8,7 @@ import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
 
 // Dashboard component that contains all analytics graphs
-  const AdminAnalytics = () => {
+const AdminAnalytics = () => {
 
   // State for storing data from API
   const [skillDemandData, setSkillDemandData] = useState([]);
@@ -20,7 +20,7 @@ import { StoreContext } from '../../Context/StoreContext';
   // Add loading state for skill demand data
   const [skillsLoading, setSkillsLoading] = useState(true);
   const [skillsError, setSkillsError] = useState(null);
-  
+
   // Add loading state for report data
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState(null);
@@ -29,14 +29,14 @@ import { StoreContext } from '../../Context/StoreContext';
   const [aiInternshipData, setAiInternshipData] = useState([]);
   const [allInternshipData, setAllInternshipData] = useState([]);
 
-    // State for company and position statistics
-    const [topCompanies, setTopCompanies] = useState([]);
-    const [allPositions, setAllPositions] = useState([]);
+  // State for company and position statistics
+  const [topCompanies, setTopCompanies] = useState([]);
+  const [allPositions, setAllPositions] = useState([]);
 
-    // Internship secure status through the recent 4 months
-    const [monthlyInternships, setMonthlyInternships] = useState([]);
+  // Internship secure status through the recent 4 months
+  const [monthlyInternships, setMonthlyInternships] = useState([]);
 
-  
+
 
   const { url } = useContext(StoreContext);
 
@@ -165,51 +165,51 @@ import { StoreContext } from '../../Context/StoreContext';
   };
 
   const fetchInternshipStatistics = async () => {
-  try {
-    setReportsLoading(true);
-    setReportsError(null);
-    
-    // Get token from localStorage
-    const token = localStorage.getItem("authToken");
-    
-    if (!token) {
-      setReportsError('Authentication token not found');
+    try {
+      setReportsLoading(true);
+      setReportsError(null);
+
+      // Get token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        setReportsError('Authentication token not found');
+        setReportsLoading(false);
+        return;
+      }
+
+      // Make API call to get report statistics
+      const response = await axios.get(`${url}/api/admin/getInternshipStatistics`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+
+        if (response.data.data.itInternship) {
+          setItInternshipData(response.data.data.itInternship);
+        }
+        if (response.data.data.itmInternship) {
+          setItmInternshipData(response.data.data.itmInternship);
+        }
+        if (response.data.data.aiInternship) {
+          setAiInternshipData(response.data.data.aiInternship);
+        }
+        if (response.data.data.allInternship) {
+          setAllInternshipData(response.data.data.allInternship);
+        }
+
+      } else {
+        setReportsError(response.data.message || 'Failed to fetch report statistics');
+      }
+
       setReportsLoading(false);
-      return;
+    } catch (error) {
+      console.error("Error fetching report statistics:", error);
+      setReportsError('An error occurred while fetching report statistics');
+      setReportsLoading(false);
     }
-    
-    // Make API call to get report statistics
-    const response = await axios.get(`${url}/api/admin/getInternshipStatistics`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (response.data.success) {
-      
-      if (response.data.data.itInternship) {
-        setItInternshipData(response.data.data.itInternship);
-      }
-      if (response.data.data.itmInternship) {
-        setItmInternshipData(response.data.data.itmInternship);
-      }
-      if (response.data.data.aiInternship) {
-        setAiInternshipData(response.data.data.aiInternship);
-      }
-      if (response.data.data.allInternship) {
-        setAllInternshipData(response.data.data.allInternship);
-      }
-      
-    } else {
-      setReportsError(response.data.message || 'Failed to fetch report statistics');
-    }
-    
-    setReportsLoading(false);
-  } catch (error) {
-    console.error("Error fetching report statistics:", error);
-    setReportsError('An error occurred while fetching report statistics');
-    setReportsLoading(false);
-  }
   };
 
   // GPA chart loading state
@@ -293,7 +293,7 @@ import { StoreContext } from '../../Context/StoreContext';
   };
 
   // Secure Internship chart with loading state
-  const renderInternshipCharts =() => {
+  const renderInternshipCharts = () => {
     if (reportsLoading) {
       return (
         <div className="flex justify-center items-center h-48">
@@ -301,17 +301,17 @@ import { StoreContext } from '../../Context/StoreContext';
         </div>
       );
     }
-  
+
     if (reportsError) {
       return <div className="text-red-500 text-center py-8">{reportsError}</div>;
     }
-  
+
     // Colors for pie charts
-    const COLORS = ['#1E90FF', '#00CED1', '#20B2AA', '#4682B4', '#2E8B57', '#5F9EA0'];
-  
+    const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#2ecc71', '#e74c3c', '#3498db', '#f1c40f'];
+
     return (
       <div>
-  
+
         {/* New internship charts - first row */}
         <div className="flex mb-8">
           <div className="w-1/2">
@@ -333,7 +333,7 @@ import { StoreContext } from '../../Context/StoreContext';
             </ResponsiveContainer>
             <h3 className="text-center font-medium text-sm mb-2 text-gray-600">IT Students Internship Status</h3>
           </div>
-  
+
           <div className="w-1/2">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
@@ -374,7 +374,7 @@ import { StoreContext } from '../../Context/StoreContext';
             </ResponsiveContainer>
             <h3 className="text-center font-medium text-sm mb-2 text-gray-600">AI Students Internship Status</h3>
           </div>
-  
+
           <div className="w-1/2">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
@@ -396,7 +396,7 @@ import { StoreContext } from '../../Context/StoreContext';
           </div>
         </div>
       </div>
-   
+
     );
   };
 
@@ -416,7 +416,7 @@ import { StoreContext } from '../../Context/StoreContext';
           axios.get(`${url}/api/admin/getSelectionStatistics`),
           axios.get(`${url}/api/admin/getMonthlyInternshipsByDegree`)
         ]);
-        
+
         if (selectionsResponse.data.success) {
           setTopCompanies(selectionsResponse.data.data.topCompanies);
           setAllPositions(selectionsResponse.data.data.allPositions);
@@ -449,15 +449,15 @@ import { StoreContext } from '../../Context/StoreContext';
         </div>
       );
     }
-    
+
     if (error) {
       return <div className="text-red-500 text-center py-8">{error}</div>;
     }
-    
+
     return (
       <div className="flex flex-col space-y-8">
 
-        
+
         {/* Top Companies Chart Section */}
         <div className="flex">
           {/* Company Names Legend */}
@@ -466,8 +466,8 @@ import { StoreContext } from '../../Context/StoreContext';
             <div className="space-y-2">
               {topCompanies.map((company, index) => (
                 <div key={`company-${index}`} className="flex items-center">
-                  <div 
-                    className="w-3 h-3 rounded-full mr-2" 
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-sm truncate" title={company.name}>
@@ -478,7 +478,7 @@ import { StoreContext } from '../../Context/StoreContext';
               ))}
             </div>
           </div>
-          
+
           {/* Company Doughnut Chart */}
           <div className="w-2/3">
             <ResponsiveContainer width="100%" height={220}>
@@ -501,7 +501,7 @@ import { StoreContext } from '../../Context/StoreContext';
             </ResponsiveContainer>
           </div>
         </div>
-        
+
         {/* All Positions Chart Section */}
         <div className="flex">
           {/* Position Names Legend */}
@@ -510,8 +510,8 @@ import { StoreContext } from '../../Context/StoreContext';
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {allPositions.map((position, index) => (
                 <div key={`position-${index}`} className="flex items-center">
-                  <div 
-                    className="w-3 h-3 rounded-full mr-2" 
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: COLORS[(index + 2) % COLORS.length] }}
                   />
                   <span className="text-sm truncate" title={position.name}>
@@ -522,7 +522,7 @@ import { StoreContext } from '../../Context/StoreContext';
               ))}
             </div>
           </div>
-          
+
           {/* Position Doughnut Chart */}
           <div className="w-2/3">
             <ResponsiveContainer width="100%" height={220}>
@@ -545,43 +545,20 @@ import { StoreContext } from '../../Context/StoreContext';
             </ResponsiveContainer>
           </div>
         </div>
-                {/* Monthly Internships Line Chart */}
-                <div className="w-full">
-          <h3 className="font-medium text-gray-600 mb-4">Monthly Internships by Degree</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={monthlyInternships}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value, name) => [`${value} students`, name]} />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="IT" 
-                stroke={LINE_COLORS.IT} 
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="ITM" 
-                stroke={LINE_COLORS.ITM} 
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="AI" 
-                stroke={LINE_COLORS.AI} 
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        {/* Monthly Internships Line Chart */}
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={monthlyInternships} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip formatter={(value, name) => [`${value} students`, name]} />
+            <Legend />
+            <Bar dataKey="IT" fill={LINE_COLORS.IT} />
+            <Bar dataKey="ITM" fill={LINE_COLORS.ITM} />
+            <Bar dataKey="AI" fill={LINE_COLORS.AI} />
+          </BarChart>
+        </ResponsiveContainer>
+
       </div>
     );
   };
