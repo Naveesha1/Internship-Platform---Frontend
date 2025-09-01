@@ -74,15 +74,25 @@ const LoginSignUp = () => {
     }
     // if user trying to sign up, set backend path to sign up
     else {
-      newURL += "/api/user/register";
-      const response = await axios.post(newURL, data);
-      if (response.data.success) {
-        toast.success(response.data.message);
-        navigate("/");
-      } else {
-        toast.error(response.data.message);
-      }
-    }
+  // Custom validation for company email
+  if (
+    data.role === "Company" &&
+    /@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|icloud\.com)$/i.test(data.email)
+  ) {
+    toast.error("Company email must not be a personal email domain (e.g., @gmail.com)");
+    return;
+  }
+
+  newURL += "/api/user/register";
+  const response = await axios.post(newURL, data);
+  if (response.data.success) {
+    toast.success(response.data.message);
+    navigate("/");
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
   };
 
   // forget password button function

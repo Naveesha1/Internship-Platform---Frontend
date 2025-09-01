@@ -19,7 +19,7 @@ const CreateInternEmployee = ({
   setNewStudent,
   refreshData,
 }) => {
-  const { url } = useContext(StoreContext); 
+  const { url } = useContext(StoreContext);
   const [registeredIds, setRegisteredIds] = useState([]);
   const [filteredIds, setFilteredIds] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -116,7 +116,7 @@ const CreateInternEmployee = ({
       };
 
       const response = await axios.post(`${url}/api/mentor/saveStudentData`, {
-        registeredEmail: newMentor.mentorEmail, 
+        registeredEmail: newMentor.mentorEmail,
         student: studentData,
       });
 
@@ -148,7 +148,7 @@ const CreateInternEmployee = ({
             onChange={handleIdChange}
             onFocus={() => newStudent.id && setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-            className={`w-full p-2 border rounded ${error ? "border-red-500" : ""}`}          />
+            className={`w-full p-2 border rounded ${error ? "border-red-500" : ""}`} />
           {showSuggestions && (
             <ul className="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto rounded shadow">
               {filteredIds.length > 0 ? (
@@ -242,14 +242,78 @@ const CreateInternEmployee = ({
               />
             </div>
 
-            <input
-              type="text"
-              name="position"
-              placeholder="Position"
-              value={newStudent.position || ""}
-              onChange={handleChange}
-              className="w-full mb-2 p-2 border rounded"
-            />
+            <div className="relative w-full mb-2">
+              <input
+                list="positionOptions"
+                type="text"
+                name="position"
+                placeholder="Position"
+                value={newStudent.position || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+              <datalist id="positionOptions">
+                <option value="Front-End Developer" />
+                <option value="Back-End Developer" />
+                <option value="Full Stack Developer" />
+                <option value="Mobile App Developer" />
+                <option value="Game Developer" />
+                <option value="Software Engineer" />
+                <option value="Embedded Systems Developer" />
+                <option value="Web Designer" />
+                <option value="Web Developer" />
+                <option value="UI/UX Designer" />
+                <option value="WordPress Developer" />
+                <option value="Data Scientist" />
+                <option value="Machine Learning Engineer" />
+                <option value="AI Engineer" />
+                <option value="Data Analyst" />
+                <option value="Deep Learning Specialist" />
+                <option value="NLP Engineer" />
+                <option value="DevOps Engineer" />
+                <option value="Cloud Engineer" />
+                <option value="Site Reliability Engineer" />
+                <option value="Cloud Architect" />
+                <option value="IT Support Specialist" />
+                <option value="System Administrator" />
+                <option value="Network Administrator" />
+                <option value="Help Desk Technician" />
+                <option value="Technical Support Engineer" />
+                <option value="Cybersecurity Analyst" />
+                <option value="Ethical Hacker" />
+                <option value="Security Engineer" />
+                <option value="Information Security Analyst" />
+                <option value="SOC Analyst" />
+                <option value="Database Administrator" />
+                <option value="Data Engineer" />
+                <option value="Big Data Engineer" />
+                <option value="SQL Developer" />
+                <option value="IoT Developer" />
+                <option value="Embedded Systems Engineer" />
+                <option value="Robotics Engineer" />
+                <option value="Firmware Engineer" />
+                <option value="QA Tester" />
+                <option value="Automation Test Engineer" />
+                <option value="Performance Tester" />
+                <option value="Manual Tester" />
+                <option value="Business Analyst" />
+                <option value="Systems Analyst" />
+                <option value="Product Manager" />
+                <option value="Project Manager" />
+                <option value="Scrum Master" />
+                <option value="Tech Writer" />
+                <option value="IT Consultant" />
+                <option value="Blockchain Developer" />
+                <option value="CRM Developer" />
+                <option value="ERP Consultant" />
+                <option value="IT Auditor" />
+                <option value="Game Tester" />
+                <option value="GIS Analyst" />
+                <option value="Multimedia Developer" />
+                <option value="AR/VR Developer" />
+              </datalist>
+            </div>
+
           </>
         )}
 

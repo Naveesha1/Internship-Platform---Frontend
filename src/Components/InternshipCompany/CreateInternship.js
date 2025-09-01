@@ -28,7 +28,9 @@ const CreateInternship = () => {
           navigate("/");
         };
   
+
         const decodedToken = jwtDecode(token);
+        console.log(decodedToken.email);
         setRegisteredEmail(decodedToken.email);
       } catch (error) {
         navigate("/");
@@ -55,6 +57,7 @@ const CreateInternship = () => {
 
     try {
       setLoading(true);
+      console.log(newInternship);
       const response = await axios.post(`${url}/api/company/createIntern`, newInternship);
       if (response.data.success) {
         toast.success(response.data.message);
