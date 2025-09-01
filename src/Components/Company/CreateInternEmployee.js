@@ -29,9 +29,12 @@ const CreateInternEmployee = ({
 
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const decodedToken = jwtDecode(token);
+    const registeredEmail = decodedToken.email;
     const getStudentRegisteredId = async () => {
       try {
-        const response = await axios.get(`${url}/api/student/getStudentRegisteredId`);
+        const response = await axios.get(`${url}/api/student/getHiredStudentsRegisteredId/${registeredEmail}`);
         if (response.data.success) {
           setRegisteredIds(response.data.data || []);
         }
@@ -159,7 +162,7 @@ const CreateInternEmployee = ({
                   </li>
                 ))
               ) : (
-                <li className="p-2 text-gray-500">No student</li>
+                <li className="p-2 text-gray-500">No student hired</li>
               )}
             </ul>
           )}
