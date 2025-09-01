@@ -14,7 +14,6 @@ import StudentDocumentPage from "./Pages/Student/StudentDocumentPage.js";
 
 import InternshipDetailsView from "./Pages/Company/InternshipDetailsViewPage.js";
 import CalendarPage from "./Pages/Student/CalendarPage.js";
-import ChatbotPage from "./Pages/Student/ChatbotPage.js";
 import ComDashboardPage from "./Pages/Company/ComDashboardPage.js";
 import CompanyProfilePage from "./Pages/Company/CompanyProfilePage.js";
 import CompanyInternshipPage from "./Pages/Company/CompanyInternshipPage.js";
@@ -50,41 +49,24 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
+
         {/* Students routes */}
         <Route path="/STDashboard" element={<DashboardPage />}></Route>
         <Route path="/SProfile" element={<Profile />} />
         <Route path="/InternshipPage" element={<InternshipPage />} />
         <Route path="/CalendarPage" element={<CalendarPage />}></Route>
-        <Route
-          path="/InternshipDetailsPage"
-          element={<InternshipDetailsPage />}
-        ></Route>
-        <Route path="/ChatbotPage" element={<ChatbotPage />}></Route>
+        <Route path="/InternshipDetailsPage" element={<InternshipDetailsPage />}></Route>
         <Route path="/ApplicationPage" element={<ApplicationPage />}></Route>
         <Route path="/DocumentPage" element={<StudentDocumentPage />}></Route>
+
         {/* company routes */}
         <Route path="/ComDashboard" element={<ComDashboardPage />}></Route>
         <Route path="/CompanyProfile" element={<CompanyProfilePage />}></Route>
-        <Route
-          path="/CompanyInternshipPage"
-          element={<CompanyInternshipPage />}
-        ></Route>
-        <Route
-          path="/CompanyCalendar"
-          element={<CompanyCalendarPage />}
-        ></Route>
-        <Route
-          path="/CompanyApplicationPage"
-          element={<CompanyApplicationPage />}
-        ></Route>
-        <Route
-          path="/InternEmployees"
-          element={<InternEmployees />}
-        ></Route>
-        <Route
-          path="/InternshipDetailsView"
-          element={<InternshipDetailsView />}
-        ></Route>
+        <Route path="/CompanyInternshipPage" element={<CompanyInternshipPage />}></Route>
+        <Route path="/CompanyCalendar" element={<CompanyCalendarPage />}></Route>
+        <Route path="/CompanyApplicationPage" element={<CompanyApplicationPage />}></Route>
+        <Route path="/InternEmployees" element={<InternEmployees />}></Route>
+        <Route path="/InternshipDetailsView" element={<InternshipDetailsView />}></Route>
 
         {/* Admin routes */}
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
@@ -93,10 +75,7 @@ function App() {
         <Route path="/AdminCalender" element={<AdminCalenderPage />} />
         <Route path="/AdminDocument" element={<AdminDocumentPage />} />
         <Route path="/AdminAnalyticsPage" element={<AdminAnalyticsPage/>}></Route>
-        <Route
-          path="/InternshipDetailsViewAdmin"
-          element={<InternshipDetailsViewAdmin />}
-        ></Route>
+        <Route path="/InternshipDetailsViewAdmin" element={<InternshipDetailsViewAdmin />}></Route>
 
         {/* Mentor routes */}
         <Route path="/MDashboard" element={<MentorDashboard />} />

@@ -27,7 +27,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Applications', icon: require("../../Images/sidebar/applications.png"), href: `/ApplicationPage`, requiresVerification: true },
     { name: 'Progress Report', icon: require("../../Images/sidebar/applications.png"), href: `/DocumentPage`, requiresVerification: true },
     { name: 'Calendar', icon: require("../../Images/sidebar/calender.png"), href: `/CalendarPage` },
-    { name: 'FAQ', icon: require("../../Images/sidebar/chatbot.png"), href: `/ChatbotPage` },
   ], []);
 
   // Check user verification status on component mount
